@@ -6,6 +6,8 @@ import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.repository.KitchenRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class KitchenService {
     private final KitchenMapper kitchenMapper;
@@ -20,5 +22,9 @@ public class KitchenService {
         KitchenModel kitchenModel = kitchenMapper.toEntity(kitchen);
         KitchenModel kitchenSaved = kitchenRepository.save(kitchenModel);
         return kitchenMapper.toDTO(kitchenSaved);
+    }
+
+    public List<KitchenDTO> listKitchens(){
+        return kitchenRepository.findAll().stream().map(kitchenMapper::toDTO).toList();
     }
 }
