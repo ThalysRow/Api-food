@@ -1,0 +1,14 @@
+services:
+  api-food:
+    image: postgres:17.5-alpine
+    container_name: api-food
+    environment:
+      POSTGRES_DB: ${NAME_DB}
+      POSTGRES_USER: ${USER_DB}
+      POSTGRES_PASSWORD: ${PASSWORD_DB}
+    ports:
+      - ${PORT_DB}:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+    postgres_data:
