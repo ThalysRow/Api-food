@@ -7,6 +7,7 @@ import com.api_food.Algaworks_Food.repository.KitchenRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class KitchenService {
@@ -26,5 +27,10 @@ public class KitchenService {
 
     public List<KitchenDTO> listKitchens(){
         return kitchenRepository.findAll().stream().map(kitchenMapper::toDTO).toList();
+    }
+
+    public KitchenDTO findKitchenById(UUID id){
+       KitchenModel kitchenFinded = kitchenRepository.findById(id).orElseThrow(()-> new RuntimeException("Ninja not found"));
+       return kitchenMapper.toDTO(kitchenFinded);
     }
 }
