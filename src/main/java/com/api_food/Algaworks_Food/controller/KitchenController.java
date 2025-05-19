@@ -5,10 +5,8 @@ import com.api_food.Algaworks_Food.service.KitchenService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/kitchen")
@@ -24,4 +22,15 @@ public class KitchenController {
         KitchenDTO saveKitchen = kitchenService.addKitchen(kitchen);
         return ResponseEntity.status(HttpStatus.CREATED).body(saveKitchen);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> findKitchen(@PathVariable UUID id){
+        try {
+            KitchenDTO kitchenFinded = kitchenService.findKitchenById(id);
+            return ResponseEntity.ok(kitchenFinded);
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 }
