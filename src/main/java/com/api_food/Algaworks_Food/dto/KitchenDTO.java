@@ -1,5 +1,6 @@
 package com.api_food.Algaworks_Food.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class KitchenDTO {
     private UUID id;
+    @NotBlank(message = "Kitchen name is required")
     private String name;
 }
