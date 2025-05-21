@@ -6,10 +6,12 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/kitchen")
+@RequestMapping("/kitchens")
 public class KitchenController {
     private final KitchenService kitchenService;
 
@@ -33,4 +35,9 @@ public class KitchenController {
         }
     }
 
+    @GetMapping("/kitchens")
+    public ResponseEntity<List<KitchenDTO>> listKitchens(){
+        List<KitchenDTO> kitchens = kitchenService.listKitchens();
+        return ResponseEntity.status(HttpStatus.OK).body(kitchens);
+    }
 }
