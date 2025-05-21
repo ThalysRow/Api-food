@@ -30,7 +30,8 @@ public class KitchenService {
     }
 
     public KitchenDTO findKitchenById(UUID id){
-       KitchenModel kitchenFinded = kitchenRepository.findById(id).orElseThrow(()-> new RuntimeException("Ninja not found"));
+       KitchenModel kitchenFinded = kitchenRepository.findById(id).orElseThrow(()-> new RuntimeException("Kitchen not found"));
        return kitchenMapper.toDTO(kitchenFinded);
     }
+
 }
