@@ -35,7 +35,7 @@ public class KitchenController {
         }
     }
 
-    @GetMapping("/kitchens")
+    @GetMapping("/all")
     public ResponseEntity<List<KitchenDTO>> listKitchens(){
         List<KitchenDTO> kitchens = kitchenService.listKitchens();
         return ResponseEntity.status(HttpStatus.OK).body(kitchens);
