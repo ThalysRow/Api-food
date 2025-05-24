@@ -4,8 +4,8 @@ import com.api_food.Algaworks_Food.Mapper.StateMapper;
 import com.api_food.Algaworks_Food.dto.StateDTO;
 import com.api_food.Algaworks_Food.model.StateModel;
 import com.api_food.Algaworks_Food.repository.StateRepository;
-import jakarta.persistence.Id;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class StateService {
@@ -23,13 +23,13 @@ public class StateService {
         return stateMapper.toDTO(stateSave);
     }
 
-    public StateDTO findStateById(Id id){
+    public StateDTO findStateById(int id){
         StateModel findedState = stateRepository.findById(id).orElseThrow(()-> new RuntimeException("State not found"));
         return stateMapper.toDTO(findedState);
     }
 
-    public void delState(Id id){
+    public void delState(int id){
         StateModel state = stateRepository.findById(id).orElseThrow(()-> new RuntimeException("State not found"));
-        stateRepository.deleteById(id);
+        stateRepository.deleteById(state.getId());
     }
 }
