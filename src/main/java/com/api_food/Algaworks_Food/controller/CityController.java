@@ -32,4 +32,14 @@ public class CityController {
         List<CityDTO> cities = cityService.listCities();
         return ResponseEntity.status(HttpStatus.OK).body(cities);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> findCity(@PathVariable int id){
+        try {
+            CityDTO city = cityService.findCity(id);
+            return ResponseEntity.status(HttpStatus.OK).body(city);
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }
