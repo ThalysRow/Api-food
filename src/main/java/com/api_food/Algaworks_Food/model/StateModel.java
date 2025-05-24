@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "states")
 public class StateModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
