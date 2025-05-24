@@ -19,9 +19,14 @@ public class RestaurantController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<RestaurantDTO> newRestaurant(@RequestBody RestaurantDTO restaurant){
-        RestaurantDTO addRestaurant = restaurantService.newRestaurant(restaurant);
-        return ResponseEntity.status(HttpStatus.CREATED).body(addRestaurant);
+    public ResponseEntity<Object> newRestaurant(@RequestBody RestaurantDTO restaurant){
+        try {
+            RestaurantDTO addRestaurant = restaurantService.newRestaurant(restaurant);
+            return ResponseEntity.status(HttpStatus.CREATED).body(addRestaurant);
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
     }
 
     @GetMapping("/{id}")
@@ -38,5 +43,15 @@ public class RestaurantController {
     public ResponseEntity<List<RestaurantDTO>> lisRestaurants(){
         List<RestaurantDTO> restaurants = restaurantService.listRestaurants();
         return ResponseEntity.ok(restaurants);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateRestaurant(@PathVariable UUID id, @RequestBody RestaurantDTO restaurant){
+        try {
+            RestaurantDTO restaurantUpdate = restaurantService.updateRestaurant(id, restaurant);
+            return ResponseEntity.status(HttpStatus.OK).body(restaurantUpdate);
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }
