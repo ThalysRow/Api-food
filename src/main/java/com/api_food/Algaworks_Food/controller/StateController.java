@@ -49,4 +49,16 @@ public class StateController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteState(@PathVariable int id){
+        try {
+             stateService.delState(id);
+             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (IllegalStateException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }
