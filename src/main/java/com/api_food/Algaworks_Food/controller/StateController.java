@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/states")
 public class StateController {
@@ -30,5 +32,11 @@ public class StateController {
         } catch (RuntimeException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<StateDTO>> listStates(){
+        List<StateDTO> states = stateService.listStates();
+        return ResponseEntity.status(HttpStatus.OK).body(states);
     }
 }
