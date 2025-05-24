@@ -2,7 +2,6 @@ package com.api_food.Algaworks_Food.controller;
 
 import com.api_food.Algaworks_Food.dto.StateDTO;
 import com.api_food.Algaworks_Food.service.StateService;
-import jakarta.persistence.Id;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,7 @@ public class StateController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> findStateById(@PathVariable Id id){
+    public ResponseEntity<Object> findStateById(@PathVariable int id){
         try {
             StateDTO state = stateService.findStateById(id);
             return ResponseEntity.status(HttpStatus.OK).body(state);
