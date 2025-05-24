@@ -52,4 +52,14 @@ public class CityController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateCity(@PathVariable int id, @RequestBody CityDTO city){
+        try {
+            CityDTO updateCity = cityService.updateCity(id, city);
+            return ResponseEntity.status(HttpStatus.OK).body(updateCity);
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }
