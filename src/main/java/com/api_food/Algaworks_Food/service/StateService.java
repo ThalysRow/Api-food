@@ -6,6 +6,8 @@ import com.api_food.Algaworks_Food.model.StateModel;
 import com.api_food.Algaworks_Food.repository.StateRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class StateService {
@@ -31,5 +33,9 @@ public class StateService {
     public void delState(int id){
         StateModel state = stateRepository.findById(id).orElseThrow(()-> new RuntimeException("State not found"));
         stateRepository.deleteById(state.getId());
+    }
+
+    public List<StateDTO> listStates(){
+        return stateRepository.findAll().stream().map(stateMapper::toDTO).toList();
     }
 }
