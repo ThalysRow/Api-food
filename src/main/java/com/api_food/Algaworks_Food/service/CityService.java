@@ -47,4 +47,19 @@ public class CityService {
         CityModel city = cityRepository.findById(id).orElseThrow(()-> new RuntimeException("City not found"));
         cityRepository.deleteById(city.getId());
     }
+
+    public CityDTO updateCity(int id, CityDTO city){
+        CityModel cityFinded = cityRepository.findById(id).orElseThrow(()-> new RuntimeException("City not found"));
+
+        cityFinded.setName(city.getName());
+
+        StateModel state = stateRepository.findById(city.getState().getId()).orElseThrow(()-> new RuntimeException("State not found"));
+
+        cityFinded.setState(state);
+
+        CityModel saveCity = cityRepository.save(cityFinded);
+        return cityMapper.toDTO(saveCity);
+
+
+    }
 }
