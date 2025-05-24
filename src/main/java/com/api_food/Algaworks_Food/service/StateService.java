@@ -38,4 +38,11 @@ public class StateService {
     public List<StateDTO> listStates(){
         return stateRepository.findAll().stream().map(stateMapper::toDTO).toList();
     }
+
+    public StateDTO updateState(int id, StateDTO state){
+        StateModel findState = stateRepository.findById(id).orElseThrow(()-> new RuntimeException("State not found"));
+        findState.setName(state.getName());
+        StateModel stateSave = stateRepository.save(findState);
+        return stateMapper.toDTO(stateSave);
+    }
 }
