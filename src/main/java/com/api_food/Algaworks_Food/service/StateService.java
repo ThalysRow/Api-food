@@ -32,6 +32,10 @@ public class StateService {
 
     public void delState(int id){
         StateModel state = stateRepository.findById(id).orElseThrow(()-> new RuntimeException("State not found"));
+
+        if(state.getCities() != null && !state.getCities().isEmpty()){
+            throw new IllegalStateException("State in use table cities");
+        }
         stateRepository.deleteById(state.getId());
     }
 
