@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "cities")
 public class CityModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,5 +21,5 @@ public class CityModel {
     @ManyToOne
     @NotNull
     @JoinColumn(name = "state_id", nullable = false)
-    private StateDTO state;
+    private StateModel state;
 }
