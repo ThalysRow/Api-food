@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CityDTO {
+    private int id;
     @NotBlank(message = "City name is required")
     private String name;
     @NotNull(message = "State is required")
