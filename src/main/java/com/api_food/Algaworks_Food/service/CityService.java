@@ -8,6 +8,8 @@ import com.api_food.Algaworks_Food.repository.CityRepository;
 import com.api_food.Algaworks_Food.repository.StateRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CityService {
     private final CityMapper cityMapper;
@@ -22,13 +24,17 @@ public class CityService {
 
     public CityDTO addCity(CityDTO city){
 
-        int stateId = city.getState_id().getId();
-        StateModel state =  stateRepository.findById(stateId).orElseThrow(()-> new RuntimeException("State not found"));
+        StateModel state = stateRepository.findById(city.getState().getId()).orElseThrow(()-> new RuntimeException("State not found"));
 
-        CityModel newCity = new CityModel();
+        CityModel newCity = cityMapper.toEntity(city);
         newCity.setName(city.getName());
         newCity.setState(state);
-        cityRepository.save(newCity);
-        return cityMapper.toDTO(newCity);
+
+        CityModel saveCity = cityRepository.save(newCity);
+        return cityMapper.toDTO(saveCity);
+    }
+
+    public List<CityDTO> listCities(){
+        return cityRepository.findAll().stream().map(cityMapper::toDTO).toList();
     }
 }
