@@ -37,4 +37,9 @@ public class CityService {
     public List<CityDTO> listCities(){
         return cityRepository.findAll().stream().map(cityMapper::toDTO).toList();
     }
+
+    public CityDTO findCity(int id){
+        CityModel cityFinded = cityRepository.findById(id).orElseThrow(()-> new RuntimeException("City not found"));
+        return cityMapper.toDTO(cityFinded);
+    }
 }
