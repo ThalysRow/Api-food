@@ -42,4 +42,9 @@ public class CityService {
         CityModel cityFinded = cityRepository.findById(id).orElseThrow(()-> new RuntimeException("City not found"));
         return cityMapper.toDTO(cityFinded);
     }
+
+    public void deleteCity(int id){
+        CityModel city = cityRepository.findById(id).orElseThrow(()-> new RuntimeException("City not found"));
+        cityRepository.deleteById(city.getId());
+    }
 }
