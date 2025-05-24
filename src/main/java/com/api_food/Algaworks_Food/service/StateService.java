@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StateService {
-    private StateRepository stateRepository;
-    private StateMapper stateMapper;
+    private final StateRepository stateRepository;
+    private final StateMapper stateMapper;
 
     public StateService(StateRepository stateRepository, StateMapper stateMapper) {
         this.stateRepository = stateRepository;
@@ -26,5 +26,10 @@ public class StateService {
     public StateDTO findStateById(Id id){
         StateModel findedState = stateRepository.findById(id).orElseThrow(()-> new RuntimeException("State not found"));
         return stateMapper.toDTO(findedState);
+    }
+
+    public void delState(Id id){
+        StateModel state = stateRepository.findById(id).orElseThrow(()-> new RuntimeException("State not found"));
+        stateRepository.deleteById(id);
     }
 }
