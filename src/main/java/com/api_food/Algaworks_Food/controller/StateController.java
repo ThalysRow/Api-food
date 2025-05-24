@@ -39,4 +39,14 @@ public class StateController {
         List<StateDTO> states = stateService.listStates();
         return ResponseEntity.status(HttpStatus.OK).body(states);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateState(@PathVariable int id, @RequestBody StateDTO state){
+        try {
+            StateDTO updateState = stateService.updateState(id, state);
+            return ResponseEntity.status(HttpStatus.OK).body(updateState);
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }
