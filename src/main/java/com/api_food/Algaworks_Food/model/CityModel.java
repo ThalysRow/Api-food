@@ -1,5 +1,6 @@
 package com.api_food.Algaworks_Food.model;
 
+import com.api_food.Algaworks_Food.dto.StateDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,5 +20,5 @@ public class CityModel {
     @ManyToOne
     @NotNull
     @JoinColumn(name = "state_id", nullable = false)
-    private StateModel state;
+    private StateDTO state;
 }
