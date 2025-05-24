@@ -1,5 +1,6 @@
 package com.api_food.Algaworks_Food.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,6 @@ public class StateModel {
     @Column(nullable = false)
     private String name;
     @OneToMany(mappedBy = "state")
+    @JsonIgnore
     private List<CityModel> cities;
-
 }
