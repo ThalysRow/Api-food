@@ -1,4 +1,4 @@
-package com.api_food.Algaworks_Food.Mapper;
+package com.api_food.Algaworks_Food.mapper;
 
 import com.api_food.Algaworks_Food.dto.StateDTO;
 import com.api_food.Algaworks_Food.model.StateModel;

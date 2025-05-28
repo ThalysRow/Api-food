@@ -1,4 +1,4 @@
-package com.api_food.Algaworks_Food.Mapper;
+package com.api_food.Algaworks_Food.mapper;
 
 import com.api_food.Algaworks_Food.dto.CityDTO;
 import com.api_food.Algaworks_Food.model.CityModel;
