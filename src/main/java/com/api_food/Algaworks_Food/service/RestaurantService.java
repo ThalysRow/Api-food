@@ -1,15 +1,12 @@
 package com.api_food.Algaworks_Food.service;
 
-import com.api_food.Algaworks_Food.Mapper.RestaurantMapper;
-import com.api_food.Algaworks_Food.dto.KitchenDTO;
+import com.api_food.Algaworks_Food.mapper.RestaurantMapper;
 import com.api_food.Algaworks_Food.dto.RestaurantDTO;
 import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.model.RestaurantModel;
 import com.api_food.Algaworks_Food.repository.KitchenRepository;
 import com.api_food.Algaworks_Food.repository.RestaurantRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.UUID;

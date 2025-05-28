@@ -1,6 +1,6 @@
 package com.api_food.Algaworks_Food.service;
 
-import com.api_food.Algaworks_Food.Mapper.KitchenMapper;
+import com.api_food.Algaworks_Food.mapper.KitchenMapper;
 import com.api_food.Algaworks_Food.dto.KitchenDTO;
 import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.repository.KitchenRepository;

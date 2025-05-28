@@ -1,6 +1,6 @@
 package com.api_food.Algaworks_Food.service;
 
-import com.api_food.Algaworks_Food.Mapper.StateMapper;
+import com.api_food.Algaworks_Food.mapper.StateMapper;
 import com.api_food.Algaworks_Food.dto.StateDTO;
 import com.api_food.Algaworks_Food.model.StateModel;
 import com.api_food.Algaworks_Food.repository.StateRepository;

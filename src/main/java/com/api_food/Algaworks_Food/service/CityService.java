@@ -1,6 +1,6 @@
 package com.api_food.Algaworks_Food.service;
 
-import com.api_food.Algaworks_Food.Mapper.CityMapper;
+import com.api_food.Algaworks_Food.mapper.CityMapper;
 import com.api_food.Algaworks_Food.dto.CityDTO;
 import com.api_food.Algaworks_Food.model.CityModel;
 import com.api_food.Algaworks_Food.model.StateModel;
