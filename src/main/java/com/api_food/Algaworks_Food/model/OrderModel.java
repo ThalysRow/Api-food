@@ -24,36 +24,45 @@ public class OrderModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "subtotal")
     private BigInteger subtotal;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "delivery_fee")
     private BigInteger deliveryFee;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "total_value")
     private BigInteger totalValue;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private OrderStatus status;
 
     @Embedded
     private AddressModel deliveryAddress;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "payment_method_id")
     private PaymentMethodModel paymentMethod;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "restaurant_id")
+    private RestaurantModel restaurant;
+
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "user_id")
     private UserModel user;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "date_created", columnDefinition = "datetime")
     @CreationTimestamp
     private LocalDateTime dateCreated;
 
+    @Column(name = "date_confirmed", columnDefinition = "datetime")
     private LocalDateTime dateConfirmed;
 
+    @Column(name = "date_cancelled", columnDefinition = "datetime")
     private LocalDateTime dateCanceled;
 
+    @Column(name = "date_delivered", columnDefinition = "datetime")
     private LocalDateTime dateDelivered;
 
     @OneToMany(mappedBy = "order")
