@@ -20,22 +20,24 @@ public class OrderItemModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "quantity")
     private BigDecimal quantity;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "unit_price")
     private BigDecimal unitPrice;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "total_price")
     private BigDecimal totalPrice;
 
+    @Column(name = "observations")
     private String observations;
 
     @ManyToOne()
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "order_id")
     private OrderModel order;
 
     @ManyToOne()
+    @JoinColumn(nullable = false, name = "product_id")
     private ProductModel product;
 
 }
