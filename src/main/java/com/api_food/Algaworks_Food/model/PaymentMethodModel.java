@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -18,6 +20,5 @@ public class PaymentMethodModel {
     private String name;
 
     @OneToMany(mappedBy = "paymentMethod")
-    @JoinColumn(nullable = false)
-    private OrderModel order;
+    private List<OrderModel> orders;
 }
