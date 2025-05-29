@@ -58,4 +58,7 @@ public class RestaurantModel {
     @OneToMany(mappedBy = "restaurant")
     @JsonIgnore
     private List<ProductModel> products;
+
+    @OneToMany(mappedBy = "restaurant")
+    private List<OrderModel> orders;
 }
