@@ -40,4 +40,10 @@ public class KitchenController {
         List<KitchenDTO> kitchens = kitchenService.listKitchens();
         return ResponseEntity.status(HttpStatus.OK).body(kitchens);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteKitchen(UUID id){
+        kitchenService.deleteKitchen(id);
+    }
 }
