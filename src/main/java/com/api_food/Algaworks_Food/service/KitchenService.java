@@ -1,5 +1,7 @@
 package com.api_food.Algaworks_Food.service;
 
+import com.api_food.Algaworks_Food.exception.EntityInUseException;
+import com.api_food.Algaworks_Food.exception.EntityNotFoundException;
 import com.api_food.Algaworks_Food.mapper.KitchenMapper;
 import com.api_food.Algaworks_Food.dto.KitchenDTO;
 import com.api_food.Algaworks_Food.model.KitchenModel;
@@ -30,8 +32,18 @@ public class KitchenService {
     }
 
     public KitchenDTO findKitchenById(UUID id){
-       KitchenModel kitchenFinded = kitchenRepository.findById(id).orElseThrow(()-> new RuntimeException("Kitchen not found"));
+       KitchenModel kitchenFinded = kitchenRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Kitchen not found"));
        return kitchenMapper.toDTO(kitchenFinded);
+    }
+
+    public void deleteKitchen(UUID id){
+        KitchenDTO kitchenFinded = this.findKitchenById(id);
+
+        if (kitchenFinded.getRestaurants() != null && !kitchenFinded.getRestaurants().isEmpty()){
+            throw new EntityInUseException("Kitchen cannot be deleted, it is in use by restaurants.");
+        }
+
+        kitchenRepository.deleteById(kitchenFinded.getId());
     }
 
 }
