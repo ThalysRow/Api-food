@@ -1,14 +1,14 @@
 package com.api_food.Algaworks_Food.service;
 
 import com.api_food.Algaworks_Food.dto.create.RestaurantCreateDTO;
-import com.api_food.Algaworks_Food.dto.list.KitchenListDTO;
 import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
 import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
+import com.api_food.Algaworks_Food.exception.BusinessException;
 import com.api_food.Algaworks_Food.exception.EntityNotFoundException;
-import com.api_food.Algaworks_Food.mapper.KitchenMapper;
 import com.api_food.Algaworks_Food.mapper.RestaurantMapper;
 import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.model.RestaurantModel;
+import com.api_food.Algaworks_Food.repository.KitchenRepository;
 import com.api_food.Algaworks_Food.repository.RestaurantRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
@@ -21,29 +21,26 @@ import java.util.UUID;
 public class RestaurantService {
     private final RestaurantMapper restaurantMapper;
     private final RestaurantRepository restaurantRepository;
-    private final KitchenService kitchenService;
     private final StringFormatter stringFormatter;
-    private final KitchenMapper kitchenMapper;
+    private final KitchenRepository kitchenRepository;
 
-    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, KitchenService kitchenService, StringFormatter stringFormatter, KitchenMapper kitchenMapper) {
+    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenRepository kitchenRepository) {
         this.restaurantMapper = restaurantMapper;
         this.restaurantRepository = restaurantRepository;
-        this.kitchenService = kitchenService;
         this.stringFormatter = stringFormatter;
-        this.kitchenMapper = kitchenMapper;
+        this.kitchenRepository = kitchenRepository;
     }
 
     public RestaurantCreateDTO newRestaurant(RestaurantCreateDTO restaurant){
 
-        KitchenListDTO findKitchen = kitchenService.findKitchenById(restaurant.getKitchen().getId());
-        KitchenModel saveKitchen = kitchenMapper.toModel(findKitchen);
+        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId()).orElseThrow(()-> new BusinessException("Kitchen not exist"));
 
         String formatedName = stringFormatter.stringFormated(restaurant.getName());
 
         RestaurantModel newRestaurant = restaurantMapper.toCreateModel(restaurant);
         newRestaurant.setName(formatedName);
         newRestaurant.setDeliveryFee(restaurant.getDeliveryFee());
-        newRestaurant.setKitchen(saveKitchen);
+        newRestaurant.setKitchen(findKitchen);
         newRestaurant.setDateCreated(LocalDateTime.now());
         newRestaurant.setDateUpdated(LocalDateTime.now());
 
@@ -64,15 +61,14 @@ public class RestaurantService {
     public RestaurantUpdateDTO updateRestaurant(UUID id, RestaurantUpdateDTO restaurant){
 
         RestaurantListDTO findRestaurant = this.findRestaurantById(id);
-        KitchenListDTO findKitchen = kitchenService.findKitchenById(restaurant.getKitchen().getId());
+        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId()).orElseThrow(()-> new BusinessException("Kitchen not exist"));
 
         RestaurantModel updateRestaurant = restaurantMapper.toUpdateModel(findRestaurant);
-        KitchenModel updateKitchen = kitchenMapper.toModel(findKitchen);
         String nameFormated = stringFormatter.stringFormated(restaurant.getName());
 
         updateRestaurant.setName(nameFormated);
         updateRestaurant.setDeliveryFee(restaurant.getDeliveryFee());
-        updateRestaurant.setKitchen(updateKitchen);
+        updateRestaurant.setKitchen(findKitchen);
         updateRestaurant.setDateUpdated(LocalDateTime.now());
 
         RestaurantModel saveRestaurant = restaurantRepository.save(updateRestaurant);
