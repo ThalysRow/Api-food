@@ -1,11 +1,16 @@
 package com.api_food.Algaworks_Food.service;
 
+import com.api_food.Algaworks_Food.dto.create.CityCreateDTO;
+import com.api_food.Algaworks_Food.dto.list.CityListDTO;
+import com.api_food.Algaworks_Food.dto.list.StateListDTO;
+import com.api_food.Algaworks_Food.dto.update.CityUpdateDTO;
+import com.api_food.Algaworks_Food.exception.EntityNotFoundException;
 import com.api_food.Algaworks_Food.mapper.CityMapper;
-import com.api_food.Algaworks_Food.dto.CityDTO;
+import com.api_food.Algaworks_Food.mapper.StateMapper;
 import com.api_food.Algaworks_Food.model.CityModel;
 import com.api_food.Algaworks_Food.model.StateModel;
 import com.api_food.Algaworks_Food.repository.CityRepository;
-import com.api_food.Algaworks_Food.repository.StateRepository;
+import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,51 +19,59 @@ import java.util.List;
 public class CityService {
     private final CityMapper cityMapper;
     private final CityRepository cityRepository;
-    private final StateRepository stateRepository;
+    private final StateService stateService;
+    private final StringFormatter stringFormatter;
+    private final StateMapper stateMapper;
 
-    public CityService(CityMapper cityMapper, CityRepository cityRepository, StateRepository stateRepository) {
+    public CityService(CityMapper cityMapper, CityRepository cityRepository, StateService stateService, StringFormatter stringFormatter, StateMapper stateMapper) {
         this.cityMapper = cityMapper;
         this.cityRepository = cityRepository;
-        this.stateRepository = stateRepository;
+        this.stateService = stateService;
+        this.stringFormatter = stringFormatter;
+        this.stateMapper = stateMapper;
     }
 
-    public CityDTO addCity(CityDTO city){
+    public CityCreateDTO addCity(CityCreateDTO city){
 
-        StateModel state = stateRepository.findById(city.getState().getId()).orElseThrow(()-> new RuntimeException("State not found"));
+        StateListDTO state = stateService.findStateById(city.getState().getId());
+        StateModel saveState = stateMapper.toUpdateModel(state);
+        String nameFormated = stringFormatter.stringFormated(city.getName());
 
-        CityModel newCity = cityMapper.toEntity(city);
-        newCity.setName(city.getName());
-        newCity.setState(state);
+        CityModel newCity = cityMapper.toCreateModel(city);
+        newCity.setName(nameFormated);
+        newCity.setState(saveState);
 
         CityModel saveCity = cityRepository.save(newCity);
-        return cityMapper.toDTO(saveCity);
+
+        return cityMapper.toCreateDTO(saveCity);
+
     }
 
-    public List<CityDTO> listCities(){
-        return cityRepository.findAll().stream().map(cityMapper::toDTO).toList();
+    public List<CityListDTO> listCities(){
+        return cityRepository.findAll().stream().map(cityMapper::toCreateListDTO).toList();
     }
 
-    public CityDTO findCity(int id){
-        CityModel cityFinded = cityRepository.findById(id).orElseThrow(()-> new RuntimeException("City not found"));
-        return cityMapper.toDTO(cityFinded);
+    public CityListDTO findCity(int id){
+        CityModel cityFinded = cityRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("City not found"));
+        return cityMapper.toCreateListDTO(cityFinded);
     }
 
     public void deleteCity(int id){
-        CityModel city = cityRepository.findById(id).orElseThrow(()-> new RuntimeException("City not found"));
+        CityListDTO city = this.findCity(id);
         cityRepository.deleteById(city.getId());
     }
 
-    public CityDTO updateCity(int id, CityDTO city){
-        CityModel cityFinded = cityRepository.findById(id).orElseThrow(()-> new RuntimeException("City not found"));
+    public CityUpdateDTO updateCity(int id, CityUpdateDTO city){
+        CityListDTO cityFinded = this.findCity(id);
+        StateListDTO state = stateService.findStateById(city.getState().getId());
+        StateModel saveState = stateMapper.toUpdateModel(state);
+        String nameFormated = stringFormatter.stringFormated(city.getName());
 
-        cityFinded.setName(city.getName());
-
-        StateModel state = stateRepository.findById(city.getState().getId()).orElseThrow(()-> new RuntimeException("State not found"));
-
-        cityFinded.setState(state);
-
-        CityModel saveCity = cityRepository.save(cityFinded);
-        return cityMapper.toDTO(saveCity);
+        CityModel updateCity = cityMapper.toUpdateModel(cityFinded);
+        updateCity.setName(nameFormated);
+        updateCity.setState(saveState);
+        CityModel saveCity = cityRepository.save(updateCity);
+        return cityMapper.toUpdateDTO(saveCity);
 
 
     }
