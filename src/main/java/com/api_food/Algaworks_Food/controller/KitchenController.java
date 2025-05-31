@@ -1,6 +1,8 @@
 package com.api_food.Algaworks_Food.controller;
 
-import com.api_food.Algaworks_Food.dto.KitchenDTO;
+import com.api_food.Algaworks_Food.dto.create.KitchenCreateDTO;
+import com.api_food.Algaworks_Food.dto.list.KitchenListDTO;
+import com.api_food.Algaworks_Food.dto.update.KitchenUpdateDTO;
 import com.api_food.Algaworks_Food.service.KitchenService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,30 +22,32 @@ public class KitchenController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<KitchenDTO> registerKitchen(@Valid @RequestBody KitchenDTO kitchen){
-        KitchenDTO saveKitchen = kitchenService.addKitchen(kitchen);
+    public ResponseEntity<KitchenCreateDTO> registerKitchen(@Valid @RequestBody KitchenCreateDTO kitchen){
+        KitchenCreateDTO saveKitchen = kitchenService.addKitchen(kitchen);
         return ResponseEntity.status(HttpStatus.CREATED).body(saveKitchen);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> findKitchen(@PathVariable UUID id){
-        try {
-            KitchenDTO kitchenFinded = kitchenService.findKitchenById(id);
-            return ResponseEntity.ok(kitchenFinded);
-        } catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<KitchenListDTO> findKitchen(@PathVariable UUID id){
+        KitchenListDTO kitchen = kitchenService.findKitchenById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(kitchen);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<KitchenDTO>> listKitchens(){
-        List<KitchenDTO> kitchens = kitchenService.listKitchens();
+    public ResponseEntity<List<KitchenListDTO>> listKitchens(){
+        List<KitchenListDTO> kitchens = kitchenService.listKitchens();
         return ResponseEntity.status(HttpStatus.OK).body(kitchens);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteKitchen(UUID id){
+    public void deleteKitchen(@PathVariable UUID id){
         kitchenService.deleteKitchen(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<KitchenUpdateDTO> updateKitchen(@PathVariable UUID id, @Valid @RequestBody KitchenUpdateDTO kitchen){
+        KitchenUpdateDTO kitchenSaved = kitchenService.updateKitchen(id, kitchen);
+        return ResponseEntity.status(HttpStatus.OK).body(kitchenSaved);
     }
 }
