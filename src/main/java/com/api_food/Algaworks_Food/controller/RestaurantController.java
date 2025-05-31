@@ -1,7 +1,10 @@
 package com.api_food.Algaworks_Food.controller;
 
-import com.api_food.Algaworks_Food.dto.RestaurantDTO;
+import com.api_food.Algaworks_Food.dto.create.RestaurantCreateDTO;
+import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
+import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
 import com.api_food.Algaworks_Food.service.RestaurantService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,46 +15,39 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/restaurants")
 public class RestaurantController {
-    private RestaurantService restaurantService;
+    private final RestaurantService restaurantService;
 
     public RestaurantController(RestaurantService restaurantService) {
         this.restaurantService = restaurantService;
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> newRestaurant(@RequestBody RestaurantDTO restaurant){
-        try {
-            RestaurantDTO addRestaurant = restaurantService.newRestaurant(restaurant);
-            return ResponseEntity.status(HttpStatus.CREATED).body(addRestaurant);
-        } catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-
+    public ResponseEntity<RestaurantCreateDTO> newRestaurant(@Valid @RequestBody RestaurantCreateDTO restaurant){
+        RestaurantCreateDTO newRestaurant = restaurantService.newRestaurant(restaurant);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newRestaurant);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> findRestaurant(@PathVariable UUID id){
-        try {
-            RestaurantDTO restaurant = restaurantService.findRestaurantById(id);
-            return ResponseEntity.ok(restaurant);
-        } catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<RestaurantListDTO> findRestaurant(@PathVariable UUID id){
+        RestaurantListDTO restaurant = restaurantService.findRestaurantById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(restaurant);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<RestaurantDTO>> lisRestaurants(){
-        List<RestaurantDTO> restaurants = restaurantService.listRestaurants();
-        return ResponseEntity.ok(restaurants);
+    public ResponseEntity<List<RestaurantListDTO>> lisRestaurants(){
+        List<RestaurantListDTO> restaurants = restaurantService.listRestaurants();
+        return ResponseEntity.status(HttpStatus.OK).body(restaurants);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateRestaurant(@PathVariable UUID id, @RequestBody RestaurantDTO restaurant){
-        try {
-            RestaurantDTO restaurantUpdate = restaurantService.updateRestaurant(id, restaurant);
-            return ResponseEntity.status(HttpStatus.OK).body(restaurantUpdate);
-        } catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<RestaurantUpdateDTO> updateRestaurant(@PathVariable UUID id, @Valid @RequestBody RestaurantUpdateDTO restaurant){
+        RestaurantUpdateDTO updateRestaurant = restaurantService.updateRestaurant(id, restaurant);
+        return ResponseEntity.status(HttpStatus.OK).body(updateRestaurant);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteRestaurant(@PathVariable UUID id){
+        restaurantService.deleteRestaurant(id);
     }
 }
