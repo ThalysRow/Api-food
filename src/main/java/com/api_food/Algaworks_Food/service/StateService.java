@@ -3,8 +3,8 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.StateCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.StateListDTO;
 import com.api_food.Algaworks_Food.dto.update.StateUpdateDTO;
-import com.api_food.Algaworks_Food.exception.EntityInUseException;
-import com.api_food.Algaworks_Food.exception.EntityNotFoundException;
+import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
+import com.api_food.Algaworks_Food.exception.custom.StateNotFoundException;
 import com.api_food.Algaworks_Food.mapper.StateMapper;
 import com.api_food.Algaworks_Food.model.StateModel;
 import com.api_food.Algaworks_Food.repository.StateRepository;
@@ -36,15 +36,15 @@ public class StateService {
     }
 
     public StateListDTO findStateById(int id){
-        StateModel stateFinded = stateRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("State not found"));
+        StateModel stateFinded = stateRepository.findById(id).orElseThrow(()-> new StateNotFoundException(id));
         return stateMapper.toCreateListDTO(stateFinded);
     }
 
     public void delState(int id){
-        StateModel stateFinded = stateRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("State not found"));
+        StateModel stateFinded = stateRepository.findById(id).orElseThrow(()-> new StateNotFoundException(id));
 
         if(stateFinded.getCities() != null && !stateFinded.getCities().isEmpty()){
-            throw new EntityInUseException("State cannot be deleted, it is in use by cities.");
+            throw new EntityInUseException(String.format("State id '%s' cannot be deleted, it is in use by cities.", stateFinded.getId()));
         }
         stateRepository.deleteById(stateFinded.getId());
     }
