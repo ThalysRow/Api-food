@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.exception.handler;
 
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -72,5 +73,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
 
         return handleExceptionInternal(ex, message, headers, status, request);
+    }
+
+    private ResponseEntity<Object> handlePropertyBindingException(PropertyBindingException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        String path = joinPath(ex.getPath());
+
+        ProblemType type = ProblemType.UNREADABLE_MESSAGE;
+
+        String detail = String.format("The property '%s' does not exist. " +
+                "Remove this property and try again.", path);
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+
+        return handleExceptionInternal(ex, message, headers, status, request);
+
     }
 }
