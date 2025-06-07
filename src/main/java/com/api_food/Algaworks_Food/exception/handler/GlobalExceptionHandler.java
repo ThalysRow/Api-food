@@ -1,6 +1,7 @@
 package com.api_food.Algaworks_Food.exception.handler;
 
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +20,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return references.stream().map(ref -> ref.getFieldName()).collect(Collectors.joining("."));
     }
 
-    private MessageException.MessageExceptionBuilder createMessage(HttpStatusCode status, ProblemType type, String title, String datail, LocalDateTime dateTime){
+    private MessageException.MessageExceptionBuilder createMessage(HttpStatusCode status, ProblemType type, String title, String detail, LocalDateTime dateTime){
         return MessageException.builder()
                 .status(status.value())
                 .type(type.getUri())
                 .title(title)
-                .detail(datail)
+                .detail(detail)
                 .dateTime(dateTime);
 
     }
@@ -55,5 +56,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }
 
         return super.handleExceptionInternal(ex, body, headers, statusCode, request);
+    }
+
+    private ResponseEntity<Object> handleInvalidFormatException(InvalidFormatException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        String path = joinPath(ex.getPath());
+
+        ProblemType type = ProblemType.UNREADABLE_MESSAGE;
+
+        String detail = String.format("Property '%s' received the value '%s' " +
+                "which is not of the expected type. Please correct it and provide a value of type '%s'.",
+                path, ex.getValue(), ex.getTargetType().getSimpleName()
+                );
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+
+        return handleExceptionInternal(ex, message, headers, status, request);
     }
 }
