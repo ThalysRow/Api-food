@@ -3,8 +3,8 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.KitchenCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.KitchenListDTO;
 import com.api_food.Algaworks_Food.dto.update.KitchenUpdateDTO;
-import com.api_food.Algaworks_Food.exception.EntityInUseException;
-import com.api_food.Algaworks_Food.exception.EntityNotFoundException;
+import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
+import com.api_food.Algaworks_Food.exception.custom.KitchenNotFoundException;
 import com.api_food.Algaworks_Food.mapper.KitchenMapper;
 import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.repository.KitchenRepository;
@@ -41,16 +41,16 @@ public class KitchenService {
     }
 
     public KitchenListDTO findKitchenById(UUID id){
-       KitchenModel kitchenFinded = kitchenRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Kitchen not found"));
+       KitchenModel kitchenFinded = kitchenRepository.findById(id).orElseThrow(()-> new KitchenNotFoundException(id));
        return kitchenMapper.toCreateListDTO(kitchenFinded);
     }
 
     public void deleteKitchen(UUID id){
 
-        KitchenModel kitchen = kitchenRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Kitchen not found"));
+        KitchenModel kitchen = kitchenRepository.findById(id).orElseThrow(()-> new KitchenNotFoundException(id));
 
         if (kitchen.getRestaurants() != null && !kitchen.getRestaurants().isEmpty()){
-            throw new EntityInUseException("Kitchen cannot be deleted, it is in use by restaurants.");
+            throw new EntityInUseException(String.format("Kitchen id '%s' cannot be deleted, it is in use by restaurants.", kitchen.getId()));
         }
 
         kitchenRepository.deleteById(kitchen.getId());
