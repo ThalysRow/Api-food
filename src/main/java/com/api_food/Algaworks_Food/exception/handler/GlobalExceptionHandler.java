@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
@@ -107,6 +108,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         ProblemType type = ProblemType.UNREADABLE_MESSAGE;
         String detail = "One or more request fields are invalid. Please check the syntax";
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+
+        return handleExceptionInternal(ex, message, headers, status, request);
+    }
+
+    private ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request){
+
+        ProblemType type = ProblemType.INVALID_PARAMETER;
+
+        String detail = String.format("The URL parameter '%s', received the value '%s', "
+                + "which is of an invalid type. Please correct it and provide a value compatible with the expected type %s.",
+                ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName());
 
         MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
 
