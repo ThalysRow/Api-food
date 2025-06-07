@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -125,5 +126,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
 
         return handleExceptionInternal(ex, message, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        if (ex instanceof MethodArgumentTypeMismatchException){
+            return handleMethodArgumentTypeMismatch((MethodArgumentTypeMismatchException) ex, headers, status, request);
+        }
+
+        return super.handleTypeMismatch(ex, headers, status, request);
     }
 }
