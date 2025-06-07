@@ -194,4 +194,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
+
+    @ExceptionHandler(EntityInUseException.class)
+    public ResponseEntity<?> handleEntityInUseException(EntityInUseException ex, WebRequest request){
+        HttpStatusCode status = HttpStatus.CONFLICT;
+        ProblemType type = ProblemType.ENTITY_IN_USE;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
+
+    }
 }
