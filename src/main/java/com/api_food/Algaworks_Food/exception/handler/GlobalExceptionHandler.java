@@ -1,11 +1,15 @@
 package com.api_food.Algaworks_Food.exception.handler;
 
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
+import com.fasterxml.jackson.databind.exc.IgnoredPropertyException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.PropertyBindingException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -88,5 +92,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return handleExceptionInternal(ex, message, headers, status, request);
 
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        Throwable rootCause = ExceptionUtils.getRootCause(ex);
+
+        if (rootCause instanceof InvalidFormatException){
+            return handleInvalidFormatException((InvalidFormatException) rootCause, headers, status, request);
+        } else if (rootCause instanceof PropertyBindingException || rootCause instanceof IgnoredPropertyException || rootCause instanceof UnrecognizedPropertyException) {
+            return handlePropertyBindingException((PropertyBindingException) rootCause, headers, status, request);
+        }
+
+        ProblemType type = ProblemType.UNREADABLE_MESSAGE;
+        String detail = "One or more request fields are invalid. Please check the syntax";
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+
+        return handleExceptionInternal(ex, message, headers, status, request);
     }
 }
