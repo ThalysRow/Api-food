@@ -1,9 +1,6 @@
 package com.api_food.Algaworks_Food.exception.handler;
 
-import com.api_food.Algaworks_Food.exception.custom.CityNotFoundException;
-import com.api_food.Algaworks_Food.exception.custom.KitchenNotFoundException;
-import com.api_food.Algaworks_Food.exception.custom.RestaurantNotFoundException;
-import com.api_food.Algaworks_Food.exception.custom.StateNotFoundException;
+import com.api_food.Algaworks_Food.exception.custom.*;
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.IgnoredPropertyException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -185,6 +182,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
 
+        return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<?> handleBusinessException(BusinessException ex, WebRequest request){
+        HttpStatusCode status = HttpStatus.BAD_REQUEST;
+        ProblemType type = ProblemType.BUSINESS_ERROR;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
 }
