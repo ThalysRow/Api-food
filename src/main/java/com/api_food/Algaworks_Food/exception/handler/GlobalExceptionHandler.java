@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.exception.handler;
 
 import com.api_food.Algaworks_Food.exception.custom.CityNotFoundException;
 import com.api_food.Algaworks_Food.exception.custom.KitchenNotFoundException;
+import com.api_food.Algaworks_Food.exception.custom.RestaurantNotFoundException;
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.IgnoredPropertyException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -162,6 +163,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
 
+        return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(RestaurantNotFoundException.class)
+    public ResponseEntity<?> handleRestaurantNotFoundException(RestaurantNotFoundException ex, WebRequest request){
+        HttpStatusCode status = HttpStatus.NOT_FOUND;
+        ProblemType type = ProblemType.ENTITY_NOT_FOUND;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
 }
