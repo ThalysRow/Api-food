@@ -33,7 +33,8 @@ public class RestaurantService {
 
     public RestaurantCreateDTO newRestaurant(RestaurantCreateDTO restaurant){
 
-        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId()).orElseThrow(()-> new BusinessException("Kitchen not exist", new Throwable()));
+        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId())
+                .orElseThrow(()-> new BusinessException(String.format("Kitchen with id '%s', does not exist", restaurant.getKitchen().getId()), new Throwable()));
 
         String formatedName = stringFormatter.stringFormated(restaurant.getName());
 
@@ -61,7 +62,8 @@ public class RestaurantService {
     public RestaurantUpdateDTO updateRestaurant(UUID id, RestaurantUpdateDTO restaurant){
 
         RestaurantListDTO findRestaurant = this.findRestaurantById(id);
-        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId()).orElseThrow(()-> new BusinessException("Kitchen not exist", new Throwable()));
+        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId())
+                .orElseThrow(()-> new BusinessException(String.format("Kitchen with id '%s', does not exist.", restaurant.getKitchen().getId()), new Throwable()));
 
         RestaurantModel updateRestaurant = restaurantMapper.toUpdateModel(findRestaurant);
         String nameFormated = stringFormatter.stringFormated(restaurant.getName());
