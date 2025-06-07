@@ -4,8 +4,8 @@ import com.api_food.Algaworks_Food.dto.create.CityCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.CityListDTO;
 import com.api_food.Algaworks_Food.dto.list.StateListDTO;
 import com.api_food.Algaworks_Food.dto.update.CityUpdateDTO;
-import com.api_food.Algaworks_Food.exception.BusinessException;
-import com.api_food.Algaworks_Food.exception.EntityNotFoundException;
+import com.api_food.Algaworks_Food.exception.custom.CityNotFoundException;
+import com.api_food.Algaworks_Food.exception.custom.StateNotFoundException;
 import com.api_food.Algaworks_Food.mapper.CityMapper;
 import com.api_food.Algaworks_Food.mapper.StateMapper;
 import com.api_food.Algaworks_Food.model.CityModel;
@@ -56,7 +56,7 @@ public class CityService {
     }
 
     public CityListDTO findCity(int id){
-        CityModel cityFinded = cityRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("City not found"));
+        CityModel cityFinded = cityRepository.findById(id).orElseThrow(()-> new CityNotFoundException(id));
         return cityMapper.toCreateListDTO(cityFinded);
     }
 
@@ -67,7 +67,7 @@ public class CityService {
 
     public CityUpdateDTO updateCity(int id, CityUpdateDTO city){
         CityListDTO cityFinded = this.findCity(id);
-        StateModel state = stateRepository.findById(city.getState().getId()).orElseThrow(()-> new BusinessException("State not exist"));
+        StateModel state = stateRepository.findById(city.getState().getId()).orElseThrow(()-> new StateNotFoundException(id));
         String nameFormated = stringFormatter.stringFormated(city.getName());
 
         CityModel updateCity = cityMapper.toUpdateModel(cityFinded);
