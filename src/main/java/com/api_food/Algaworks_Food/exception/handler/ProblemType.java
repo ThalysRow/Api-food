@@ -8,7 +8,8 @@ public enum ProblemType {
     ENTITY_NOT_FOUND("/entity-not-found", "Entity not found"),
     ENTITY_IN_USE("/entity-in-use", "Entity in use"),
     BUSINESS_ERROR("/business-error", "Business rule violation"),
-    INVALID_PARAMETER("/invalid-parameter", "Invalid parameter");
+    INVALID_PARAMETER("/invalid-parameter", "Invalid parameter"),
+    INVALID_DATA("/invalid-data", "Invalid data");
 
     private String title;
     private String uri;
