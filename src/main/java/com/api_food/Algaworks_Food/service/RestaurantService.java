@@ -3,8 +3,8 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.RestaurantCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
 import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
-import com.api_food.Algaworks_Food.exception.BusinessException;
-import com.api_food.Algaworks_Food.exception.EntityNotFoundException;
+import com.api_food.Algaworks_Food.exception.custom.BusinessException;
+import com.api_food.Algaworks_Food.exception.custom.RestaurantNotFoundException;
 import com.api_food.Algaworks_Food.mapper.RestaurantMapper;
 import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.model.RestaurantModel;
@@ -33,7 +33,7 @@ public class RestaurantService {
 
     public RestaurantCreateDTO newRestaurant(RestaurantCreateDTO restaurant){
 
-        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId()).orElseThrow(()-> new BusinessException("Kitchen not exist"));
+        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId()).orElseThrow(()-> new BusinessException("Kitchen not exist", new Throwable()));
 
         String formatedName = stringFormatter.stringFormated(restaurant.getName());
 
@@ -50,7 +50,7 @@ public class RestaurantService {
     }
 
     public RestaurantListDTO findRestaurantById(UUID id){
-        RestaurantModel restaurant = restaurantRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Restaurant not found"));
+        RestaurantModel restaurant = restaurantRepository.findById(id).orElseThrow(()-> new RestaurantNotFoundException(id));
         return restaurantMapper.toListDTO(restaurant);
     }
 
@@ -61,7 +61,7 @@ public class RestaurantService {
     public RestaurantUpdateDTO updateRestaurant(UUID id, RestaurantUpdateDTO restaurant){
 
         RestaurantListDTO findRestaurant = this.findRestaurantById(id);
-        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId()).orElseThrow(()-> new BusinessException("Kitchen not exist"));
+        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId()).orElseThrow(()-> new BusinessException("Kitchen not exist", new Throwable()));
 
         RestaurantModel updateRestaurant = restaurantMapper.toUpdateModel(findRestaurant);
         String nameFormated = stringFormatter.stringFormated(restaurant.getName());
