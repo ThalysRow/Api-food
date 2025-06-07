@@ -2,12 +2,10 @@ package com.api_food.Algaworks_Food.service;
 
 import com.api_food.Algaworks_Food.dto.create.CityCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.CityListDTO;
-import com.api_food.Algaworks_Food.dto.list.StateListDTO;
 import com.api_food.Algaworks_Food.dto.update.CityUpdateDTO;
+import com.api_food.Algaworks_Food.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.exception.custom.CityNotFoundException;
-import com.api_food.Algaworks_Food.exception.custom.StateNotFoundException;
 import com.api_food.Algaworks_Food.mapper.CityMapper;
-import com.api_food.Algaworks_Food.mapper.StateMapper;
 import com.api_food.Algaworks_Food.model.CityModel;
 import com.api_food.Algaworks_Food.model.StateModel;
 import com.api_food.Algaworks_Food.repository.CityRepository;
@@ -21,29 +19,26 @@ import java.util.List;
 public class CityService {
     private final CityMapper cityMapper;
     private final CityRepository cityRepository;
-    private final StateService stateService;
     private final StringFormatter stringFormatter;
-    private final StateMapper stateMapper;
     private final StateRepository stateRepository;
 
-    public CityService(CityMapper cityMapper, CityRepository cityRepository, StateService stateService, StringFormatter stringFormatter, StateMapper stateMapper, StateRepository stateRepository) {
+    public CityService(CityMapper cityMapper, CityRepository cityRepository, StringFormatter stringFormatter, StateRepository stateRepository) {
         this.cityMapper = cityMapper;
         this.cityRepository = cityRepository;
-        this.stateService = stateService;
         this.stringFormatter = stringFormatter;
-        this.stateMapper = stateMapper;
         this.stateRepository = stateRepository;
     }
 
     public CityCreateDTO addCity(CityCreateDTO city){
 
-        StateListDTO state = stateService.findStateById(city.getState().getId());
-        StateModel saveState = stateMapper.toUpdateModel(state);
+        StateModel state = stateRepository.findById(city.getState().getId())
+                .orElseThrow(()-> new BusinessException(String.format("State with id '%d', does not exist", city.getState().getId()), new Throwable()));
+
         String nameFormated = stringFormatter.stringFormated(city.getName());
 
         CityModel newCity = cityMapper.toCreateModel(city);
         newCity.setName(nameFormated);
-        newCity.setState(saveState);
+        newCity.setState(state);
 
         CityModel saveCity = cityRepository.save(newCity);
 
@@ -67,7 +62,9 @@ public class CityService {
 
     public CityUpdateDTO updateCity(int id, CityUpdateDTO city){
         CityListDTO cityFinded = this.findCity(id);
-        StateModel state = stateRepository.findById(city.getState().getId()).orElseThrow(()-> new StateNotFoundException(id));
+        StateModel state = stateRepository.findById(city.getState().getId())
+                .orElseThrow(()-> new BusinessException(String.format("State with id '%d', does not exist.", city.getState().getId()), new Throwable()));
+
         String nameFormated = stringFormatter.stringFormated(city.getName());
 
         CityModel updateCity = cityMapper.toUpdateModel(cityFinded);
