@@ -212,9 +212,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         ProblemType type = ProblemType.INVALID_DATA;
 
-        String detail = ex.getBindingResult().getFieldErrors()
+        List<String> details = ex.getBindingResult().getFieldErrors()
                 .stream().map(error -> error.getDefaultMessage())
-                .findFirst().orElse("Invalid request data");
+                .collect(Collectors.toList());
+
+        String detail = String.join(", ", details);
 
         MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
