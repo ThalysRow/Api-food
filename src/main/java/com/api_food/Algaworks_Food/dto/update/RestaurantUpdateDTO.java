@@ -1,9 +1,10 @@
 package com.api_food.Algaworks_Food.dto.update;
 
 import com.api_food.Algaworks_Food.dto.list.KitchenListDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,10 +21,11 @@ public class RestaurantUpdateDTO {
     @NotBlank(message = "Restaurant name is required")
     private String name;
 
-    @Positive(message = "The delivery fee must be positive")
+    @PositiveOrZero(message = "The delivery fee must be positive")
     @NotNull(message = "The delivery fee is required")
     private BigDecimal deliveryFee;
 
+    @Valid
     @NotNull(message = "Kitchen is required")
     private KitchenListDTO kitchen;
 }
