@@ -12,6 +12,7 @@ import com.api_food.Algaworks_Food.repository.KitchenRepository;
 import com.api_food.Algaworks_Food.repository.RestaurantRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,10 +32,11 @@ public class RestaurantService {
         this.kitchenRepository = kitchenRepository;
     }
 
+    @Transactional
     public RestaurantCreateDTO newRestaurant(RestaurantCreateDTO restaurant){
 
         KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId())
-                .orElseThrow(()-> new BusinessException(String.format("Kitchen with id '%s', does not exist", restaurant.getKitchen().getId()), new Throwable()));
+                .orElseThrow(()-> new BusinessException("kitchen", restaurant.getKitchen().getId()));
 
         String formatedName = stringFormatter.stringFormated(restaurant.getName());
 
@@ -59,11 +61,12 @@ public class RestaurantService {
         return restaurantRepository.findAll().stream().map(restaurantMapper::toListDTO).toList();
     }
 
+    @Transactional
     public RestaurantUpdateDTO updateRestaurant(UUID id, RestaurantUpdateDTO restaurant){
 
         RestaurantListDTO findRestaurant = this.findRestaurantById(id);
         KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId())
-                .orElseThrow(()-> new BusinessException(String.format("Kitchen with id '%s', does not exist.", restaurant.getKitchen().getId()), new Throwable()));
+                .orElseThrow(()-> new BusinessException("kitchen", restaurant.getKitchen().getId()));
 
         RestaurantModel updateRestaurant = restaurantMapper.toUpdateModel(findRestaurant);
         String nameFormated = stringFormatter.stringFormated(restaurant.getName());
@@ -77,6 +80,7 @@ public class RestaurantService {
         return restaurantMapper.toUpdateDTO(saveRestaurant);
         }
 
+        @Transactional
         public void deleteRestaurant(UUID id){
         RestaurantListDTO restaurant = this.findRestaurantById(id);
         restaurantRepository.deleteById(restaurant.getId());
