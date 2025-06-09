@@ -12,6 +12,7 @@ import com.api_food.Algaworks_Food.repository.CityRepository;
 import com.api_food.Algaworks_Food.repository.StateRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -29,10 +30,11 @@ public class CityService {
         this.stateRepository = stateRepository;
     }
 
+    @Transactional
     public CityCreateDTO addCity(CityCreateDTO city){
 
         StateModel state = stateRepository.findById(city.getState().getId())
-                .orElseThrow(()-> new BusinessException(String.format("State with id '%d', does not exist", city.getState().getId()), new Throwable()));
+                .orElseThrow(()-> new BusinessException("state", city.getState().getId()));
 
         String nameFormated = stringFormatter.stringFormated(city.getName());
 
@@ -55,15 +57,17 @@ public class CityService {
         return cityMapper.toCreateListDTO(cityFinded);
     }
 
+    @Transactional
     public void deleteCity(int id){
         CityListDTO city = this.findCity(id);
         cityRepository.deleteById(city.getId());
     }
 
+    @Transactional
     public CityUpdateDTO updateCity(int id, CityUpdateDTO city){
         CityListDTO cityFinded = this.findCity(id);
         StateModel state = stateRepository.findById(city.getState().getId())
-                .orElseThrow(()-> new BusinessException(String.format("State with id '%d', does not exist.", city.getState().getId()), new Throwable()));
+                .orElseThrow(()-> new BusinessException("state", city.getState().getId()));
 
         String nameFormated = stringFormatter.stringFormated(city.getName());
 
