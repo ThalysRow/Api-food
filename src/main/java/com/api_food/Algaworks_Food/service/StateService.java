@@ -10,6 +10,7 @@ import com.api_food.Algaworks_Food.model.StateModel;
 import com.api_food.Algaworks_Food.repository.StateRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class StateService {
         this.stringFormatter = stringFormatter;
     }
 
+    @Transactional
     public StateCreateDTO createNewState(StateCreateDTO state){
         String nameFormated = stringFormatter.stringFormated(state.getName());
         state.setName(nameFormated);
@@ -40,11 +42,12 @@ public class StateService {
         return stateMapper.toCreateListDTO(stateFinded);
     }
 
+    @Transactional
     public void delState(int id){
         StateModel stateFinded = stateRepository.findById(id).orElseThrow(()-> new StateNotFoundException(id));
 
         if(stateFinded.getCities() != null && !stateFinded.getCities().isEmpty()){
-            throw new EntityInUseException(String.format("State id '%s' cannot be deleted, it is in use by cities.", stateFinded.getId()));
+            throw new EntityInUseException("state", stateFinded.getId(), "cities");
         }
         stateRepository.deleteById(stateFinded.getId());
     }
@@ -53,6 +56,7 @@ public class StateService {
         return stateRepository.findAll().stream().map(stateMapper::toCreateListDTO).toList();
     }
 
+    @Transactional
     public StateUpdateDTO updateState(int id, StateUpdateDTO state){
         StateListDTO stateFinded = this.findStateById(id);
         String nameFormated = stringFormatter.stringFormated(state.getName());
