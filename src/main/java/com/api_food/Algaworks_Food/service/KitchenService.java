@@ -10,6 +10,7 @@ import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.repository.KitchenRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +27,7 @@ public class KitchenService {
         this.stringFormatter = stringFormatter;
     }
 
+    @Transactional
     public KitchenCreateDTO addKitchen(KitchenCreateDTO kitchen){
 
        String formatedName = stringFormatter.stringFormated(kitchen.getName());
@@ -45,17 +47,19 @@ public class KitchenService {
        return kitchenMapper.toCreateListDTO(kitchenFinded);
     }
 
+    @Transactional
     public void deleteKitchen(UUID id){
 
         KitchenModel kitchen = kitchenRepository.findById(id).orElseThrow(()-> new KitchenNotFoundException(id));
 
         if (kitchen.getRestaurants() != null && !kitchen.getRestaurants().isEmpty()){
-            throw new EntityInUseException(String.format("Kitchen id '%s' cannot be deleted, it is in use by restaurants.", kitchen.getId()));
+            throw new EntityInUseException("kitchen", kitchen.getId(), "restaurants");
         }
 
         kitchenRepository.deleteById(kitchen.getId());
     }
 
+    @Transactional
     public KitchenUpdateDTO updateKitchen(UUID id, KitchenUpdateDTO kitchen){
         KitchenListDTO kitchenFinded = this.findKitchenById(id);
         String nameFormated = stringFormatter.stringFormated(kitchen.getName());
