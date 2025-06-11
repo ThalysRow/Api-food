@@ -13,8 +13,7 @@ import com.api_food.Algaworks_Food.repository.RestaurantRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,8 +43,8 @@ public class RestaurantService {
         newRestaurant.setName(formatedName);
         newRestaurant.setDeliveryFee(restaurant.getDeliveryFee());
         newRestaurant.setKitchen(findKitchen);
-        newRestaurant.setDateCreated(LocalDateTime.now());
-        newRestaurant.setDateUpdated(LocalDateTime.now());
+        newRestaurant.setDateCreated(OffsetDateTime.now());
+        newRestaurant.setDateUpdated(OffsetDateTime.now());
 
         RestaurantModel saveRestaurant = restaurantRepository.save(newRestaurant);
         return restaurantMapper.toCreateDTO(saveRestaurant);
@@ -74,7 +73,7 @@ public class RestaurantService {
         updateRestaurant.setName(nameFormated);
         updateRestaurant.setDeliveryFee(restaurant.getDeliveryFee());
         updateRestaurant.setKitchen(findKitchen);
-        updateRestaurant.setDateUpdated(LocalDateTime.now());
+        updateRestaurant.setDateUpdated(OffsetDateTime.now());
 
         RestaurantModel saveRestaurant = restaurantRepository.save(updateRestaurant);
         return restaurantMapper.toUpdateDTO(saveRestaurant);
