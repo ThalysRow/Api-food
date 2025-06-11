@@ -1,6 +1,7 @@
 package com.api_food.Algaworks_Food.dto.update;
 
 import com.api_food.Algaworks_Food.dto.list.StateListDTO;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,5 +18,6 @@ public class CityUpdateDTO {
     private String name;
     @Valid
     @NotNull(message = "State is required")
+    @JsonIgnoreProperties(value = "name", allowGetters = true)
     private StateListDTO state;
 }
