@@ -1,6 +1,7 @@
 package com.api_food.Algaworks_Food.dto.create;
 
 import com.api_food.Algaworks_Food.dto.list.KitchenListDTO;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,6 +29,7 @@ public class RestaurantCreateDTO {
 
     @Valid
     @NotNull(message = "Kitchen is required")
+    @JsonIgnoreProperties(value = "name", allowGetters = true)
     private KitchenListDTO kitchen;
 
 }
