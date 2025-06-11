@@ -21,6 +21,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return references.stream().map(ref -> ref.getFieldName()).collect(Collectors.joining("."));
     }
 
-    private MessageException.MessageExceptionBuilder createMessage(HttpStatusCode status, ProblemType type, String title, String detail, LocalDateTime dateTime){
+    private MessageException.MessageExceptionBuilder createMessage(HttpStatusCode status, ProblemType type, String title, String detail, OffsetDateTime dateTime){
         return MessageException.builder()
                 .status(status.value())
                 .type(type.getUri())
@@ -49,7 +50,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             MessageException message = MessageException.builder()
                     .status(statusCode.value())
                     .title(ex.getMessage())
-                    .dateTime(LocalDateTime.now())
+                    .dateTime(OffsetDateTime.now())
                     .build();
 
             body = message;
@@ -60,7 +61,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             MessageException message = MessageException.builder()
                     .status(statusCode.value())
                     .title((String) body)
-                    .dateTime(LocalDateTime.now())
+                    .dateTime(OffsetDateTime.now())
                     .build();
 
             body = message;
@@ -80,7 +81,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 path, ex.getValue(), ex.getTargetType().getSimpleName()
                 );
 
-        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
 
         return handleExceptionInternal(ex, message, headers, status, request);
     }
@@ -94,7 +95,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String detail = String.format("The property '%s' does not exist. " +
                 "Remove this property and try again.", path);
 
-        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
 
         return handleExceptionInternal(ex, message, headers, status, request);
 
@@ -114,7 +115,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemType type = ProblemType.UNREADABLE_MESSAGE;
         String detail = "One or more request fields are invalid. Please check the syntax";
 
-        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
 
         return handleExceptionInternal(ex, message, headers, status, request);
     }
@@ -127,7 +128,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 + "which is of an invalid type. Please correct it and provide a value compatible with the expected type %s.",
                 ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName());
 
-        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
 
         return handleExceptionInternal(ex, message, headers, status, request);
     }
@@ -148,7 +149,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemType type = ProblemType.ENTITY_NOT_FOUND;
         String detail = ex.getMessage();
 
-        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
 
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
 
@@ -160,7 +161,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemType type = ProblemType.ENTITY_NOT_FOUND;
         String detail = ex.getMessage();
 
-        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
 
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
@@ -171,7 +172,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemType type = ProblemType.ENTITY_NOT_FOUND;
         String detail = ex.getMessage();
 
-        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
 
@@ -181,7 +182,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemType type = ProblemType.ENTITY_NOT_FOUND;
         String detail = ex.getMessage();
 
-        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
 
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
@@ -192,7 +193,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemType type = ProblemType.BUSINESS_ERROR;
         String detail = ex.getMessage();
 
-        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
 
@@ -202,7 +203,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemType type = ProblemType.ENTITY_IN_USE;
         String detail = ex.getMessage();
 
-        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
 
     }
@@ -218,7 +219,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         String detail = String.join(", ", details);
 
-        MessageException message = createMessage(status, type, type.getTitle(), detail, LocalDateTime.now()).build();
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
 }
