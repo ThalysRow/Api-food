@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Entity
@@ -54,16 +54,16 @@ public class OrderModel {
 
     @Column(nullable = false, name = "date_created", columnDefinition = "datetime")
     @CreationTimestamp
-    private LocalDateTime dateCreated;
+    private OffsetDateTime dateCreated;
 
     @Column(name = "date_confirmed", columnDefinition = "datetime")
-    private LocalDateTime dateConfirmed;
+    private OffsetDateTime dateConfirmed;
 
     @Column(name = "date_cancelled", columnDefinition = "datetime")
-    private LocalDateTime dateCanceled;
+    private OffsetDateTime dateCanceled;
 
     @Column(name = "date_delivered", columnDefinition = "datetime")
-    private LocalDateTime dateDelivered;
+    private OffsetDateTime dateDelivered;
 
     @OneToMany(mappedBy = "order")
     private List<OrderItemModel> itens;
