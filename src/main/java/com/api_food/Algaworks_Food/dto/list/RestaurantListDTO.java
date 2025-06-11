@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
@@ -17,6 +17,6 @@ public class RestaurantListDTO {
     private String name;
     private BigDecimal deliveryFee;
     private KitchenListDTO kitchen;
-    private LocalDateTime dateCreated;
-    private LocalDateTime dateUpdated;
+    private OffsetDateTime dateCreated;
+    private OffsetDateTime dateUpdated;
 }
