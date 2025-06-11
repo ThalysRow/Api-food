@@ -2,8 +2,7 @@ package com.api_food.Algaworks_Food.exception.handler;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -14,5 +13,5 @@ public class MessageException {
     private String type;
     private String title;
     private String detail;
-    private LocalDateTime dateTime;
+    private OffsetDateTime dateTime;
 }
