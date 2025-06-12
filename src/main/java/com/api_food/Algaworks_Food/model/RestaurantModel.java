@@ -31,6 +31,9 @@ public class RestaurantModel {
     @JoinColumn(nullable = false)
     private KitchenModel kitchen;
 
+    @Column(nullable = false)
+    private Boolean active = Boolean.TRUE;
+
     @Embedded
     private AddressModel address;
 
