@@ -85,5 +85,19 @@ public class RestaurantService {
         restaurantRepository.deleteById(restaurant.getId());
         }
 
+        @Transactional
+        public void activateRestaurant(UUID id){
+            RestaurantModel restaurant = restaurantRepository.findById(id)
+                    .orElseThrow(()-> new RestaurantNotFoundException(id));
 
+            restaurant.setActive(true);
+        }
+
+        @Transactional
+        public void deactivateRestaurant(UUID id){
+            RestaurantModel restaurant = restaurantRepository.findById(id)
+                    .orElseThrow(()-> new RestaurantNotFoundException(id));
+
+            restaurant.setActive(false);
+        }
 }
