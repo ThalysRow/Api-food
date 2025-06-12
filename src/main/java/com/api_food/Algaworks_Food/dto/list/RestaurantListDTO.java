@@ -19,4 +19,5 @@ public class RestaurantListDTO {
     private KitchenListDTO kitchen;
     private OffsetDateTime dateCreated;
     private OffsetDateTime dateUpdated;
+    private Boolean active;
 }
