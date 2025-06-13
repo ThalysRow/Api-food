@@ -1,6 +1,7 @@
 package com.api_food.Algaworks_Food.service;
 
 import com.api_food.Algaworks_Food.dto.create.PaymentMethodCreateDTO;
+import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
 import com.api_food.Algaworks_Food.exception.custom.PaymentMethodAlreadyExistsException;
 import com.api_food.Algaworks_Food.mapper.PaymentMethodMapper;
 import com.api_food.Algaworks_Food.model.PaymentMethodModel;
@@ -9,6 +10,7 @@ import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,5 +46,9 @@ public class PaymentMethodService {
         PaymentMethodModel savePaymentMethod = paymentMethodRepository.save(newPayment);
 
         return paymentMethodMapper.toCreateDTO(savePaymentMethod);
+    }
+
+    public List<PaymentMethodListDTO> listAllPaymentMethod(){
+        return paymentMethodRepository.findAll().stream().map(paymentMethodMapper::toListDTO).toList();
     }
 }
