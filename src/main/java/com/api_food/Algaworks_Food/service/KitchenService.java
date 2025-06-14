@@ -3,6 +3,7 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.KitchenCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.KitchenListDTO;
 import com.api_food.Algaworks_Food.dto.update.KitchenUpdateDTO;
+import com.api_food.Algaworks_Food.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.exception.custom.KitchenNotFoundException;
 import com.api_food.Algaworks_Food.mapper.KitchenMapper;
@@ -69,4 +70,9 @@ public class KitchenService {
         KitchenModel savedKithen = kitchenRepository.save(newKitchen);
         return kitchenMapper.toUpdateDTO(savedKithen);
     }
+
+    public KitchenModel verifyKitchen(UUID id){
+        return kitchenRepository.findById(id).orElseThrow(()-> new BusinessException("Kitchen", id));
+    }
+
 }
