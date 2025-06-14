@@ -6,6 +6,11 @@ import org.springframework.stereotype.Component;
 public class StringFormatter {
 
     public String stringFormated(String string) {
+
+        if(string == null || string.trim().isEmpty()){
+            return "";
+        }
+
         String format1 = string.trim();
         String[] format2 = format1.split(" ");
 
