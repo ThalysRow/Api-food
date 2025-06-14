@@ -3,12 +3,10 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.RestaurantCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
 import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
-import com.api_food.Algaworks_Food.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.exception.custom.RestaurantNotFoundException;
 import com.api_food.Algaworks_Food.mapper.RestaurantMapper;
 import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.model.RestaurantModel;
-import com.api_food.Algaworks_Food.repository.KitchenRepository;
 import com.api_food.Algaworks_Food.repository.RestaurantRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
@@ -22,33 +20,35 @@ public class RestaurantService {
     private final RestaurantMapper restaurantMapper;
     private final RestaurantRepository restaurantRepository;
     private final StringFormatter stringFormatter;
-    private final KitchenRepository kitchenRepository;
+    private final KitchenService kitchenService;
+    private final CityService cityService;
 
-    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenRepository kitchenRepository) {
+    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenService kitchenService, CityService cityService) {
         this.restaurantMapper = restaurantMapper;
         this.restaurantRepository = restaurantRepository;
         this.stringFormatter = stringFormatter;
-        this.kitchenRepository = kitchenRepository;
+        this.kitchenService = kitchenService;
+        this.cityService = cityService;
     }
 
     @Transactional
     public RestaurantCreateDTO newRestaurant(RestaurantCreateDTO restaurant){
 
-        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId())
-                .orElseThrow(()-> new BusinessException("kitchen", restaurant.getKitchen().getId()));
+         kitchenService.verifyKitchen(restaurant.getKitchen().getId());
+         cityService.verifyCity(restaurant.getAddress().getCity().getId());
 
-        String formatedName = stringFormatter.stringFormated(restaurant.getName());
+        restaurant.setName(stringFormatter.stringFormated(restaurant.getName()));
+        restaurant.getAddress().setZipcode(stringFormatter.stringFormated(restaurant.getAddress().getZipcode()));
+        restaurant.getAddress().setStreet(stringFormatter.stringFormated(restaurant.getAddress().getStreet()));
+        restaurant.getAddress().setNumber(stringFormatter.stringFormated(restaurant.getAddress().getNumber()));
+        restaurant.getAddress().setComplement(stringFormatter.stringFormated(restaurant.getAddress().getComplement()));
+        restaurant.getAddress().setNeighborhood(stringFormatter.stringFormated(restaurant.getAddress().getNeighborhood()));
 
         RestaurantModel newRestaurant = restaurantMapper.toCreateModel(restaurant);
-        newRestaurant.setName(formatedName);
-        newRestaurant.setDeliveryFee(restaurant.getDeliveryFee());
-        newRestaurant.setKitchen(findKitchen);
         newRestaurant.setDateCreated(OffsetDateTime.now());
         newRestaurant.setDateUpdated(OffsetDateTime.now());
-
         RestaurantModel saveRestaurant = restaurantRepository.save(newRestaurant);
         return restaurantMapper.toCreateDTO(saveRestaurant);
-
     }
 
     public RestaurantListDTO findRestaurantById(UUID id){
@@ -64,8 +64,7 @@ public class RestaurantService {
     public RestaurantUpdateDTO updateRestaurant(UUID id, RestaurantUpdateDTO restaurant){
 
         RestaurantListDTO findRestaurant = this.findRestaurantById(id);
-        KitchenModel findKitchen = kitchenRepository.findById(restaurant.getKitchen().getId())
-                .orElseThrow(()-> new BusinessException("kitchen", restaurant.getKitchen().getId()));
+        KitchenModel findKitchen = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
 
         RestaurantModel updateRestaurant = restaurantMapper.toUpdateModel(findRestaurant);
         String nameFormated = stringFormatter.stringFormated(restaurant.getName());
