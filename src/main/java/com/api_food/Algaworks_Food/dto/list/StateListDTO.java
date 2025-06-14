@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StateListDTO {
-    @NotNull
-    @Positive
+    @NotNull(message = "State id is required")
+    @Positive(message = "State id must be a valid positive number.")
     private int id;
     private String name;
 }
