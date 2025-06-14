@@ -20,4 +20,5 @@ public class RestaurantListDTO {
     private OffsetDateTime dateCreated;
     private OffsetDateTime dateUpdated;
     private Boolean active;
+    private AddressListDTO address;
 }
