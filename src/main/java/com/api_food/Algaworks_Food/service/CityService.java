@@ -76,7 +76,9 @@ public class CityService {
         updateCity.setState(state);
         CityModel saveCity = cityRepository.save(updateCity);
         return cityMapper.toUpdateDTO(saveCity);
+    }
 
-
+    public CityModel verifyCity(int id){
+        return cityRepository.findById(id).orElseThrow(()-> new BusinessException("City", id));
     }
 }
