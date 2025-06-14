@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.controller;
 
 import com.api_food.Algaworks_Food.dto.create.PaymentMethodCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
+import com.api_food.Algaworks_Food.dto.update.PaymentMethodUpdateDTO;
 import com.api_food.Algaworks_Food.service.PaymentMethodService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,12 @@ public class PaymentMethodController {
     public ResponseEntity<PaymentMethodListDTO> findPaymentMethod(@PathVariable int id){
         PaymentMethodListDTO paymentMethod = paymentMethodService.findPaymentMethodById(id);
 
+        return ResponseEntity.status(HttpStatus.OK).body(paymentMethod);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PaymentMethodUpdateDTO> updatePaymentMethod(@PathVariable int id, @Valid @RequestBody PaymentMethodUpdateDTO data){
+        PaymentMethodUpdateDTO paymentMethod = paymentMethodService.updatePaymentMethod(id, data);
         return ResponseEntity.status(HttpStatus.OK).body(paymentMethod);
     }
 }
