@@ -10,6 +10,8 @@ import com.api_food.Algaworks_Food.repository.GroupRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,5 +49,9 @@ public class GroupService {
                 .orElseThrow(()-> new GroupNotFoundException(id));
 
         return groupMapper.toListDTO(group);
+    }
+
+    public List<GroupListDTO> listAllGroups(){
+        return groupRepository.findAll().stream().map(groupMapper::toListDTO).toList();
     }
 }
