@@ -51,7 +51,7 @@ Create City (POST `/cities/new`):
 ```json
 {
   "name": "New York",
-  "stateId": 1
+  "state": 1
 }
 ```
 
@@ -59,7 +59,7 @@ Update City (PUT `/cities/{id}`):
 ```json
 {
   "name": "Los Angeles",
-  "stateId": 2
+  "state": 2
 }
 ```
 
@@ -78,8 +78,7 @@ Update City (PUT `/cities/{id}`):
 Create State (POST `/states/new`):
 ```json
 {
-  "name": "São Paulo",
-  "countryId": 1
+  "name": "São Paulo"
 }
 ```
 
@@ -125,15 +124,17 @@ Create Restaurant (POST `/restaurants/new`):
 ```json
 {
   "name": "Italian Food",
-  "freightRate": 12.3,
-  "kitchenId": 1,
-  "cityId": 1,
+  "deliveryFee": 12.3,
+  "kitchen": "d41bbf05-b002-445c-a6a7-69c99ecdd056",
   "address": {
     "zipCode": "00000000",
     "street": "some street",
     "number": "1234",
     "complement": "some complement",
-    "neighborhood": "some neighborhood"
+    "neighborhood": "some neighborhood",
+    "city":{
+    "id": 1
+    }
   }
 }
 ```
@@ -142,15 +143,17 @@ Update Restaurant (PUT `/restaurants/{id}`):
 ```json
 {
   "name": "Brazilian Food",
-  "freightRate": 15.0,
-  "kitchenId": 2,
-   "cityId": 2,
+  "deliveryFee": 15.0,
+  "kitchen":"d41bbf05-b002-445c-a6a7-69c99ecdd056",
   "address": {
     "zipCode": "11111111",
     "street": "another street",
     "number": "4321",
     "complement": "another complement",
-    "neighborhood": "another neighborhood"
+    "neighborhood": "another neighborhood",
+    "city": {
+      "id": 2
+    }
   }
 }
 ```
@@ -196,7 +199,7 @@ The application uses the following main entities:
 
 ## 🚀 Getting Started
 
-1. Clone the repository: bash git clone [https://github.com/your-ThalysRow/apifood.git](https://github.com/ThalysRow/apifood.git)
+1. Clone the repository: bash git clone [https://github.com/ThalysRow/apifood.git](https://github.com/ThalysRow/apifood.git)
 2. Configure the database in `application.properties` or using environment variables (`.env`)
 3. Run Docker Compose to start required services: bash docker-compose up -d
 4. Run the application using Maven: bash ./mvnw spring-boot:run
