@@ -5,6 +5,7 @@ import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
 import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
 import com.api_food.Algaworks_Food.exception.custom.RestaurantNotFoundException;
 import com.api_food.Algaworks_Food.mapper.RestaurantMapper;
+import com.api_food.Algaworks_Food.model.CityModel;
 import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.model.RestaurantModel;
 import com.api_food.Algaworks_Food.repository.RestaurantRepository;
@@ -34,17 +35,14 @@ public class RestaurantService {
     @Transactional
     public RestaurantCreateDTO newRestaurant(RestaurantCreateDTO restaurant){
 
-         kitchenService.verifyKitchen(restaurant.getKitchen().getId());
-         cityService.verifyCity(restaurant.getAddress().getCity().getId());
+         KitchenModel kitchenFinded = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
+         CityModel cityFinded = cityService.verifyCity(restaurant.getAddress().getCity().getId());
 
-        restaurant.setName(stringFormatter.stringFormated(restaurant.getName()));
-        restaurant.getAddress().setZipcode(stringFormatter.stringFormated(restaurant.getAddress().getZipcode()));
-        restaurant.getAddress().setStreet(stringFormatter.stringFormated(restaurant.getAddress().getStreet()));
-        restaurant.getAddress().setNumber(stringFormatter.stringFormated(restaurant.getAddress().getNumber()));
-        restaurant.getAddress().setComplement(stringFormatter.stringFormated(restaurant.getAddress().getComplement()));
-        restaurant.getAddress().setNeighborhood(stringFormatter.stringFormated(restaurant.getAddress().getNeighborhood()));
+        RestaurantCreateDTO data = stringFormatter.restaurantFieldsFormatter(restaurant);
 
-        RestaurantModel newRestaurant = restaurantMapper.toCreateModel(restaurant);
+        RestaurantModel newRestaurant = restaurantMapper.toCreateModel(data);
+        newRestaurant.setKitchen(kitchenFinded);
+        newRestaurant.getAddress().setCity(cityFinded);
         newRestaurant.setDateCreated(OffsetDateTime.now());
         newRestaurant.setDateUpdated(OffsetDateTime.now());
         RestaurantModel saveRestaurant = restaurantRepository.save(newRestaurant);
@@ -63,19 +61,28 @@ public class RestaurantService {
     @Transactional
     public RestaurantUpdateDTO updateRestaurant(UUID id, RestaurantUpdateDTO restaurant){
 
-        RestaurantListDTO findRestaurant = this.findRestaurantById(id);
-        KitchenModel findKitchen = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
+        RestaurantModel findRestaurant = restaurantRepository.findById(id)
+                .orElseThrow(()-> new RestaurantNotFoundException(id));
 
-        RestaurantModel updateRestaurant = restaurantMapper.toUpdateModel(findRestaurant);
-        String nameFormated = stringFormatter.stringFormated(restaurant.getName());
+            KitchenModel kitchenFinded = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
+            CityModel cityFinded = cityService.verifyCity(restaurant.getAddress().getCity().getId());
 
-        updateRestaurant.setName(nameFormated);
-        updateRestaurant.setDeliveryFee(restaurant.getDeliveryFee());
-        updateRestaurant.setKitchen(findKitchen);
+        RestaurantUpdateDTO data = stringFormatter.restaurantFieldsFormatter(restaurant);
+
+        findRestaurant.setName(data.getName());
+        findRestaurant.setDeliveryFee(restaurant.getDeliveryFee());
+        findRestaurant.setKitchen(kitchenFinded);
+        findRestaurant.getAddress().setCity(cityFinded);
+        findRestaurant.getAddress().setZipcode(data.getAddress().getZipcode());
+        findRestaurant.getAddress().setStreet(data.getAddress().getStreet());
+        findRestaurant.getAddress().setNumber(data.getAddress().getNumber());
+        findRestaurant.getAddress().setComplement(data.getAddress().getComplement());
+        findRestaurant.getAddress().setNeighborhood(data.getAddress().getNeighborhood());
+        RestaurantModel updateRestaurant = restaurantMapper.toUpdateModel(data);
         updateRestaurant.setDateUpdated(OffsetDateTime.now());
 
-        RestaurantModel saveRestaurant = restaurantRepository.save(updateRestaurant);
-        return restaurantMapper.toUpdateDTO(saveRestaurant);
+        RestaurantModel saveUpdate = restaurantRepository.save(updateRestaurant);
+        return restaurantMapper.toUpdateDTO(saveUpdate);
         }
 
         @Transactional
