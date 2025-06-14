@@ -21,4 +21,7 @@ public class PaymentMethodModel {
 
     @OneToMany(mappedBy = "paymentMethod")
     private List<OrderModel> orders;
+
+    @ManyToMany(mappedBy = "paymentMethods")
+    private List<RestaurantModel> restaurants;
 }
