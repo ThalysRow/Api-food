@@ -12,7 +12,7 @@ public interface RestaurantMapper {
     RestaurantModel toCreateModel(RestaurantCreateDTO restaurantCreateDTO);
     RestaurantCreateDTO toCreateDTO(RestaurantModel restaurantModel);
     RestaurantListDTO toListDTO(RestaurantModel restaurantModel);
-    RestaurantModel toUpdateModel(RestaurantListDTO restaurantListDTO);
+    RestaurantModel toUpdateModel(RestaurantUpdateDTO restaurantUpdateDTO);
     RestaurantUpdateDTO toUpdateDTO(RestaurantModel restaurantModel);
 
 }
