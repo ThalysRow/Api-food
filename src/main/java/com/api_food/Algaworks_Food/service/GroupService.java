@@ -1,15 +1,15 @@
 package com.api_food.Algaworks_Food.service;
 
 import com.api_food.Algaworks_Food.dto.create.GroupCreateDTO;
+import com.api_food.Algaworks_Food.dto.list.GroupListDTO;
 import com.api_food.Algaworks_Food.exception.custom.GroupNameAlreadyExistsException;
+import com.api_food.Algaworks_Food.exception.custom.GroupNotFoundException;
 import com.api_food.Algaworks_Food.mapper.GroupMapper;
 import com.api_food.Algaworks_Food.model.GroupModel;
 import com.api_food.Algaworks_Food.repository.GroupRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.security.GeneralSecurityException;
 import java.util.Optional;
 
 @Service
@@ -40,5 +40,12 @@ public class GroupService {
         createGroup.setName(nameFormated);
         GroupModel saveGroup = groupRepository.save(createGroup);
         return groupMapper.toCreateDTO(saveGroup);
+    }
+
+    public GroupListDTO findGroupById(int id){
+        GroupModel group = groupRepository.findById(id)
+                .orElseThrow(()-> new GroupNotFoundException(id));
+
+        return groupMapper.toListDTO(group);
     }
 }
