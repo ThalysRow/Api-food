@@ -3,6 +3,7 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.PaymentMethodCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
 import com.api_food.Algaworks_Food.exception.custom.PaymentMethodAlreadyExistsException;
+import com.api_food.Algaworks_Food.exception.custom.PaymentMethodNotFoundException;
 import com.api_food.Algaworks_Food.mapper.PaymentMethodMapper;
 import com.api_food.Algaworks_Food.model.PaymentMethodModel;
 import com.api_food.Algaworks_Food.repository.PaymentMethodRepository;
@@ -50,5 +51,12 @@ public class PaymentMethodService {
 
     public List<PaymentMethodListDTO> listAllPaymentMethod(){
         return paymentMethodRepository.findAll().stream().map(paymentMethodMapper::toListDTO).toList();
+    }
+
+    public PaymentMethodListDTO findPaymentMethodById(int id){
+        PaymentMethodModel payment = paymentMethodRepository.findById(id)
+                .orElseThrow(()-> new  PaymentMethodNotFoundException(id));
+
+        return paymentMethodMapper.toListDTO(payment);
     }
 }
