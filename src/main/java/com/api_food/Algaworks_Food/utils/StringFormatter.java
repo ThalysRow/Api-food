@@ -1,5 +1,7 @@
 package com.api_food.Algaworks_Food.utils;
 
+import com.api_food.Algaworks_Food.dto.create.RestaurantCreateDTO;
+import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,5 +24,28 @@ public class StringFormatter {
         }
 
         return String.join(" ", format2);
+    }
+
+    public RestaurantCreateDTO restaurantFieldsFormatter(RestaurantCreateDTO data){
+
+        data.setName(stringFormated(data.getName()));
+        data.getAddress().setZipcode(stringFormated(data.getAddress().getZipcode()));
+        data.getAddress().setStreet(stringFormated(data.getAddress().getStreet()));
+        data.getAddress().setNumber(stringFormated(data.getAddress().getNumber()));
+        data.getAddress().setComplement(stringFormated(data.getAddress().getComplement()));
+        data.getAddress().setNeighborhood(stringFormated(data.getAddress().getNeighborhood()));
+
+        return data;
+    }
+
+    public RestaurantUpdateDTO restaurantFieldsFormatter(RestaurantUpdateDTO data){
+        data.setName(stringFormated(data.getName()));
+        data.getAddress().setZipcode(stringFormated(data.getAddress().getZipcode()));
+        data.getAddress().setStreet(stringFormated(data.getAddress().getStreet()));
+        data.getAddress().setNumber(stringFormated(data.getAddress().getNumber()));
+        data.getAddress().setComplement(stringFormated(data.getAddress().getComplement()));
+        data.getAddress().setNeighborhood(stringFormated(data.getAddress().getNeighborhood()));
+
+        return data;
     }
 }
