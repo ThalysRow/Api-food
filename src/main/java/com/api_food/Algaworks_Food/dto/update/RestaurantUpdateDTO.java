@@ -30,4 +30,8 @@ public class RestaurantUpdateDTO {
     @NotNull(message = "Kitchen is required")
     @JsonIgnoreProperties(value = "name", allowGetters = true)
     private KitchenListDTO kitchen;
+
+    @Valid
+    @NotNull(message = "Address is required")
+    private AddressUpdateDTO address;
 }
