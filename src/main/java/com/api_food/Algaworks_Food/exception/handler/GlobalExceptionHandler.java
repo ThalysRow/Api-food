@@ -243,4 +243,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
+
+    @ExceptionHandler(GroupNameAlreadyExistsException.class)
+    public ResponseEntity<?> handleGroupNameAlreadyExistsException(GroupNameAlreadyExistsException ex, WebRequest request){
+        HttpStatusCode status = HttpStatus.CONFLICT;
+        ProblemType type = ProblemType.ENTITY_IN_USE;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
+
+        return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
+    }
 }
