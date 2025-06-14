@@ -6,11 +6,9 @@ A REST API for restaurant management and food delivery, developed with Spring Bo
 
 - [Technologies](#-technologies)
 - [Features](#-features)
-- [Endpoints](#-endpoints)
+- [Endpoints and Request Bodies](#-endpoints-and-request-bodies)
 - [Getting Started](#-getting-started)
 - [Database Schema](#-database-schema)
-- [Contributing](#-contributing)
-- [License](#-license)
 
 ## 🚀 Technologies
 
@@ -35,7 +33,7 @@ The system provides a complete API for managing:
 - Permissions
 - Products
 
-## 🔌 Endpoints
+## 🔌 Endpoints and Request Bodies
 
 ### Cities
 
@@ -47,6 +45,24 @@ The system provides a complete API for managing:
 | PUT | `/cities/{id}` | Update a city |
 | DELETE | `/cities/{id}` | Delete a city |
 
+#### Request Body Examples:
+
+Create City (POST `/cities/new`):
+```json
+{
+  "name": "New York",
+  "stateId": 1
+}
+```
+
+Update City (PUT `/cities/{id}`):
+```json
+{
+  "name": "Los Angeles",
+  "stateId": 2
+}
+```
+
 ### States
 
 | Method | Route | Description |
@@ -56,6 +72,16 @@ The system provides a complete API for managing:
 | GET | `/states/{id}` | Get a specific state |
 | PUT | `/states/{id}` | Update a state |
 | DELETE | `/states/{id}` | Delete a state |
+
+#### Request Body Examples:
+
+Create State (POST `/states/new`):
+```json
+{
+  "name": "São Paulo",
+  "countryId": 1
+}
+```
 
 ### Kitchens
 
@@ -67,6 +93,22 @@ The system provides a complete API for managing:
 | PUT | `/kitchens/{id}` | Update a kitchen |
 | DELETE | `/kitchens/{id}` | Delete a kitchen |
 
+#### Request Body Examples:
+
+Create Kitchen (POST `/kitchens/new`):
+```json
+{
+  "name": "Italian"
+}
+```
+
+Update Kitchen (PUT `/kitchens/{id}`):
+```json
+{
+  "name": "Brazilian"
+}
+```
+
 ### Restaurants
 
 | Method | Route | Description |
@@ -77,6 +119,42 @@ The system provides a complete API for managing:
 | PUT | `/restaurants/{id}` | Update a restaurant |
 | DELETE | `/restaurants/{id}` | Delete a restaurant |
 
+#### Request Body Examples:
+
+Create Restaurant (POST `/restaurants/new`):
+```json
+{
+  "name": "Italian Food",
+  "freightRate": 12.3,
+  "kitchenId": 1,
+  "cityId": 1,
+  "address": {
+    "zipCode": "00000000",
+    "street": "some street",
+    "number": "1234",
+    "complement": "some complement",
+    "neighborhood": "some neighborhood"
+  }
+}
+```
+
+Update Restaurant (PUT `/restaurants/{id}`):
+```json
+{
+  "name": "Brazilian Food",
+  "freightRate": 15.0,
+  "kitchenId": 2,
+   "cityId": 2,
+  "address": {
+    "zipCode": "11111111",
+    "street": "another street",
+    "number": "4321",
+    "complement": "another complement",
+    "neighborhood": "another neighborhood"
+  }
+}
+```
+
 ### Payment Methods
 
 | Method | Route | Description |
@@ -86,6 +164,22 @@ The system provides a complete API for managing:
 | GET | `/payment-methods/{id}` | Get a specific payment method |
 | PUT | `/payment-methods/{id}` | Update a payment method |
 | DELETE | `/payment-methods/{id}` | Delete a payment method |
+
+#### Request Body Examples:
+
+Create Payment Method (POST `/payment-methods/new`):
+```json
+{
+  "description": "Credit Card"
+}
+```
+
+Update Payment Method (PUT `/payment-methods/{id}`):
+```json
+{
+  "description": "Debit Card"
+}
+```
 
 ## 📊 Database Schema
 
@@ -102,10 +196,11 @@ The application uses the following main entities:
 
 ## 🚀 Getting Started
 
-1. Clone the repository:
+1. Clone the repository: bash git clone [https://github.com/your-ThalysRow/apifood.git](https://github.com/ThalysRow/apifood.git)
 2. Configure the database in `application.properties` or using environment variables (`.env`)
-3. Run Docker Compose to start required services:
-4. Run the application using Maven:
+3. Run Docker Compose to start required services: bash docker-compose up -d
+4. Run the application using Maven: bash ./mvnw spring-boot:run
+
 The API will be available at `http://localhost:8080`
 
 ## 📝 Requirements
@@ -118,6 +213,11 @@ The API will be available at `http://localhost:8080`
 ## 🔒 Development Environment
 
 To set up the development environment, copy `.env.exemple` to `.env` and adjust the variables as needed:
+```bash
+env DB_HOST=localhost DB_PORT=5432
+DB_NAME=apifood DB_USER=your_username
+DB_PASSWORD=your_password
+```
 
 ## 📫 Contributing
 
@@ -126,7 +226,3 @@ To set up the development environment, copy `.env.exemple` to `.env` and adjust 
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-## 📝 License
-
-This project is under MIT license. See [LICENSE](LICENSE) file for more details.
