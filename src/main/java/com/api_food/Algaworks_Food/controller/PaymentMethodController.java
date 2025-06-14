@@ -44,4 +44,10 @@ public class PaymentMethodController {
         PaymentMethodUpdateDTO paymentMethod = paymentMethodService.updatePaymentMethod(id, data);
         return ResponseEntity.status(HttpStatus.OK).body(paymentMethod);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePaymentMethod(@PathVariable int id){
+        paymentMethodService.deletePaymentMethod(id);
+    }
 }
