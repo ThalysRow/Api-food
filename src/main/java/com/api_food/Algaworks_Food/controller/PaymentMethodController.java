@@ -31,4 +31,10 @@ public class PaymentMethodController {
         List<PaymentMethodListDTO> paymentMethods = paymentMethodService.listAllPaymentMethod();
         return ResponseEntity.status(HttpStatus.OK).body(paymentMethods);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<PaymentMethodListDTO> findPaymentMethod(@PathVariable int id){
+        PaymentMethodListDTO paymentMethod = paymentMethodService.findPaymentMethodById(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(paymentMethod);
+    }
 }
