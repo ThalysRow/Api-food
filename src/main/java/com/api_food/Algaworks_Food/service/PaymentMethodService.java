@@ -3,6 +3,7 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.PaymentMethodCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
 import com.api_food.Algaworks_Food.dto.update.PaymentMethodUpdateDTO;
+import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.exception.custom.PaymentMethodAlreadyExistsException;
 import com.api_food.Algaworks_Food.exception.custom.PaymentMethodNotFoundException;
 import com.api_food.Algaworks_Food.mapper.PaymentMethodMapper;
@@ -33,6 +34,16 @@ public class PaymentMethodService {
 
         if (findName.isPresent()) {
             throw new PaymentMethodAlreadyExistsException(name);
+        }
+    }
+
+    public void verifyPaymentMethodInUse(int id){
+        PaymentMethodModel findPaymentMethod = paymentMethodRepository.findById(id)
+                .orElseThrow(()-> new PaymentMethodNotFoundException(id));
+
+        if (findPaymentMethod.getOrders() != null && !findPaymentMethod.getOrders().isEmpty() ||
+                findPaymentMethod.getRestaurants() != null && !findPaymentMethod.getRestaurants().isEmpty()){
+            throw new EntityInUseException(findPaymentMethod.getName(), id, "orders and restaurants");
         }
     }
 
@@ -70,5 +81,11 @@ public class PaymentMethodService {
         PaymentMethodModel updatePaymentMethod = paymentMethodMapper.toSaveModel(payment);
         PaymentMethodModel saveUpdatePaymentMethod = paymentMethodRepository.save(updatePaymentMethod);
         return paymentMethodMapper.toUpdateDTO(saveUpdatePaymentMethod);
+    }
+
+    @Transactional
+    public void deletePaymentMethod(int id){
+        this.verifyPaymentMethodInUse(id);
+        paymentMethodRepository.deleteById(id);
     }
 }
