@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/groups")
 public class GroupController {
@@ -27,5 +29,11 @@ public class GroupController {
     public ResponseEntity<GroupListDTO> findGroup(@PathVariable int id){
         GroupListDTO group = groupService.findGroupById(id);
         return ResponseEntity.status(HttpStatus.OK).body(group);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<GroupListDTO>> listAllGroups(){
+        List<GroupListDTO> groups = groupService.listAllGroups();
+        return ResponseEntity.status(HttpStatus.OK).body(groups);
     }
 }
