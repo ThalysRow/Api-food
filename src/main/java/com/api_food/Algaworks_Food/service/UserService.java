@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.service;
 
 import com.api_food.Algaworks_Food.dto.create.UserCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.UserListDTO;
+import com.api_food.Algaworks_Food.dto.update.UserUpdateDTO;
 import com.api_food.Algaworks_Food.exception.custom.EmailAlreadyExistsException;
 import com.api_food.Algaworks_Food.exception.custom.UserNotFoundException;
 import com.api_food.Algaworks_Food.mapper.UserMapper;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,6 +48,9 @@ public class UserService {
         data.setPassword(hashedPassword);
 
         UserModel userModel = userMapper.toCreateModel(data);
+        userModel.setDateCreated(OffsetDateTime.now());
+        userModel.setDateUpdated(OffsetDateTime.now());
+
         UserModel createUser = userRepository.save(userModel);
         return userMapper.toCreateDTO(createUser);
     }
@@ -59,5 +64,24 @@ public class UserService {
         return userRepository.findAll().stream().map(userMapper::toListDTO).toList();
     }
 
+    public UserUpdateDTO updateUser(UUID id, UserUpdateDTO data){
+        UserModel user = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id));
+
+        Optional<UserModel> findEmail = userRepository.findUserByEmail(data.getEmail());
+
+        if(findEmail.isPresent()){
+            if (!findEmail.get().getId().equals(user.getId())){
+                throw new EmailAlreadyExistsException(data.getEmail());
+            }
+        }
+
+        String nameFormated = stringFormatter.stringFormated(data.getName());
+        user.setDateUpdated(OffsetDateTime.now());
+        user.setName(nameFormated);
+        user.setEmail(data.getEmail());
+
+        UserModel saveUser = userRepository.save(user);
+        return userMapper.toUpdateDTO(saveUser);
+    }
 
 }
