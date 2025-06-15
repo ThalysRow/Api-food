@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.service;
 
 import com.api_food.Algaworks_Food.dto.create.GroupCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.GroupListDTO;
+import com.api_food.Algaworks_Food.dto.update.GroupUpdateDTO;
 import com.api_food.Algaworks_Food.exception.custom.GroupNameAlreadyExistsException;
 import com.api_food.Algaworks_Food.exception.custom.GroupNotFoundException;
 import com.api_food.Algaworks_Food.mapper.GroupMapper;
@@ -53,5 +54,17 @@ public class GroupService {
 
     public List<GroupListDTO> listAllGroups(){
         return groupRepository.findAll().stream().map(groupMapper::toListDTO).toList();
+    }
+
+    @Transactional
+    public GroupUpdateDTO updateGroup(int id, GroupUpdateDTO data){
+        GroupListDTO group = this.findGroupById(id);
+        String nameFormated = stringFormatter.stringFormated(data.getName());
+        this.verifyGroupName(nameFormated);
+
+        GroupModel updateGroup = groupMapper.toUpdateModel(group);
+        updateGroup.setName(nameFormated);
+        GroupModel saveGroup = groupRepository.save(updateGroup);
+        return groupMapper.toUpdateDTO(saveGroup);
     }
 }
