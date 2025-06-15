@@ -3,6 +3,7 @@ package com.api_food.Algaworks_Food.controller;
 import com.api_food.Algaworks_Food.dto.create.UserCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.UserListDTO;
 import com.api_food.Algaworks_Food.dto.update.UserUpdateDTO;
+import com.api_food.Algaworks_Food.dto.update.UserUpdatePasswordDTO;
 import com.api_food.Algaworks_Food.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -45,4 +46,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(updateUser);
     }
 
+    @PutMapping("/{id}/password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateUserPassword(@PathVariable UUID id, @Valid @RequestBody UserUpdatePasswordDTO data){
+        userService.updateUserPassword(id, data);
+    }
 }
