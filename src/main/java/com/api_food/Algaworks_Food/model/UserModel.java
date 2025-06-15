@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,12 +35,12 @@ public class UserModel {
     private String password;
 
     @CreationTimestamp
-    @Column(nullable = false, columnDefinition = "datetime")
-    private LocalDateTime dateCreated;
+    @Column(nullable = false)
+    private OffsetDateTime dateCreated;
 
     @UpdateTimestamp
-    @Column(nullable = false, columnDefinition = "datetime")
-    private LocalDateTime dateUpdated;
+    @Column(nullable = false)
+    private OffsetDateTime dateUpdated;
 
     @ManyToMany(mappedBy = "users")
     @JsonIgnore
