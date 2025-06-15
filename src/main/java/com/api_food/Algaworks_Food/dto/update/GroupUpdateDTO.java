@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupUpdateDTO {
+    private int id;
     @NotBlank(message = "The group name is required")
     private String name;
 }
