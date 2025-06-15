@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.controller;
 
 import com.api_food.Algaworks_Food.dto.create.UserCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.UserListDTO;
+import com.api_food.Algaworks_Food.dto.update.UserUpdateDTO;
 import com.api_food.Algaworks_Food.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,12 @@ public class UserController {
     public ResponseEntity<List<UserListDTO>> listUsers(){
         List<UserListDTO> users = userService.listAllUsers();
         return ResponseEntity.status(HttpStatus.OK).body(users);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserUpdateDTO> updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO data){
+        UserUpdateDTO updateUser = userService.updateUser(id, data);
+        return ResponseEntity.status(HttpStatus.OK).body(updateUser);
     }
 
 }
