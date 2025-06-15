@@ -51,4 +51,10 @@ public class UserController {
     public void updateUserPassword(@PathVariable UUID id, @Valid @RequestBody UserUpdatePasswordDTO data){
         userService.updateUserPassword(id, data);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable UUID id){
+        userService.deleteUser(id);
+    }
 }
