@@ -3,7 +3,9 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.UserCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.UserListDTO;
 import com.api_food.Algaworks_Food.dto.update.UserUpdateDTO;
+import com.api_food.Algaworks_Food.dto.update.UserUpdatePasswordDTO;
 import com.api_food.Algaworks_Food.exception.custom.EmailAlreadyExistsException;
+import com.api_food.Algaworks_Food.exception.custom.InvalidCurrentPasswordException;
 import com.api_food.Algaworks_Food.exception.custom.UserNotFoundException;
 import com.api_food.Algaworks_Food.mapper.UserMapper;
 import com.api_food.Algaworks_Food.model.UserModel;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -82,6 +85,18 @@ public class UserService {
 
         UserModel saveUser = userRepository.save(user);
         return userMapper.toUpdateDTO(saveUser);
+    }
+
+    @Transactional
+    public void updateUserPassword(UUID id, UserUpdatePasswordDTO data){
+        UserModel user = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id));
+        if (!passwordEncoder.matches(data.getCurrentPassword(), user.getPassword())){
+            throw new InvalidCurrentPasswordException();
+        }
+        String hashedNewPassword = passwordEncoder.encode(data.getNewPassword());
+        user.setPassword(hashedNewPassword);
+        user.setDateUpdated(OffsetDateTime.now());
+        userRepository.save(user);
     }
 
 }
