@@ -3,6 +3,7 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.GroupCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.GroupListDTO;
 import com.api_food.Algaworks_Food.dto.update.GroupUpdateDTO;
+import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.exception.custom.GroupNameAlreadyExistsException;
 import com.api_food.Algaworks_Food.exception.custom.GroupNotFoundException;
 import com.api_food.Algaworks_Food.mapper.GroupMapper;
@@ -66,5 +67,17 @@ public class GroupService {
         updateGroup.setName(nameFormated);
         GroupModel saveGroup = groupRepository.save(updateGroup);
         return groupMapper.toUpdateDTO(saveGroup);
+    }
+
+    @Transactional
+    public void deleteGroup(int id){
+        GroupModel group = groupRepository.findById(id).orElseThrow(()-> new GroupNotFoundException(id));
+
+        if(group.getPermissions() != null && !group.getPermissions().isEmpty() ||
+            group.getUsers() != null && !group.getUsers().isEmpty()){
+            throw new EntityInUseException(group.getName(), group.getId(), "permissions and users");
+        }
+
+        groupRepository.deleteById(id);
     }
 }
