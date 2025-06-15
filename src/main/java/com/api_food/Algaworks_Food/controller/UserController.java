@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,6 +30,12 @@ public class UserController {
     public ResponseEntity<UserListDTO> findUser(@PathVariable UUID id){
         UserListDTO user = userService.findUserById(id);
         return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<UserListDTO>> listUsers(){
+        List<UserListDTO> users = userService.listAllUsers();
+        return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
 }
