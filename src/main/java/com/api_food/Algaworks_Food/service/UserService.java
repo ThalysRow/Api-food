@@ -5,6 +5,7 @@ import com.api_food.Algaworks_Food.dto.list.UserListDTO;
 import com.api_food.Algaworks_Food.dto.update.UserUpdateDTO;
 import com.api_food.Algaworks_Food.dto.update.UserUpdatePasswordDTO;
 import com.api_food.Algaworks_Food.exception.custom.EmailAlreadyExistsException;
+import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.exception.custom.InvalidCurrentPasswordException;
 import com.api_food.Algaworks_Food.exception.custom.UserNotFoundException;
 import com.api_food.Algaworks_Food.mapper.UserMapper;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,7 +35,7 @@ public class UserService {
         this.stringFormatter = stringFormatter;
     }
 
-    public void findUserByEmail(String email){
+    public void verifyEmailInUse(String email){
         Optional<UserModel> user = userRepository.findUserByEmail(email.trim());
 
         if (user.isPresent()){
@@ -45,7 +45,7 @@ public class UserService {
 
     @Transactional
     public UserCreateDTO addNewUser(UserCreateDTO data){
-        this.findUserByEmail(data.getEmail());
+        this.verifyEmailInUse(data.getEmail());
         data.setName(stringFormatter.stringFormated(data.getName()));
         String hashedPassword = passwordEncoder.encode(data.getPassword());
         data.setPassword(hashedPassword);
@@ -67,6 +67,7 @@ public class UserService {
         return userRepository.findAll().stream().map(userMapper::toListDTO).toList();
     }
 
+    @Transactional
     public UserUpdateDTO updateUser(UUID id, UserUpdateDTO data){
         UserModel user = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id));
 
@@ -99,4 +100,15 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void deleteUser(UUID id){
+        UserModel user = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id));
+
+        if (user.getGroups() != null && !user.getGroups().isEmpty() ||
+                user.getOrders() != null && !user.getOrders().isEmpty()){
+            throw new EntityInUseException("user", user.getId(), "groups and orders");
+        }
+
+        userRepository.deleteById(id);
+    }
 }
