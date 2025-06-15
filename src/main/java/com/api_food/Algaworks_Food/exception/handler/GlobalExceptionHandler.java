@@ -285,4 +285,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
+
+    @ExceptionHandler(InvalidCurrentPasswordException.class)
+    public ResponseEntity<?> handleInvalidCurrentPasswordException(InvalidCurrentPasswordException ex, WebRequest request){
+        HttpStatusCode status = HttpStatus.UNAUTHORIZED;
+        ProblemType type = ProblemType.UNAUTHORIZED;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
+        return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
+    }
 }
