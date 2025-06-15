@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -275,5 +273,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
 
         return handleExceptionInternal(ex,message, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException ex, WebRequest request){
+        HttpStatusCode status = HttpStatus.NOT_FOUND;
+        ProblemType type = ProblemType.ENTITY_NOT_FOUND;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
+
+        return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
 }
