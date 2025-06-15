@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.controller;
 
 import com.api_food.Algaworks_Food.dto.create.GroupCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.GroupListDTO;
+import com.api_food.Algaworks_Food.dto.update.GroupUpdateDTO;
 import com.api_food.Algaworks_Food.service.GroupService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -35,5 +36,11 @@ public class GroupController {
     public ResponseEntity<List<GroupListDTO>> listAllGroups(){
         List<GroupListDTO> groups = groupService.listAllGroups();
         return ResponseEntity.status(HttpStatus.OK).body(groups);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GroupUpdateDTO> updateGroup(@PathVariable int id, @Valid @RequestBody GroupUpdateDTO data){
+        GroupUpdateDTO updateGroup = groupService.updateGroup(id, data);
+        return ResponseEntity.status(HttpStatus.OK).body(updateGroup);
     }
 }
