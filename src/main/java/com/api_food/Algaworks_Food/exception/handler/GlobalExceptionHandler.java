@@ -265,4 +265,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<?> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex,WebRequest request){
+        HttpStatusCode status = HttpStatus.CONFLICT;
+        ProblemType type = ProblemType.ENTITY_IN_USE;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
+
+        return handleExceptionInternal(ex,message, new HttpHeaders(), status, request);
+    }
 }
