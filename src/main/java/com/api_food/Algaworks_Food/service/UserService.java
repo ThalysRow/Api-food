@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,5 +54,10 @@ public class UserService {
         UserModel user = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id));
         return userMapper.toListDTO(user);
     }
+
+    public List<UserListDTO> listAllUsers(){
+        return userRepository.findAll().stream().map(userMapper::toListDTO).toList();
+    }
+
 
 }
