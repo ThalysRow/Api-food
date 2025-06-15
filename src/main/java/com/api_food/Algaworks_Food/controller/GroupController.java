@@ -43,4 +43,10 @@ public class GroupController {
         GroupUpdateDTO updateGroup = groupService.updateGroup(id, data);
         return ResponseEntity.status(HttpStatus.OK).body(updateGroup);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteGroup(@PathVariable int id){
+        groupService.deleteGroup(id);
+    }
 }
