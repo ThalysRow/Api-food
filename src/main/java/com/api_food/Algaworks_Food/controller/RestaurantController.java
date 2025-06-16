@@ -69,4 +69,10 @@ public class RestaurantController {
         List<PaymentMethodListDTO> paymentMethods = restaurantService.restaurantListPaymentMethods(id);
         return ResponseEntity.status(HttpStatus.OK).body(paymentMethods);
     }
+
+    @DeleteMapping("/{restaurantId}/payment-method/{paymentMethodId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void restaurantRemovePaymentMethod(@PathVariable UUID restaurantId, @PathVariable int paymentMethodId){
+        restaurantService.restaurantRemovePaymentMethod(restaurantId, paymentMethodId);
+    }
 }
