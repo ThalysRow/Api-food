@@ -75,4 +75,10 @@ public class RestaurantController {
     public void restaurantRemovePaymentMethod(@PathVariable UUID restaurantId, @PathVariable int paymentMethodId){
         restaurantService.restaurantRemovePaymentMethod(restaurantId, paymentMethodId);
     }
+
+    @PutMapping("/{restaurantId}/payment-method/{paymentMethodId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void restaurantAddPaymentMethod(@PathVariable UUID restaurantId, @PathVariable int paymentMethodId){
+        restaurantService.restaurantAddPaymentMethod(restaurantId, paymentMethodId);
+    }
 }
