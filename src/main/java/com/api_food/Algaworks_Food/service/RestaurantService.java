@@ -4,6 +4,8 @@ import com.api_food.Algaworks_Food.dto.create.RestaurantCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
 import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
 import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
+import com.api_food.Algaworks_Food.exception.custom.BusinessException;
+import com.api_food.Algaworks_Food.exception.custom.PaymentMethodNotFoundException;
 import com.api_food.Algaworks_Food.exception.custom.RestaurantNotFoundException;
 import com.api_food.Algaworks_Food.mapper.PaymentMethodMapper;
 import com.api_food.Algaworks_Food.mapper.RestaurantMapper;
@@ -11,6 +13,7 @@ import com.api_food.Algaworks_Food.model.CityModel;
 import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.model.PaymentMethodModel;
 import com.api_food.Algaworks_Food.model.RestaurantModel;
+import com.api_food.Algaworks_Food.repository.PaymentMethodRepository;
 import com.api_food.Algaworks_Food.repository.RestaurantRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
@@ -28,14 +31,16 @@ public class RestaurantService {
     private final KitchenService kitchenService;
     private final CityService cityService;
     private final PaymentMethodMapper paymentMethodMapper;
+    private final PaymentMethodRepository paymentMethodRepository;
 
-    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenService kitchenService, CityService cityService, PaymentMethodMapper paymentMethodMapper) {
+    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenService kitchenService, CityService cityService, PaymentMethodMapper paymentMethodMapper, PaymentMethodRepository paymentMethodRepository) {
         this.restaurantMapper = restaurantMapper;
         this.restaurantRepository = restaurantRepository;
         this.stringFormatter = stringFormatter;
         this.kitchenService = kitchenService;
         this.cityService = cityService;
         this.paymentMethodMapper = paymentMethodMapper;
+        this.paymentMethodRepository = paymentMethodRepository;
     }
 
     @Transactional
@@ -117,5 +122,19 @@ public class RestaurantService {
             RestaurantModel restaurant = restaurantRepository.findById(id).orElseThrow(()-> new RestaurantNotFoundException(id));
 
             return restaurant.getPaymentMethods().stream().map(paymentMethodMapper::toListDTO).toList();
+        }
+
+        @Transactional
+        public void restaurantRemovePaymentMethod(UUID restaurantId, int paymentMethodId){
+            RestaurantModel restaurant = restaurantRepository.findById(restaurantId)
+                    .orElseThrow(()-> new RestaurantNotFoundException(restaurantId));
+
+            PaymentMethodModel paymentMethod = paymentMethodRepository.findById(paymentMethodId)
+                    .orElseThrow(()-> new PaymentMethodNotFoundException(paymentMethodId));
+
+            if (!restaurant.getPaymentMethods().contains(paymentMethod)) {
+                throw new BusinessException(String.format("The payment method '%s' is not yet associated with restaurant '%s'.", paymentMethod.getName(), restaurant.getName()));
+            }
+            restaurant.getPaymentMethods().remove(paymentMethod);
         }
 }
