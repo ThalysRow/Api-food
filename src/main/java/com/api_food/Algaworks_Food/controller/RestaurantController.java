@@ -1,6 +1,7 @@
 package com.api_food.Algaworks_Food.controller;
 
 import com.api_food.Algaworks_Food.dto.create.RestaurantCreateDTO;
+import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
 import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
 import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
 import com.api_food.Algaworks_Food.service.RestaurantService;
@@ -61,5 +62,11 @@ public class RestaurantController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void restaurantOff(@PathVariable UUID id){
         restaurantService.deactivateRestaurant(id);
+    }
+
+    @GetMapping("/{id}/payment-method/all")
+    public ResponseEntity<List<PaymentMethodListDTO>> restaurantPaymentMethods(@PathVariable UUID id){
+        List<PaymentMethodListDTO> paymentMethods = restaurantService.restaurantListPaymentMethods(id);
+        return ResponseEntity.status(HttpStatus.OK).body(paymentMethods);
     }
 }
