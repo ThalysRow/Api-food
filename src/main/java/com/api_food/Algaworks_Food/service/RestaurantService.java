@@ -5,6 +5,7 @@ import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
 import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
 import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
 import com.api_food.Algaworks_Food.exception.custom.BusinessException;
+import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.exception.custom.PaymentMethodNotFoundException;
 import com.api_food.Algaworks_Food.exception.custom.RestaurantNotFoundException;
 import com.api_food.Algaworks_Food.mapper.PaymentMethodMapper;
@@ -136,5 +137,19 @@ public class RestaurantService {
                 throw new BusinessException(String.format("The payment method '%s' is not yet associated with restaurant '%s'.", paymentMethod.getName(), restaurant.getName()));
             }
             restaurant.getPaymentMethods().remove(paymentMethod);
+        }
+
+        @Transactional
+        public void restaurantAddPaymentMethod(UUID restaurantId, int paymentMethodId){
+            RestaurantModel restaurant = restaurantRepository.findById(restaurantId)
+                    .orElseThrow(()-> new RestaurantNotFoundException(restaurantId));
+
+            PaymentMethodModel paymentMethod = paymentMethodRepository.findById(paymentMethodId)
+                    .orElseThrow(()-> new PaymentMethodNotFoundException(paymentMethodId));
+
+            if (restaurant.getPaymentMethods().contains(paymentMethod)) {
+                throw new EntityInUseException(String.format("The payment method '%s' is already linked to restaurant '%s'.", paymentMethod.getName(), restaurant.getName()));
+            }
+            restaurant.getPaymentMethods().add(paymentMethod);
         }
 }
