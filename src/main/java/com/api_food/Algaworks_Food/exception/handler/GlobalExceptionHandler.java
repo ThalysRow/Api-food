@@ -295,4 +295,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
+
+    @ExceptionHandler(ProductNotFoundInRestaurantException.class)
+    public ResponseEntity<?> handleProductNotFoundInRestaurantException(ProductNotFoundInRestaurantException ex, WebRequest request){
+        HttpStatusCode status = HttpStatus.NOT_FOUND;
+        ProblemType type = ProblemType.ENTITY_NOT_FOUND;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
+
+        return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
+
+    }
 }
