@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class RestaurantService {
@@ -151,5 +150,9 @@ public class RestaurantService {
                 throw new EntityInUseException(String.format("The payment method '%s' is already linked to restaurant '%s'.", paymentMethod.getName(), restaurant.getName()));
             }
             restaurant.getPaymentMethods().add(paymentMethod);
+        }
+
+        public RestaurantModel returnRestaurantModel(UUID id){
+            return restaurantRepository.findById(id).orElseThrow(()-> new RestaurantNotFoundException(id));
         }
 }
