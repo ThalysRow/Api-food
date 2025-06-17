@@ -21,5 +21,6 @@ public class ProductUpdateDTO {
     @Positive(message = "The price value must be positive")
     @NotNull(message = "The price value must be positive number")
     private BigDecimal price;
+    @NotNull(message = "The field active ins required")
     private Boolean active;
 }
