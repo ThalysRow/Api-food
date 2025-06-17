@@ -32,4 +32,9 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductListDTO> findProductInRestaurant(@PathVariable UUID restaurantId, @PathVariable int productId) {
+        ProductListDTO product = productService.findProductInRestaurant(restaurantId, productId);
+        return ResponseEntity.status(HttpStatus.OK).body(product);
+    }
 }
