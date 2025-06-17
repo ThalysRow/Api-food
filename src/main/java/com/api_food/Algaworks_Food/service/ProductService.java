@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.service;
 
 import com.api_food.Algaworks_Food.dto.create.ProductCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.ProductListDTO;
+import com.api_food.Algaworks_Food.dto.update.ProductUpdateDTO;
 import com.api_food.Algaworks_Food.exception.custom.ProductNotFoundInRestaurantException;
 import com.api_food.Algaworks_Food.mapper.ProductMapper;
 import com.api_food.Algaworks_Food.model.ProductModel;
@@ -61,5 +62,29 @@ public class ProductService {
         return productMapper.createListDTO(findProduct);
     }
 
+    @Transactional
+    public ProductUpdateDTO  updateProductRestaurant(UUID restaurantId, int productId, ProductUpdateDTO data) {
 
+        data.setName(stringFormatter.stringFormated(data.getName()));
+        data.setDescription(stringFormatter.stringFormated(data.getDescription()));
+        data.setPrice(data.getPrice());
+        data.setActive(data.getActive());
+
+        RestaurantModel restaurant = restaurantService.returnRestaurantModel(restaurantId);
+
+        ProductModel findProduct = restaurant.getProducts()
+                .stream().filter(product -> product.getId() == productId)
+                .findFirst()
+                .orElseThrow(()-> new ProductNotFoundInRestaurantException(productId, restaurant.getName()));
+
+        findProduct.setName(data.getName());
+        findProduct.setDescription(data.getDescription());
+        findProduct.setPrice(data.getPrice());
+        findProduct.setActive(data.getActive());
+
+        ProductModel saveProduct = productRepository.save(findProduct);
+
+        return productMapper.createUpdateDTO(saveProduct);
+
+    }
 }
