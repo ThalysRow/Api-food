@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.service;
 
 import com.api_food.Algaworks_Food.dto.create.ProductCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.ProductListDTO;
+import com.api_food.Algaworks_Food.exception.custom.ProductNotFoundInRestaurantException;
 import com.api_food.Algaworks_Food.mapper.ProductMapper;
 import com.api_food.Algaworks_Food.model.ProductModel;
 import com.api_food.Algaworks_Food.model.RestaurantModel;
@@ -47,5 +48,18 @@ public class ProductService {
 
         return restaurant.getProducts().stream().map(productMapper::createListDTO).toList();
     }
+
+    public ProductListDTO findProductInRestaurant(UUID restaurantId, int productId ){
+
+        RestaurantModel restaurant = restaurantService.returnRestaurantModel(restaurantId);
+
+        ProductModel findProduct = restaurant.getProducts()
+                .stream().filter(product -> product.getId() == productId)
+                .findFirst()
+                .orElseThrow(()-> new ProductNotFoundInRestaurantException(productId, restaurant.getName()));
+
+        return productMapper.createListDTO(findProduct);
+    }
+
 
 }
