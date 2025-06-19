@@ -1,6 +1,7 @@
 package com.api_food.Algaworks_Food.service;
 
 import com.api_food.Algaworks_Food.dto.create.UserCreateDTO;
+import com.api_food.Algaworks_Food.dto.list.GroupListDTO;
 import com.api_food.Algaworks_Food.dto.list.UserListDTO;
 import com.api_food.Algaworks_Food.dto.update.UserUpdateDTO;
 import com.api_food.Algaworks_Food.dto.update.UserUpdatePasswordDTO;
@@ -8,8 +9,11 @@ import com.api_food.Algaworks_Food.exception.custom.EmailAlreadyExistsException;
 import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.exception.custom.InvalidCurrentPasswordException;
 import com.api_food.Algaworks_Food.exception.custom.UserNotFoundException;
+import com.api_food.Algaworks_Food.mapper.GroupMapper;
 import com.api_food.Algaworks_Food.mapper.UserMapper;
+import com.api_food.Algaworks_Food.model.GroupModel;
 import com.api_food.Algaworks_Food.model.UserModel;
+import com.api_food.Algaworks_Food.repository.GroupRepository;
 import com.api_food.Algaworks_Food.repository.UserRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,11 +32,19 @@ public class UserService {
     private final UserMapper userMapper;
     private final StringFormatter stringFormatter;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final GroupService groupService;
+    private final GroupMapper  groupMapper;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, StringFormatter stringFormatter) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, StringFormatter stringFormatter, GroupService groupService, GroupMapper groupMapper) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.stringFormatter = stringFormatter;
+        this.groupService = groupService;
+        this.groupMapper = groupMapper;
+    }
+
+    public UserModel returnUserModel(UUID userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     public void verifyEmailInUse(String email){
@@ -59,7 +71,7 @@ public class UserService {
     }
 
     public UserListDTO findUserById(UUID id){
-        UserModel user = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id));
+        UserModel user = this.returnUserModel(id);
         return userMapper.toListDTO(user);
     }
 
@@ -69,7 +81,7 @@ public class UserService {
 
     @Transactional
     public UserUpdateDTO updateUser(UUID id, UserUpdateDTO data){
-        UserModel user = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id));
+        UserModel user = this.returnUserModel(id);
 
         Optional<UserModel> findEmail = userRepository.findUserByEmail(data.getEmail());
 
@@ -90,7 +102,7 @@ public class UserService {
 
     @Transactional
     public void updateUserPassword(UUID id, UserUpdatePasswordDTO data){
-        UserModel user = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id));
+        UserModel user = this.returnUserModel(id);
         if (!passwordEncoder.matches(data.getCurrentPassword(), user.getPassword())){
             throw new InvalidCurrentPasswordException();
         }
@@ -102,7 +114,7 @@ public class UserService {
 
     @Transactional
     public void deleteUser(UUID id){
-        UserModel user = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id));
+        UserModel user = this.returnUserModel(id);
 
         if (user.getGroups() != null && !user.getGroups().isEmpty() ||
                 user.getOrders() != null && !user.getOrders().isEmpty()){
@@ -110,5 +122,22 @@ public class UserService {
         }
 
         userRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void addGroupToUser(UUID userId, int groupId){
+        UserModel user = this.returnUserModel(userId);
+        GroupModel group = groupService.returnGroupModel(groupId);
+
+        if (!user.getGroups().contains(group)){
+            user.getGroups().add(group);
+            userRepository.save(user);
+        }
+    }
+
+    public List<GroupListDTO> listGroupsUserHave(UUID userId){
+        UserModel user = this.returnUserModel(userId);
+
+        return user.getGroups().stream().map(groupMapper::toListDTO).toList();
     }
 }
