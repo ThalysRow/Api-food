@@ -38,8 +38,7 @@ public class PaymentMethodService {
     }
 
     public void verifyPaymentMethodInUse(int id){
-        PaymentMethodModel findPaymentMethod = paymentMethodRepository.findById(id)
-                .orElseThrow(()-> new PaymentMethodNotFoundException(id));
+        PaymentMethodModel findPaymentMethod = this.returnPaymentMethodModel(id);
 
         if (findPaymentMethod.getOrders() != null && !findPaymentMethod.getOrders().isEmpty() ||
                 findPaymentMethod.getRestaurants() != null && !findPaymentMethod.getRestaurants().isEmpty()){
@@ -66,8 +65,7 @@ public class PaymentMethodService {
     }
 
     public PaymentMethodListDTO findPaymentMethodById(int id){
-        PaymentMethodModel payment = paymentMethodRepository.findById(id)
-                .orElseThrow(()-> new  PaymentMethodNotFoundException(id));
+        PaymentMethodModel payment = this.returnPaymentMethodModel(id);
 
         return paymentMethodMapper.toListDTO(payment);
     }
@@ -87,5 +85,10 @@ public class PaymentMethodService {
     public void deletePaymentMethod(int id){
         this.verifyPaymentMethodInUse(id);
         paymentMethodRepository.deleteById(id);
+    }
+
+    public PaymentMethodModel returnPaymentMethodModel(int id){
+        return  paymentMethodRepository.findById(id)
+                .orElseThrow(()-> new PaymentMethodNotFoundException(id));
     }
 }
