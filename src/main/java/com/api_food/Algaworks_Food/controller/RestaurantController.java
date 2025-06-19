@@ -87,4 +87,10 @@ public class RestaurantController {
     public void restaurantOpen(@PathVariable UUID id){
         restaurantService.restaurantOpen(id);
     }
+
+    @PutMapping("/{id}/close")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void restaurantClose(@PathVariable UUID id){
+        restaurantService.closeRestaurant(id);
+    }
 }
