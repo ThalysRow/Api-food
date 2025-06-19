@@ -307,4 +307,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
 
     }
+
+    @ExceptionHandler(PermissionNotFoundException.class)
+    public ResponseEntity<?> handlePermissionNotFoundException(PermissionNotFoundException ex, WebRequest request){
+        HttpStatusCode status = HttpStatus.NOT_FOUND;
+        ProblemType type = ProblemType.ENTITY_NOT_FOUND;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
+
+        return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
+    }
 }
