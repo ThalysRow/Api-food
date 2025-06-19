@@ -3,6 +3,7 @@ package com.api_food.Algaworks_Food.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "payment_methods")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PaymentMethodModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int id;
     @Column(nullable = false)
     private String name;

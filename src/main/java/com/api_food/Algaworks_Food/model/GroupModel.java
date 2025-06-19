@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @Entity
@@ -19,6 +18,7 @@ public class GroupModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int id;
 
     @Column(nullable = false)
@@ -26,13 +26,9 @@ public class GroupModel {
 
     @ManyToMany
     @JsonIgnore
-    @JoinTable(name = "group_permissions", joinColumns = @JoinColumn(name = "group_id"),
-    inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private List<PermissionModel> permissions;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "groups")
     @JsonIgnore
-    @JoinTable(name = "group_users", joinColumns = @JoinColumn(name = "group_id"),
-    inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<UserModel> users;
 }

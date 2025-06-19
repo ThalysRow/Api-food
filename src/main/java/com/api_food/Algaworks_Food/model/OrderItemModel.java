@@ -18,6 +18,7 @@ public class OrderItemModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int id;
 
     @Column(nullable = false, name = "quantity")

@@ -8,8 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +21,7 @@ import java.util.UUID;
 public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @Column(nullable = false)
@@ -42,8 +41,11 @@ public class UserModel {
     @Column(nullable = false)
     private OffsetDateTime dateUpdated;
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany
     @JsonIgnore
+    @JoinTable(name = "group_users",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     private List<GroupModel> groups;
 
     @OneToMany(mappedBy = "user")
