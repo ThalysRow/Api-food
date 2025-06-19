@@ -13,7 +13,6 @@ import com.api_food.Algaworks_Food.mapper.GroupMapper;
 import com.api_food.Algaworks_Food.mapper.UserMapper;
 import com.api_food.Algaworks_Food.model.GroupModel;
 import com.api_food.Algaworks_Food.model.UserModel;
-import com.api_food.Algaworks_Food.repository.GroupRepository;
 import com.api_food.Algaworks_Food.repository.UserRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -135,9 +134,19 @@ public class UserService {
         }
     }
 
-    public List<GroupListDTO> listGroupsUserHave(UUID userId){
+    public List<GroupListDTO> listGroupsFromUser(UUID userId){
         UserModel user = this.returnUserModel(userId);
 
         return user.getGroups().stream().map(groupMapper::toListDTO).toList();
+    }
+
+    @Transactional
+    public void removeGroupFromUser(UUID userId, int groupId){
+        UserModel user = this.returnUserModel(userId);
+        GroupModel group = groupService.returnGroupModel(groupId);
+
+        if(user.getGroups().contains(group)){
+            user.getGroups().removeIf(group::equals);
+        }
     }
 }
