@@ -6,7 +6,6 @@ import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
 import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
 import com.api_food.Algaworks_Food.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
-import com.api_food.Algaworks_Food.exception.custom.PaymentMethodNotFoundException;
 import com.api_food.Algaworks_Food.exception.custom.RestaurantNotFoundException;
 import com.api_food.Algaworks_Food.mapper.PaymentMethodMapper;
 import com.api_food.Algaworks_Food.mapper.RestaurantMapper;
@@ -14,7 +13,6 @@ import com.api_food.Algaworks_Food.model.CityModel;
 import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.model.PaymentMethodModel;
 import com.api_food.Algaworks_Food.model.RestaurantModel;
-import com.api_food.Algaworks_Food.repository.PaymentMethodRepository;
 import com.api_food.Algaworks_Food.repository.RestaurantRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
@@ -31,29 +29,29 @@ public class RestaurantService {
     private final KitchenService kitchenService;
     private final CityService cityService;
     private final PaymentMethodMapper paymentMethodMapper;
-    private final PaymentMethodRepository paymentMethodRepository;
+    private final PaymentMethodService paymentMethodService;
 
-    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenService kitchenService, CityService cityService, PaymentMethodMapper paymentMethodMapper, PaymentMethodRepository paymentMethodRepository) {
+    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenService kitchenService, CityService cityService, PaymentMethodMapper paymentMethodMapper, PaymentMethodService paymentMethodService) {
         this.restaurantMapper = restaurantMapper;
         this.restaurantRepository = restaurantRepository;
         this.stringFormatter = stringFormatter;
         this.kitchenService = kitchenService;
         this.cityService = cityService;
         this.paymentMethodMapper = paymentMethodMapper;
-        this.paymentMethodRepository = paymentMethodRepository;
+        this.paymentMethodService = paymentMethodService;
     }
 
     @Transactional
     public RestaurantCreateDTO newRestaurant(RestaurantCreateDTO restaurant){
 
-         KitchenModel kitchenFinded = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
-         CityModel cityFinded = cityService.verifyCity(restaurant.getAddress().getCity().getId());
+         KitchenModel kitchenFound = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
+         CityModel cityFound = cityService.verifyCity(restaurant.getAddress().getCity().getId());
 
         RestaurantCreateDTO data = stringFormatter.restaurantFieldsFormatter(restaurant);
 
         RestaurantModel newRestaurant = restaurantMapper.toCreateModel(data);
-        newRestaurant.setKitchen(kitchenFinded);
-        newRestaurant.getAddress().setCity(cityFinded);
+        newRestaurant.setKitchen(kitchenFound);
+        newRestaurant.getAddress().setCity(cityFound);
         newRestaurant.setDateCreated(OffsetDateTime.now());
         newRestaurant.setDateUpdated(OffsetDateTime.now());
         RestaurantModel saveRestaurant = restaurantRepository.save(newRestaurant);
@@ -72,18 +70,17 @@ public class RestaurantService {
     @Transactional
     public RestaurantUpdateDTO updateRestaurant(UUID id, RestaurantUpdateDTO restaurant){
 
-        RestaurantModel findRestaurant = restaurantRepository.findById(id)
-                .orElseThrow(()-> new RestaurantNotFoundException(id));
+        RestaurantModel findRestaurant = this.returnRestaurantModel(id);
 
-            KitchenModel kitchenFinded = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
-            CityModel cityFinded = cityService.verifyCity(restaurant.getAddress().getCity().getId());
+            KitchenModel kitchenFound = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
+            CityModel cityFound = cityService.verifyCity(restaurant.getAddress().getCity().getId());
 
         RestaurantUpdateDTO data = stringFormatter.restaurantFieldsFormatter(restaurant);
 
         findRestaurant.setName(data.getName());
         findRestaurant.setDeliveryFee(restaurant.getDeliveryFee());
-        findRestaurant.setKitchen(kitchenFinded);
-        findRestaurant.getAddress().setCity(cityFinded);
+        findRestaurant.setKitchen(kitchenFound);
+        findRestaurant.getAddress().setCity(cityFound);
         findRestaurant.getAddress().setZipcode(data.getAddress().getZipcode());
         findRestaurant.getAddress().setStreet(data.getAddress().getStreet());
         findRestaurant.getAddress().setNumber(data.getAddress().getNumber());
@@ -104,33 +101,29 @@ public class RestaurantService {
 
         @Transactional
         public void activateRestaurant(UUID id){
-            RestaurantModel restaurant = restaurantRepository.findById(id)
-                    .orElseThrow(()-> new RestaurantNotFoundException(id));
+            RestaurantModel restaurant = this.returnRestaurantModel(id);
 
             restaurant.setActive(true);
         }
 
         @Transactional
         public void deactivateRestaurant(UUID id){
-            RestaurantModel restaurant = restaurantRepository.findById(id)
-                    .orElseThrow(()-> new RestaurantNotFoundException(id));
+            RestaurantModel restaurant = this.returnRestaurantModel(id);
 
             restaurant.setActive(false);
         }
 
         public List<PaymentMethodListDTO> restaurantListPaymentMethods(UUID id){
-            RestaurantModel restaurant = restaurantRepository.findById(id).orElseThrow(()-> new RestaurantNotFoundException(id));
+            RestaurantModel restaurant = this.returnRestaurantModel(id);
 
             return restaurant.getPaymentMethods().stream().map(paymentMethodMapper::toListDTO).toList();
         }
 
         @Transactional
         public void restaurantRemovePaymentMethod(UUID restaurantId, int paymentMethodId){
-            RestaurantModel restaurant = restaurantRepository.findById(restaurantId)
-                    .orElseThrow(()-> new RestaurantNotFoundException(restaurantId));
+            RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
 
-            PaymentMethodModel paymentMethod = paymentMethodRepository.findById(paymentMethodId)
-                    .orElseThrow(()-> new PaymentMethodNotFoundException(paymentMethodId));
+            PaymentMethodModel paymentMethod = paymentMethodService.returnPaymentMethodModel(paymentMethodId);
 
             if (!restaurant.getPaymentMethods().contains(paymentMethod)) {
                 throw new BusinessException(String.format("The payment method '%s' is not yet associated with restaurant '%s'.", paymentMethod.getName(), restaurant.getName()));
@@ -140,11 +133,9 @@ public class RestaurantService {
 
         @Transactional
         public void restaurantAddPaymentMethod(UUID restaurantId, int paymentMethodId){
-            RestaurantModel restaurant = restaurantRepository.findById(restaurantId)
-                    .orElseThrow(()-> new RestaurantNotFoundException(restaurantId));
+            RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
 
-            PaymentMethodModel paymentMethod = paymentMethodRepository.findById(paymentMethodId)
-                    .orElseThrow(()-> new PaymentMethodNotFoundException(paymentMethodId));
+            PaymentMethodModel paymentMethod = paymentMethodService.returnPaymentMethodModel(paymentMethodId);
 
             if (restaurant.getPaymentMethods().contains(paymentMethod)) {
                 throw new EntityInUseException(String.format("The payment method '%s' is already linked to restaurant '%s'.", paymentMethod.getName(), restaurant.getName()));
@@ -161,6 +152,16 @@ public class RestaurantService {
         RestaurantModel restaurant = this.returnRestaurantModel(id);
 
         restaurant.setOpen(true);
+        restaurant.setDateUpdated(OffsetDateTime.now());
+        restaurantRepository.save(restaurant);
+        }
+
+        @Transactional
+        public void closeRestaurant(UUID id){
+        RestaurantModel restaurant = this.returnRestaurantModel(id);
+
+        restaurant.setOpen(false);
+        restaurant.setDateUpdated(OffsetDateTime.now());
         restaurantRepository.save(restaurant);
         }
 }
