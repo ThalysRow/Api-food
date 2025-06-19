@@ -62,4 +62,10 @@ public class GroupController {
     public void removeGroupPermissions(@PathVariable int groupId, @PathVariable int permissionId){
         groupService.removeGroupPermissions(groupId, permissionId);
     }
+
+    @PutMapping("/{groupId}/permissions/{permissionId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addGroupPermissions(@PathVariable int groupId, @PathVariable int permissionId){
+        groupService.addGroupPermissions(groupId, permissionId);
+    }
 }
