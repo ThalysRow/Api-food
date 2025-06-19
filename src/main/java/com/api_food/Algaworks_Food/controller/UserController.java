@@ -1,6 +1,7 @@
 package com.api_food.Algaworks_Food.controller;
 
 import com.api_food.Algaworks_Food.dto.create.UserCreateDTO;
+import com.api_food.Algaworks_Food.dto.list.GroupListDTO;
 import com.api_food.Algaworks_Food.dto.list.UserListDTO;
 import com.api_food.Algaworks_Food.dto.update.UserUpdateDTO;
 import com.api_food.Algaworks_Food.dto.update.UserUpdatePasswordDTO;
@@ -56,5 +57,17 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable UUID id){
         userService.deleteUser(id);
+    }
+
+    @PutMapping("{userId}/groups/{groupId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addGroupUser(@PathVariable UUID userId, @PathVariable int groupId){
+        userService.addGroupToUser(userId, groupId);
+    }
+
+    @GetMapping("/{userId}/groups/list")
+    public ResponseEntity<List<GroupListDTO>> listGroupUserHave(@PathVariable UUID userId){
+        List<GroupListDTO> groups = userService.listGroupsUserHave(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(groups);
     }
 }
