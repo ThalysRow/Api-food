@@ -7,6 +7,7 @@ import com.api_food.Algaworks_Food.dto.update.GroupUpdateDTO;
 import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.exception.custom.GroupNameAlreadyExistsException;
 import com.api_food.Algaworks_Food.exception.custom.GroupNotFoundException;
+import com.api_food.Algaworks_Food.exception.custom.PermissionNotFoundException;
 import com.api_food.Algaworks_Food.mapper.GroupMapper;
 import com.api_food.Algaworks_Food.mapper.PermissionMapper;
 import com.api_food.Algaworks_Food.model.GroupModel;
@@ -95,4 +96,13 @@ public class GroupService {
         return permissions.stream().map(permissionMapper::toListDTO).toList();
     }
 
+    @Transactional
+    public void removeGroupPermissions(int groupId, int permissionId){
+        GroupModel group = this.returnGroupModel(groupId);
+        if (group.getPermissions().stream().noneMatch(permission -> permission.getId() == permissionId)){
+            throw new PermissionNotFoundException(permissionId, groupId);
+        }
+        group.getPermissions().removeIf(permission -> permission.getId() == permissionId);
+        groupRepository.save(group);
+    }
 }
