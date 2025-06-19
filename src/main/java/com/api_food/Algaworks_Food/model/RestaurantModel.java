@@ -34,6 +34,9 @@ public class RestaurantModel {
     @Column(nullable = false)
     private Boolean active = Boolean.TRUE;
 
+    @Column(nullable = false)
+    private Boolean open = Boolean.TRUE;
+
     @Embedded
     private AddressModel address;
 
