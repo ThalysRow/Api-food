@@ -155,4 +155,12 @@ public class RestaurantService {
         public RestaurantModel returnRestaurantModel(UUID id){
             return restaurantRepository.findById(id).orElseThrow(()-> new RestaurantNotFoundException(id));
         }
+
+        @Transactional
+        public void restaurantOpen(UUID id){
+        RestaurantModel restaurant = this.returnRestaurantModel(id);
+
+        restaurant.setOpen(true);
+        restaurantRepository.save(restaurant);
+        }
 }
