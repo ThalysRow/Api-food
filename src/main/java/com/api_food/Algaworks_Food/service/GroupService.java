@@ -26,12 +26,14 @@ public class GroupService {
     private final GroupMapper groupMapper;
     private final StringFormatter stringFormatter;
     private final PermissionMapper permissionMapper;
+    private final PermissionService permissionService;
 
-    public GroupService(GroupRepository groupRepository, GroupMapper groupMapper, StringFormatter stringFormatter, PermissionMapper permissionMapper) {
+    public GroupService(GroupRepository groupRepository, GroupMapper groupMapper, StringFormatter stringFormatter, PermissionMapper permissionMapper, PermissionService permissionService) {
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.stringFormatter = stringFormatter;
         this.permissionMapper = permissionMapper;
+        this.permissionService = permissionService;
     }
 
     public void verifyGroupName(String name){
@@ -104,5 +106,16 @@ public class GroupService {
         }
         group.getPermissions().removeIf(permission -> permission.getId() == permissionId);
         groupRepository.save(group);
+    }
+
+    @Transactional
+    public void addGroupPermissions(int groupId, int permissionId){
+        GroupModel group = this.returnGroupModel(groupId);
+        PermissionModel permission = permissionService.returnPermissionModel(permissionId);
+
+        if (group.getPermissions().stream().noneMatch(perm -> perm.getId() == permissionId)){
+            group.getPermissions().add(permission);
+            groupRepository.save(group);
+        }
     }
 }
