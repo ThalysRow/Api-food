@@ -81,4 +81,10 @@ public class RestaurantController {
     public void restaurantAddPaymentMethod(@PathVariable UUID restaurantId, @PathVariable int paymentMethodId){
         restaurantService.restaurantAddPaymentMethod(restaurantId, paymentMethodId);
     }
+
+    @PutMapping("/{id}/open")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void restaurantOpen(@PathVariable UUID id){
+        restaurantService.restaurantOpen(id);
+    }
 }
