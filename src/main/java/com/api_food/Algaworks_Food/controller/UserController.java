@@ -67,7 +67,13 @@ public class UserController {
 
     @GetMapping("/{userId}/groups/list")
     public ResponseEntity<List<GroupListDTO>> listGroupUserHave(@PathVariable UUID userId){
-        List<GroupListDTO> groups = userService.listGroupsUserHave(userId);
+        List<GroupListDTO> groups = userService.listGroupsFromUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(groups);
+    }
+
+    @DeleteMapping("{userId}/groups/{groupId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeGroupFromUser(@PathVariable UUID userId, @PathVariable int groupId){
+        userService.removeGroupFromUser(userId, groupId);
     }
 }
