@@ -52,8 +52,14 @@ public class GroupController {
     }
 
     @GetMapping("{groupId}/permissions")
-    public ResponseEntity<List<PermissionListDTO>> listPermissions(@PathVariable int groupId){
+    public ResponseEntity<List<PermissionListDTO>> listGroupPermissions(@PathVariable int groupId){
         List<PermissionListDTO> permissions = groupService.listGroupPermissions(groupId);
         return ResponseEntity.status(HttpStatus.OK).body(permissions);
+    }
+
+    @DeleteMapping("/{groupId}/permissions/{permissionId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeGroupPermissions(@PathVariable int groupId, @PathVariable int permissionId){
+        groupService.removeGroupPermissions(groupId, permissionId);
     }
 }
