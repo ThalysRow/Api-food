@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.controller;
 
 import com.api_food.Algaworks_Food.dto.create.GroupCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.GroupListDTO;
+import com.api_food.Algaworks_Food.dto.list.PermissionListDTO;
 import com.api_food.Algaworks_Food.dto.update.GroupUpdateDTO;
 import com.api_food.Algaworks_Food.service.GroupService;
 import jakarta.validation.Valid;
@@ -48,5 +49,11 @@ public class GroupController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGroup(@PathVariable int id){
         groupService.deleteGroup(id);
+    }
+
+    @GetMapping("{groupId}/permissions")
+    public ResponseEntity<List<PermissionListDTO>> listPermissions(@PathVariable int groupId){
+        List<PermissionListDTO> permissions = groupService.listGroupPermissions(groupId);
+        return ResponseEntity.status(HttpStatus.OK).body(permissions);
     }
 }
