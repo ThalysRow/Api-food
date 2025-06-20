@@ -112,4 +112,16 @@ public class RestaurantController {
     public void removeResponsibleUser(@PathVariable UUID restaurantId, @PathVariable UUID userId){
         restaurantService.removeResponsibleUser(restaurantId, userId);
     }
+
+    @PutMapping("/activates")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void activateRestaurants(@RequestBody List<UUID> ids){
+        restaurantService.activateRestaurants(ids);
+    }
+
+    @DeleteMapping("/activates")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deactivateRestaurants(@RequestBody List<UUID> ids){
+        restaurantService.deactivateRestaurants(ids);
+    }
 }
