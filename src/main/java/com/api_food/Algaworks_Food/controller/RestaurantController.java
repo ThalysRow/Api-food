@@ -97,7 +97,7 @@ public class RestaurantController {
 
     @GetMapping("/{id}/responsibles")
     public ResponseEntity<List<UserListDTO>> listResponsiblesForRestaurant(@PathVariable UUID id){
-        List<UserListDTO> users = restaurantService.listResponsiblesForRestaurant(id);
+        List<UserListDTO> users = restaurantService.listResponsibleUsersForRestaurant(id);
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 }
