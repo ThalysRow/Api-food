@@ -169,7 +169,7 @@ public class RestaurantService {
         restaurantRepository.save(restaurant);
         }
 
-        public List<UserListDTO> listResponsiblesForRestaurant(UUID id){
+        public List<UserListDTO> listResponsibleUsersForRestaurant(UUID id){
             RestaurantModel restaurant = this.returnRestaurantModel(id);
             return restaurant.getUsers().stream().map(userMapper::toListDTO).toList();
         }

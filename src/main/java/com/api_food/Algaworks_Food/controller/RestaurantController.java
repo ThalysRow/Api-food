@@ -3,6 +3,7 @@ package com.api_food.Algaworks_Food.controller;
 import com.api_food.Algaworks_Food.dto.create.RestaurantCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
 import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
+import com.api_food.Algaworks_Food.dto.list.UserListDTO;
 import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
 import com.api_food.Algaworks_Food.service.RestaurantService;
 import jakarta.validation.Valid;
@@ -92,5 +93,11 @@ public class RestaurantController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void restaurantClose(@PathVariable UUID id){
         restaurantService.closeRestaurant(id);
+    }
+
+    @GetMapping("/{id}/responsibles")
+    public ResponseEntity<List<UserListDTO>> listResponsiblesForRestaurant(@PathVariable UUID id){
+        List<UserListDTO> users = restaurantService.listResponsiblesForRestaurant(id);
+        return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 }
