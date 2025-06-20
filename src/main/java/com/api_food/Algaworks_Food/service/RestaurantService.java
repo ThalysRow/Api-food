@@ -11,10 +11,7 @@ import com.api_food.Algaworks_Food.exception.custom.RestaurantNotFoundException;
 import com.api_food.Algaworks_Food.mapper.PaymentMethodMapper;
 import com.api_food.Algaworks_Food.mapper.RestaurantMapper;
 import com.api_food.Algaworks_Food.mapper.UserMapper;
-import com.api_food.Algaworks_Food.model.CityModel;
-import com.api_food.Algaworks_Food.model.KitchenModel;
-import com.api_food.Algaworks_Food.model.PaymentMethodModel;
-import com.api_food.Algaworks_Food.model.RestaurantModel;
+import com.api_food.Algaworks_Food.model.*;
 import com.api_food.Algaworks_Food.repository.RestaurantRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
@@ -33,8 +30,9 @@ public class RestaurantService {
     private final PaymentMethodMapper paymentMethodMapper;
     private final PaymentMethodService paymentMethodService;
     private final UserMapper userMapper;
+    private final UserService userService;
 
-    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenService kitchenService, CityService cityService, PaymentMethodMapper paymentMethodMapper, PaymentMethodService paymentMethodService, UserMapper userMapper) {
+    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenService kitchenService, CityService cityService, PaymentMethodMapper paymentMethodMapper, PaymentMethodService paymentMethodService, UserMapper userMapper, UserService userService) {
         this.restaurantMapper = restaurantMapper;
         this.restaurantRepository = restaurantRepository;
         this.stringFormatter = stringFormatter;
@@ -43,6 +41,7 @@ public class RestaurantService {
         this.paymentMethodMapper = paymentMethodMapper;
         this.paymentMethodService = paymentMethodService;
         this.userMapper = userMapper;
+        this.userService = userService;
     }
 
     @Transactional
@@ -172,5 +171,15 @@ public class RestaurantService {
         public List<UserListDTO> listResponsibleUsersForRestaurant(UUID id){
             RestaurantModel restaurant = this.returnRestaurantModel(id);
             return restaurant.getUsers().stream().map(userMapper::toListDTO).toList();
+        }
+
+        @Transactional
+        public void addResponsibleUser(UUID restaurantId, UUID userId){
+        RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
+            UserModel user = userService.returnUserModel(userId);
+
+            if(!user.getRestaurants().contains(restaurant)){
+                user.getRestaurants().add(restaurant);
+            }
         }
 }
