@@ -106,4 +106,10 @@ public class RestaurantController {
     public void addResponsibleUser(@PathVariable UUID restaurantId, @PathVariable UUID userId){
         restaurantService.addResponsibleUser(restaurantId, userId);
     }
+
+    @DeleteMapping("/{restaurantId}/responsibles/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeResponsibleUser(@PathVariable UUID restaurantId, @PathVariable UUID userId){
+        restaurantService.removeResponsibleUser(restaurantId, userId);
+    }
 }
