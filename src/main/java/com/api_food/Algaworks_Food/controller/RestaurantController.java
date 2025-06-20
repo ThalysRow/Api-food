@@ -100,4 +100,10 @@ public class RestaurantController {
         List<UserListDTO> users = restaurantService.listResponsibleUsersForRestaurant(id);
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
+
+    @PutMapping("/{restaurantId}/responsibles/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addResponsibleUser(@PathVariable UUID restaurantId, @PathVariable UUID userId){
+        restaurantService.addResponsibleUser(restaurantId, userId);
+    }
 }
