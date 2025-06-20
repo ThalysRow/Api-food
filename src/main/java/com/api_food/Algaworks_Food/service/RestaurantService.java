@@ -182,4 +182,15 @@ public class RestaurantService {
                 user.getRestaurants().add(restaurant);
             }
         }
+
+        @Transactional
+        public void removeResponsibleUser(UUID restaurantId, UUID userId){
+        RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
+        UserModel user = userService.returnUserModel(userId);
+
+        if(user.getRestaurants().contains(restaurant)){
+            user.getRestaurants().remove(restaurant);
+            }
+
+        }
 }
