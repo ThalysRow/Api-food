@@ -1,8 +1,10 @@
 package com.api_food.Algaworks_Food.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -15,10 +17,12 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "restaurants")
 public class RestaurantModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @Column(nullable = false)
@@ -58,4 +62,8 @@ public class RestaurantModel {
 
     @OneToMany(mappedBy = "restaurant")
     private List<OrderModel> orders;
+
+    @ManyToMany(mappedBy = "restaurants")
+    @JsonIgnore
+    private List<UserModel> users;
 }
