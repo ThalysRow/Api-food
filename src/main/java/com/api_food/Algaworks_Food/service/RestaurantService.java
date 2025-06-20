@@ -191,6 +191,23 @@ public class RestaurantService {
         if(user.getRestaurants().contains(restaurant)){
             user.getRestaurants().remove(restaurant);
             }
-
         }
+
+        @Transactional
+        public void activateRestaurants(List<UUID> ids){
+        try {
+            ids.forEach(this::activateRestaurant);
+        }catch (RestaurantNotFoundException e){
+            throw new BusinessException(e.getMessage());
+            }
+        }
+
+        @Transactional
+        public void deactivateRestaurants(List<UUID> ids){
+        try {
+            ids.forEach(this::deactivateRestaurant);
+        } catch (RestaurantNotFoundException e){
+            throw new BusinessException(e.getMessage());
+        }
+    }
 }
