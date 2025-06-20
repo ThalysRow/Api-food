@@ -3,12 +3,14 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.RestaurantCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
 import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
+import com.api_food.Algaworks_Food.dto.list.UserListDTO;
 import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
 import com.api_food.Algaworks_Food.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.exception.custom.RestaurantNotFoundException;
 import com.api_food.Algaworks_Food.mapper.PaymentMethodMapper;
 import com.api_food.Algaworks_Food.mapper.RestaurantMapper;
+import com.api_food.Algaworks_Food.mapper.UserMapper;
 import com.api_food.Algaworks_Food.model.CityModel;
 import com.api_food.Algaworks_Food.model.KitchenModel;
 import com.api_food.Algaworks_Food.model.PaymentMethodModel;
@@ -30,8 +32,9 @@ public class RestaurantService {
     private final CityService cityService;
     private final PaymentMethodMapper paymentMethodMapper;
     private final PaymentMethodService paymentMethodService;
+    private final UserMapper userMapper;
 
-    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenService kitchenService, CityService cityService, PaymentMethodMapper paymentMethodMapper, PaymentMethodService paymentMethodService) {
+    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenService kitchenService, CityService cityService, PaymentMethodMapper paymentMethodMapper, PaymentMethodService paymentMethodService, UserMapper userMapper) {
         this.restaurantMapper = restaurantMapper;
         this.restaurantRepository = restaurantRepository;
         this.stringFormatter = stringFormatter;
@@ -39,6 +42,7 @@ public class RestaurantService {
         this.cityService = cityService;
         this.paymentMethodMapper = paymentMethodMapper;
         this.paymentMethodService = paymentMethodService;
+        this.userMapper = userMapper;
     }
 
     @Transactional
@@ -163,5 +167,10 @@ public class RestaurantService {
         restaurant.setOpen(false);
         restaurant.setDateUpdated(OffsetDateTime.now());
         restaurantRepository.save(restaurant);
+        }
+
+        public List<UserListDTO> listResponsiblesForRestaurant(UUID id){
+            RestaurantModel restaurant = this.returnRestaurantModel(id);
+            return restaurant.getUsers().stream().map(userMapper::toListDTO).toList();
         }
 }
