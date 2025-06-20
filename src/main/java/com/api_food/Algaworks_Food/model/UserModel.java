@@ -50,4 +50,11 @@ public class UserModel {
 
     @OneToMany(mappedBy = "user")
     private List<OrderModel> orders;
+
+    @ManyToMany
+    @JsonIgnore
+    @JoinTable(name = "restaurant_users",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "restaurant_id"))
+    private List<RestaurantModel> restaurants;
 }
