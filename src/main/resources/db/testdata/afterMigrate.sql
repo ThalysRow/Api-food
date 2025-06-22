@@ -1,6 +1,7 @@
 -- This script is used to populate the database with initial data after migration
 
 delete from restaurant_payment_methods;
+delete from order_items;
 delete from products;
 delete from group_users;
 delete from group_permissions;
@@ -22,6 +23,7 @@ ALTER SEQUENCE groups_id_seq RESTART WITH 1;
 ALTER SEQUENCE permissions_id_seq RESTART WITH 1;
 ALTER SEQUENCE products_id_seq RESTART WITH 1;
 ALTER SEQUENCE orders_id_seq RESTART WITH 1;
+ALTER SEQUENCE order_items_id_seq RESTART WITH 1;
 
  insert into kitchens (id, name) values
    ('11111111-1111-1111-1111-111111111111', 'Italian'),
