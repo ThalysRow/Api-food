@@ -1,5 +1,7 @@
 package com.api_food.Algaworks_Food.dto.list;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,8 +14,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RestaurantListDTO {
-
+    @NotNull(message = "The field id is required")
     private UUID id;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String name;
     private BigDecimal deliveryFee;
     private KitchenListDTO kitchen;
@@ -22,4 +25,5 @@ public class RestaurantListDTO {
     private Boolean active;
     private Boolean open;
     private AddressListDTO address;
+    private UserListDTO user;
 }
