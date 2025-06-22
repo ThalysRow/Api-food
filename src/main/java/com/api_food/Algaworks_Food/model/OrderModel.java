@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -26,13 +26,13 @@ public class OrderModel {
     private int id;
 
     @Column(nullable = false, name = "subtotal")
-    private BigInteger subtotal;
+    private BigDecimal subtotal;
 
     @Column(nullable = false, name = "delivery_fee")
-    private BigInteger deliveryFee;
+    private BigDecimal deliveryFee;
 
     @Column(nullable = false, name = "total_value")
-    private BigInteger totalValue;
+    private BigDecimal totalValue;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
