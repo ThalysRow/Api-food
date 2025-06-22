@@ -2,9 +2,11 @@
 
 delete from restaurant_payment_methods;
 delete from products;
-delete from restaurants;
 delete from group_users;
 delete from group_permissions;
+delete from orders;
+
+delete from restaurants;
 delete from users;
 delete from permissions;
 delete from groups;
@@ -19,6 +21,7 @@ ALTER SEQUENCE payment_methods_id_seq RESTART WITH 1;
 ALTER SEQUENCE groups_id_seq RESTART WITH 1;
 ALTER SEQUENCE permissions_id_seq RESTART WITH 1;
 ALTER SEQUENCE products_id_seq RESTART WITH 1;
+ALTER SEQUENCE orders_id_seq RESTART WITH 1;
 
  insert into kitchens (id, name) values
    ('11111111-1111-1111-1111-111111111111', 'Italian'),
