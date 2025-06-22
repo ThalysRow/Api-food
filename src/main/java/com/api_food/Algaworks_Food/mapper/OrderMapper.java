@@ -2,10 +2,12 @@ package com.api_food.Algaworks_Food.mapper;
 
 import com.api_food.Algaworks_Food.dto.create.OrderCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.ListProductInOrderDTO;
+import com.api_food.Algaworks_Food.dto.list.OrderListDTO;
 import com.api_food.Algaworks_Food.model.OrderItemModel;
 import com.api_food.Algaworks_Food.model.OrderModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.List;
 
@@ -14,9 +16,12 @@ public interface OrderMapper {
     @Mapping(target = "itens", source = "itens")
     OrderModel toCreateModel(OrderCreateDTO orderCreateDTO);
 
+    OrderListDTO toListDTO(OrderModel orderModel);
+
     @Mapping(target = "itens", source = "itens")
     OrderCreateDTO toCreateDTO(OrderModel orderModel);
 
+    @Named("mapOrderItems")
     List<ListProductInOrderDTO> mapOrderItems(List<OrderItemModel> itens);
 
     @Mapping(target = "id", source = "product.id")
