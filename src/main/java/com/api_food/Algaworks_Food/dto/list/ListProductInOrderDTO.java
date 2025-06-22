@@ -17,12 +17,28 @@ public class ListProductInOrderDTO {
     @NotNull(message = "The field id is required")
     @Positive(message = "The field id must be a positive number")
     private int id;
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String name;
+
     @JsonIgnore
     private String description;
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private BigDecimal price;
+
     @JsonIgnore
     private Boolean active;
+
+    @NotNull(message = "The quantity field is required")
+    @Positive(message = "The quantity field must be a positive number")
+    private BigDecimal quantity;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private BigDecimal unitPrice;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private BigDecimal totalPrice;
+
+    private String observations;
 }
