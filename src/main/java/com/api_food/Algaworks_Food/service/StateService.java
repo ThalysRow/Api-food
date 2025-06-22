@@ -3,6 +3,7 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.StateCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.StateListDTO;
 import com.api_food.Algaworks_Food.dto.update.StateUpdateDTO;
+import com.api_food.Algaworks_Food.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.exception.custom.StateNotFoundException;
 import com.api_food.Algaworks_Food.mapper.StateMapper;
@@ -38,18 +39,18 @@ public class StateService {
     }
 
     public StateListDTO findStateById(int id){
-        StateModel stateFinded = stateRepository.findById(id).orElseThrow(()-> new StateNotFoundException(id));
-        return stateMapper.toCreateListDTO(stateFinded);
+        StateModel stateFound = this.returnStateModel(id);
+        return stateMapper.toCreateListDTO(stateFound);
     }
 
     @Transactional
     public void delState(int id){
-        StateModel stateFinded = stateRepository.findById(id).orElseThrow(()-> new StateNotFoundException(id));
+        StateModel stateFound = this.returnStateModel(id);
 
-        if(stateFinded.getCities() != null && !stateFinded.getCities().isEmpty()){
-            throw new EntityInUseException("state", stateFinded.getId(), "cities");
+        if(stateFound.getCities() != null && !stateFound.getCities().isEmpty()){
+            throw new EntityInUseException("state", stateFound.getId(), "cities");
         }
-        stateRepository.deleteById(stateFinded.getId());
+        stateRepository.deleteById(stateFound.getId());
     }
 
     public List<StateListDTO> listStates(){
@@ -58,12 +59,20 @@ public class StateService {
 
     @Transactional
     public StateUpdateDTO updateState(int id, StateUpdateDTO state){
-        StateListDTO stateFinded = this.findStateById(id);
+        StateModel stateFound = this.returnStateModel(id);
         String nameFormated = stringFormatter.stringFormated(state.getName());
-        stateFinded.setName(nameFormated);
+        stateFound.setName(nameFormated);
 
-        StateModel newState = stateMapper.toUpdateModel(stateFinded);
-        StateModel saveState = stateRepository.save(newState);
+        StateModel saveState = stateRepository.save(stateFound);
         return stateMapper.toUpdateDTO(saveState);
+    }
+
+    public StateModel returnStateModel(int id){
+        return stateRepository.findById(id).orElseThrow(()-> new StateNotFoundException(id));
+    }
+
+    public StateModel verifyStateField(int id){
+        return  stateRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("state", id));
     }
 }

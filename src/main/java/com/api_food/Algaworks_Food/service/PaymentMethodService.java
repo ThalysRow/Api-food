@@ -3,6 +3,7 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.PaymentMethodCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
 import com.api_food.Algaworks_Food.dto.update.PaymentMethodUpdateDTO;
+import com.api_food.Algaworks_Food.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.exception.custom.PaymentMethodAlreadyExistsException;
 import com.api_food.Algaworks_Food.exception.custom.PaymentMethodNotFoundException;
@@ -72,12 +73,11 @@ public class PaymentMethodService {
 
     @Transactional
     public PaymentMethodUpdateDTO updatePaymentMethod(int id, PaymentMethodUpdateDTO data){
-        PaymentMethodListDTO payment = this.findPaymentMethodById(id);
+        PaymentMethodModel payment = this.returnPaymentMethodModel(id);
         String nameFormated = stringFormatter.stringFormated(data.getName()).toUpperCase();
         this.verifyPaymentMethodName(nameFormated);
         payment.setName(nameFormated);
-        PaymentMethodModel updatePaymentMethod = paymentMethodMapper.toSaveModel(payment);
-        PaymentMethodModel saveUpdatePaymentMethod = paymentMethodRepository.save(updatePaymentMethod);
+        PaymentMethodModel saveUpdatePaymentMethod = paymentMethodRepository.save(payment);
         return paymentMethodMapper.toUpdateDTO(saveUpdatePaymentMethod);
     }
 
@@ -90,5 +90,10 @@ public class PaymentMethodService {
     public PaymentMethodModel returnPaymentMethodModel(int id){
         return  paymentMethodRepository.findById(id)
                 .orElseThrow(()-> new PaymentMethodNotFoundException(id));
+    }
+
+    public PaymentMethodModel verifyPaymentField(int id){
+        return   paymentMethodRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("payment", id));
     }
 }

@@ -5,10 +5,7 @@ import com.api_food.Algaworks_Food.dto.list.GroupListDTO;
 import com.api_food.Algaworks_Food.dto.list.UserListDTO;
 import com.api_food.Algaworks_Food.dto.update.UserUpdateDTO;
 import com.api_food.Algaworks_Food.dto.update.UserUpdatePasswordDTO;
-import com.api_food.Algaworks_Food.exception.custom.EmailAlreadyExistsException;
-import com.api_food.Algaworks_Food.exception.custom.EntityInUseException;
-import com.api_food.Algaworks_Food.exception.custom.InvalidCurrentPasswordException;
-import com.api_food.Algaworks_Food.exception.custom.UserNotFoundException;
+import com.api_food.Algaworks_Food.exception.custom.*;
 import com.api_food.Algaworks_Food.mapper.GroupMapper;
 import com.api_food.Algaworks_Food.mapper.UserMapper;
 import com.api_food.Algaworks_Food.model.GroupModel;
@@ -148,5 +145,9 @@ public class UserService {
         if(user.getGroups().contains(group)){
             user.getGroups().removeIf(group::equals);
         }
+    }
+
+    public UserModel verifyUserField(UUID id){
+        return userRepository.findById(id).orElseThrow(() -> new BusinessException("user", id));
     }
 }

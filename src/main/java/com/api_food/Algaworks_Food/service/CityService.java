@@ -9,7 +9,6 @@ import com.api_food.Algaworks_Food.mapper.CityMapper;
 import com.api_food.Algaworks_Food.model.CityModel;
 import com.api_food.Algaworks_Food.model.StateModel;
 import com.api_food.Algaworks_Food.repository.CityRepository;
-import com.api_food.Algaworks_Food.repository.StateRepository;
 import com.api_food.Algaworks_Food.utils.StringFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,20 +20,19 @@ public class CityService {
     private final CityMapper cityMapper;
     private final CityRepository cityRepository;
     private final StringFormatter stringFormatter;
-    private final StateRepository stateRepository;
+    private final StateService stateService;
 
-    public CityService(CityMapper cityMapper, CityRepository cityRepository, StringFormatter stringFormatter, StateRepository stateRepository) {
+    public CityService(CityMapper cityMapper, CityRepository cityRepository, StringFormatter stringFormatter, StateService stateService) {
         this.cityMapper = cityMapper;
         this.cityRepository = cityRepository;
         this.stringFormatter = stringFormatter;
-        this.stateRepository = stateRepository;
+        this.stateService = stateService;
     }
 
     @Transactional
     public CityCreateDTO addCity(CityCreateDTO city){
 
-        StateModel state = stateRepository.findById(city.getState().getId())
-                .orElseThrow(()-> new BusinessException("state", city.getState().getId()));
+        StateModel state = stateService.verifyStateField(city.getId());
 
         String nameFormated = stringFormatter.stringFormated(city.getName());
 
@@ -53,8 +51,8 @@ public class CityService {
     }
 
     public CityListDTO findCity(int id){
-        CityModel cityFinded = cityRepository.findById(id).orElseThrow(()-> new CityNotFoundException(id));
-        return cityMapper.toCreateListDTO(cityFinded);
+        CityModel cityFound = this.returnCityModel(id);
+        return cityMapper.toCreateListDTO(cityFound);
     }
 
     @Transactional
@@ -65,20 +63,22 @@ public class CityService {
 
     @Transactional
     public CityUpdateDTO updateCity(int id, CityUpdateDTO city){
-        CityListDTO cityFinded = this.findCity(id);
-        StateModel state = stateRepository.findById(city.getState().getId())
-                .orElseThrow(()-> new BusinessException("state", city.getState().getId()));
+        CityModel cityFound = this.returnCityModel(id);
+        StateModel state = stateService.verifyStateField(city.getState().getId());
 
         String nameFormated = stringFormatter.stringFormated(city.getName());
 
-        CityModel updateCity = cityMapper.toUpdateModel(cityFinded);
-        updateCity.setName(nameFormated);
-        updateCity.setState(state);
-        CityModel saveCity = cityRepository.save(updateCity);
+        cityFound.setName(nameFormated);
+        cityFound.setState(state);
+        CityModel saveCity = cityRepository.save(cityFound);
         return cityMapper.toUpdateDTO(saveCity);
     }
 
-    public CityModel verifyCity(int id){
+    public CityModel returnCityModel(int id){
+        return cityRepository.findById(id).orElseThrow(()-> new CityNotFoundException(id));
+    }
+
+    public CityModel verifyCityField(int id){
         return cityRepository.findById(id).orElseThrow(()-> new BusinessException("City", id));
     }
 }

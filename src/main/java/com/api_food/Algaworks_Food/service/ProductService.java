@@ -3,6 +3,7 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.dto.create.ProductCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.ProductListDTO;
 import com.api_food.Algaworks_Food.dto.update.ProductUpdateDTO;
+import com.api_food.Algaworks_Food.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.exception.custom.ProductNotFoundInRestaurantException;
 import com.api_food.Algaworks_Food.mapper.ProductMapper;
 import com.api_food.Algaworks_Food.model.ProductModel;
@@ -86,5 +87,18 @@ public class ProductService {
 
         return productMapper.createUpdateDTO(saveProduct);
 
+    }
+
+    public void getProductModel(int productId){
+        productRepository.findById(productId).orElseThrow(()-> new BusinessException("product", productId));
+    }
+
+    @Transactional
+    public void verifyProductsField(List<Integer> productsId){
+        productsId.forEach(this::getProductModel);
+    }
+
+    public ProductModel returnProductModel(int id){
+        return productRepository.findById(id).orElseThrow(()-> new BusinessException("product", id));
     }
 }

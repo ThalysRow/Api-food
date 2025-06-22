@@ -48,7 +48,7 @@ public class RestaurantService {
     public RestaurantCreateDTO newRestaurant(RestaurantCreateDTO restaurant){
 
          KitchenModel kitchenFound = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
-         CityModel cityFound = cityService.verifyCity(restaurant.getAddress().getCity().getId());
+         CityModel cityFound = cityService.verifyCityField(restaurant.getAddress().getCity().getId());
 
         RestaurantCreateDTO data = stringFormatter.restaurantFieldsFormatter(restaurant);
 
@@ -62,7 +62,7 @@ public class RestaurantService {
     }
 
     public RestaurantListDTO findRestaurantById(UUID id){
-        RestaurantModel restaurant = restaurantRepository.findById(id).orElseThrow(()-> new RestaurantNotFoundException(id));
+        RestaurantModel restaurant = this.returnRestaurantModel(id);
         return restaurantMapper.toListDTO(restaurant);
     }
 
@@ -76,7 +76,7 @@ public class RestaurantService {
         RestaurantModel findRestaurant = this.returnRestaurantModel(id);
 
             KitchenModel kitchenFound = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
-            CityModel cityFound = cityService.verifyCity(restaurant.getAddress().getCity().getId());
+            CityModel cityFound = cityService.verifyCityField(restaurant.getAddress().getCity().getId());
 
         RestaurantUpdateDTO data = stringFormatter.restaurantFieldsFormatter(restaurant);
 
@@ -210,4 +210,8 @@ public class RestaurantService {
             throw new BusinessException(e.getMessage());
         }
     }
+
+        public RestaurantModel verifyFieldRestaurant(UUID id){
+        return restaurantRepository.findById(id).orElseThrow(()-> new BusinessException("restaurant", id));
+        }
 }
