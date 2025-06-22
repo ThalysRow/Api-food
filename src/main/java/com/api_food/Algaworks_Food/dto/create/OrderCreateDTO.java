@@ -1,5 +1,6 @@
 package com.api_food.Algaworks_Food.dto.create;
 
+import com.api_food.Algaworks_Food.dto.list.ListProductInOrderDTO;
 import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
 import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
 import com.api_food.Algaworks_Food.dto.list.UserListDTO;
@@ -44,5 +45,5 @@ public class OrderCreateDTO {
     @Valid
     private AddressCreateDTO deliveryAddress;
     @Valid
-    private List<OrderItemCreateDTO> itens;
+    private List<ListProductInOrderDTO> itens;
 }
