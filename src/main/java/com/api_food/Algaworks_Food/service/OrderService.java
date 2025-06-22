@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -44,7 +45,7 @@ public class OrderService {
         PaymentMethodModel paymentMethod = paymentMethodService.verifyPaymentField(data.getPaymentMethod().getId());
         CityModel city = cityService.verifyCityField(data.getDeliveryAddress().getCity().getId());
 
-        List<Integer> productsId = data.getItens().stream().map(productId -> productId.getProduct().getId()).toList();
+        List<Integer> productsId = data.getItens().stream().map(productId -> productId.getId()).toList();
 
         productService.verifyProductsField(productsId);
 
@@ -53,7 +54,7 @@ public class OrderService {
 
         for (int i = 0; i < data.getItens().size(); i++) {
             BigDecimal quantity = data.getItens().get(i).getQuantity();
-            int productId = data.getItens().get(i).getProduct().getId();
+            int productId = data.getItens().get(i).getId();
 
             ProductListDTO product = productService.findProductInRestaurant(restaurant.getId(), productId);
 
@@ -78,14 +79,13 @@ public class OrderService {
         addOrder.setDateDelivered(OffsetDateTime.now());
         addOrder.setItens(data.getItens().stream().map(
                 item -> {
-                    ProductModel product = productService.returnProductModel(item.getProduct().getId());
+                    ProductModel product = productService.returnProductModel(item.getId());
                     OrderItemModel orderItem = new OrderItemModel();
                     orderItem.setProduct(product);
                     orderItem.setQuantity(item.getQuantity());
                     orderItem.setUnitPrice(product.getPrice());
                     orderItem.setTotalPrice(product.getPrice().multiply(item.getQuantity()));
                     orderItem.setObservations(stringFormatter.stringFormated(item.getObservations()));
-                    orderItem.setOrder(addOrder);
                     return orderItem;
                 }).toList());
 
