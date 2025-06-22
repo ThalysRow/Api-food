@@ -1,8 +1,10 @@
 package com.api_food.Algaworks_Food.service;
 
 import com.api_food.Algaworks_Food.dto.create.OrderCreateDTO;
+import com.api_food.Algaworks_Food.dto.list.OrderListDTO;
 import com.api_food.Algaworks_Food.dto.list.ProductListDTO;
 import com.api_food.Algaworks_Food.enums.OrderStatus;
+import com.api_food.Algaworks_Food.exception.custom.OrderNotFoundException;
 import com.api_food.Algaworks_Food.mapper.OrderMapper;
 import com.api_food.Algaworks_Food.model.*;
 import com.api_food.Algaworks_Food.repository.OrderRepository;
@@ -13,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -86,6 +87,7 @@ public class OrderService {
                     orderItem.setUnitPrice(product.getPrice());
                     orderItem.setTotalPrice(product.getPrice().multiply(item.getQuantity()));
                     orderItem.setObservations(stringFormatter.stringFormated(item.getObservations()));
+                    orderItem.setOrder(addOrder);
                     return orderItem;
                 }).toList());
 
@@ -94,4 +96,7 @@ public class OrderService {
         return orderMapper.toCreateDTO(savedOrder);
     }
 
+    public OrderListDTO findOrderById(Integer id){
+        return orderRepository.findById(id).map(orderMapper::toListDTO).orElseThrow(() -> new OrderNotFoundException(id));
+    }
 }
