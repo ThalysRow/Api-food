@@ -1,7 +1,9 @@
 package com.api_food.Algaworks_Food.utils;
 
+import com.api_food.Algaworks_Food.dto.create.AddressCreateDTO;
 import com.api_food.Algaworks_Food.dto.create.RestaurantCreateDTO;
 import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
+import com.api_food.Algaworks_Food.model.AddressModel;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,6 +47,16 @@ public class StringFormatter {
         data.getAddress().setNumber(stringFormated(data.getAddress().getNumber()));
         data.getAddress().setComplement(stringFormated(data.getAddress().getComplement()));
         data.getAddress().setNeighborhood(stringFormated(data.getAddress().getNeighborhood()));
+
+        return data;
+    }
+
+    public AddressModel addressFieldsFormatter(AddressModel data){
+        data.setZipcode(stringFormated(data.getZipcode()));
+        data.setStreet(stringFormated(data.getStreet()));
+        data.setNumber(stringFormated(data.getNumber()));
+        data.setComplement(stringFormated(data.getComplement()));
+        data.setNeighborhood(stringFormated(data.getNeighborhood()));
 
         return data;
     }
