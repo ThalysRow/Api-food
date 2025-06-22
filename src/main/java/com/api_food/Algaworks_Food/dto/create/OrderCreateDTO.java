@@ -5,6 +5,7 @@ import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
 import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
 import com.api_food.Algaworks_Food.dto.list.UserListDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderCreateDTO {
+    private int id;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private BigDecimal subtotal;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
