@@ -99,4 +99,8 @@ public class OrderService {
     public OrderListDTO findOrderById(Integer id){
         return orderRepository.findById(id).map(orderMapper::toListDTO).orElseThrow(() -> new OrderNotFoundException(id));
     }
+
+    public List<OrderListDTO> listAllOrders(){
+        return  orderRepository.findAll().stream().map(orderMapper::toListDTO).toList();
+    }
 }
