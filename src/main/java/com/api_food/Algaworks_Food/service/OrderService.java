@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.service;
 
 import com.api_food.Algaworks_Food.dto.create.OrderCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.OrderListDTO;
+import com.api_food.Algaworks_Food.dto.list.OrderResumeListDTO;
 import com.api_food.Algaworks_Food.dto.list.ProductListDTO;
 import com.api_food.Algaworks_Food.enums.OrderStatus;
 import com.api_food.Algaworks_Food.exception.custom.OrderNotFoundException;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class OrderService {
@@ -41,14 +43,20 @@ public class OrderService {
     @Transactional
     public OrderCreateDTO createNewOrder(OrderCreateDTO data){
 
-        RestaurantModel restaurant = restaurantService.verifyFieldRestaurant(data.getRestaurant().getId());
-        UserModel user = userService.verifyUserField(data.getUser().getId());
-        PaymentMethodModel paymentMethod = paymentMethodService.verifyPaymentField(data.getPaymentMethod().getId());
-        CityModel city = cityService.verifyCityField(data.getDeliveryAddress().getCity().getId());
+        UUID restaurantId = data.getRestaurant().getId();
+        int paymentMethodId = data.getPaymentMethod().getId();
+        UUID userId = data.getUser().getId();
+        int cityId = data.getDeliveryAddress().getCity().getId();
+
+        RestaurantModel restaurant = restaurantService.verifyFieldRestaurant(restaurantId);
+        UserModel user = userService.verifyUserField(userId);
+        PaymentMethodModel paymentMethod = paymentMethodService.verifyPaymentField(restaurantId, paymentMethodId);
+        CityModel city = cityService.verifyCityField(cityId);
+
 
         List<Integer> productsId = data.getItens().stream().map(productId -> productId.getId()).toList();
 
-        productService.verifyProductsField(productsId);
+        productService.verifyProductsField(restaurantId, productsId);
 
         BigDecimal deliveryFee = restaurant.getDeliveryFee();
         BigDecimal subtotal = new BigDecimal(0);
@@ -100,7 +108,7 @@ public class OrderService {
         return orderRepository.findById(id).map(orderMapper::toListDTO).orElseThrow(() -> new OrderNotFoundException(id));
     }
 
-    public List<OrderListDTO> listAllOrders(){
-        return  orderRepository.findAll().stream().map(orderMapper::toListDTO).toList();
+    public List<OrderResumeListDTO> listAllOrders(){
+        return  orderRepository.findAll().stream().map(orderMapper::toListResumeDTO).toList();
     }
 }
