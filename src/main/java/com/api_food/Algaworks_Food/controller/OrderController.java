@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.controller;
 
 import com.api_food.Algaworks_Food.dto.create.OrderCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.OrderListDTO;
+import com.api_food.Algaworks_Food.dto.list.OrderResumeListDTO;
 import com.api_food.Algaworks_Food.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -33,8 +34,8 @@ public class OrderController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<OrderListDTO>> listAllOrders(){
-        List<OrderListDTO> orders = orderService.listAllOrders();
+    public ResponseEntity<List<OrderResumeListDTO>> listAllOrders(){
+        List<OrderResumeListDTO> orders = orderService.listAllOrders();
         return ResponseEntity.status(HttpStatus.OK).body(orders);
     }
 }
