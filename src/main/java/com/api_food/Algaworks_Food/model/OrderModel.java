@@ -41,7 +41,7 @@ public class OrderModel {
     @Embedded
     private AddressModel deliveryAddress;
 
-    @ManyToOne
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(nullable = false, name = "payment_method_id")
     private PaymentMethodModel paymentMethod;
 
