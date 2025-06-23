@@ -3,6 +3,7 @@ package com.api_food.Algaworks_Food.mapper;
 import com.api_food.Algaworks_Food.dto.create.OrderCreateDTO;
 import com.api_food.Algaworks_Food.dto.list.ListProductInOrderDTO;
 import com.api_food.Algaworks_Food.dto.list.OrderListDTO;
+import com.api_food.Algaworks_Food.dto.list.OrderResumeListDTO;
 import com.api_food.Algaworks_Food.model.OrderItemModel;
 import com.api_food.Algaworks_Food.model.OrderModel;
 import org.mapstruct.Mapper;
@@ -17,6 +18,8 @@ public interface OrderMapper {
     OrderModel toCreateModel(OrderCreateDTO orderCreateDTO);
 
     OrderListDTO toListDTO(OrderModel orderModel);
+
+    OrderResumeListDTO toListResumeDTO(OrderModel orderModel);
 
     @Mapping(target = "itens", source = "itens")
     OrderCreateDTO toCreateDTO(OrderModel orderModel);
