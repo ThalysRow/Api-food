@@ -298,7 +298,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundInRestaurantException.class)
     public ResponseEntity<?> handleProductNotFoundInRestaurantException(ProductNotFoundInRestaurantException ex, WebRequest request){
-        HttpStatusCode status = HttpStatus.NOT_FOUND;
+        HttpStatusCode status = HttpStatus.BAD_REQUEST;
         ProblemType type = ProblemType.ENTITY_NOT_FOUND;
         String detail = ex.getMessage();
 
@@ -323,6 +323,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleOrderNotFoundException(OrderNotFoundException ex, WebRequest request){
         HttpStatusCode status = HttpStatus.NOT_FOUND;
         ProblemType type = ProblemType.ENTITY_NOT_FOUND;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
+
+        return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(PaymentMethodNotFoundInRestaurantException.class)
+    public ResponseEntity<?> handlePaymentMethodNotFoundInRestaurantException(PaymentMethodNotFoundInRestaurantException ex, WebRequest request){
+        HttpStatusCode status = HttpStatus.BAD_REQUEST;
+        ProblemType type = ProblemType.BUSINESS_ERROR;
         String detail = ex.getMessage();
 
         MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
