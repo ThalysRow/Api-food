@@ -89,13 +89,16 @@ public class ProductService {
 
     }
 
-    public void getProductModel(int productId){
-        productRepository.findById(productId).orElseThrow(()-> new BusinessException("product", productId));
+    public void getProductInRestaurant(UUID restaurantId, int productId){
+        RestaurantModel restaurant = restaurantService.verifyFieldRestaurant(restaurantId);
+         restaurant.getProducts().stream()
+                .filter(item -> item.getId() == productId)
+                .findFirst().orElseThrow(()-> new ProductNotFoundInRestaurantException(productId, restaurant.getName()));
     }
 
     @Transactional
-    public void verifyProductsField(List<Integer> productsId){
-        productsId.forEach(this::getProductModel);
+    public void verifyProductsField(UUID restaurantId, List<Integer> productsId){
+        productsId.forEach(productId -> { getProductInRestaurant(restaurantId, productId);});
     }
 
     public ProductModel returnProductModel(int id){
