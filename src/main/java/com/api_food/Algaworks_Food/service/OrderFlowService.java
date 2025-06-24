@@ -29,4 +29,17 @@ public class OrderFlowService {
         order.setStatus(OrderStatus.CONFIRMED);
         order.setDateConfirmed(OffsetDateTime.now());
     }
+
+    @Transactional
+    public void deliverOrder(int orderId){
+        OrderModel order = orderService.returnOrderModel(orderId);
+
+        if(!order.getStatus().equals(OrderStatus.CONFIRMED)){
+            throw new BusinessException(String.format("The order with id '%d' cannot be delivered, " +
+                    "because the status of the order is '%s'",orderId,order.getStatus()));
+        }
+
+        order.setStatus(OrderStatus.DELIVERED);
+        order.setDateDelivered(OffsetDateTime.now());
+    }
 }
