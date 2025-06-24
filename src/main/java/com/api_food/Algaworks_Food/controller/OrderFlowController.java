@@ -20,4 +20,10 @@ public class OrderFlowController {
         orderFlowService.confirmOrder(orderId);
     }
 
+    @PutMapping("/deliver")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deliverOrder(@PathVariable int orderId){
+        orderFlowService.deliverOrder(orderId);
+    }
+
 }
