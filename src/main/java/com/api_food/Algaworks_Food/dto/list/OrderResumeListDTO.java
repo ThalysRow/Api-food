@@ -12,6 +12,7 @@ import java.time.OffsetDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderResumeListDTO {
     private int id;
     private BigDecimal subtotal;
@@ -19,7 +20,6 @@ public class OrderResumeListDTO {
     private BigDecimal totalValue;
     private String status;
     private OffsetDateTime dateCreated;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private OffsetDateTime dateCancelled;
     @JsonIgnoreProperties(value = {"deliveryFee", "kitchen", "dateCreated", "dateUpdated",
             "active", "open", "address", "user"})
