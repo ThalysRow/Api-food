@@ -83,3 +83,27 @@ ALTER SEQUENCE order_items_id_seq RESTART WITH 1;
    ('bbbbbbb1-bbbb-bbbb-bbbb-bbbbbbbbbbb1', 9900),
    ('bbbbbbb2-bbbb-bbbb-bbbb-bbbbbbbbbbb2', 9901),
    ('bbbbbbb3-bbbb-bbbb-bbbb-bbbbbbbbbbb3', 9902);
+
+insert into orders (id, subtotal, delivery_fee, total_value, status,
+                    restaurant_id, user_id, payment_method_id,
+                    address_city_id, address_zipcode, address_street,
+                    address_number, address_complement, address_neighborhood,
+                    date_created, date_confirmed)
+values
+    (1, 12.99, 5.00, 17.99, 'CREATED',
+     'bbbbbbb1-bbbb-bbbb-bbbb-bbbbbbbbbbb1', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1', 9900,
+     9900, '90001', '123 Main St',
+     '42', 'Apt 101', 'Downtown',
+     now(), null),
+
+    (2, 21.98, 4.00, 25.98, 'CONFIRMED',
+     'bbbbbbb2-bbbb-bbbb-bbbb-bbbbbbbbbbb2', 'aaaaaaa2-aaaa-aaaa-aaaa-aaaaaaaaaaa2', 9901,
+     9901, '77001', '456 Oak Ave',
+     '78', null, 'Westside',
+     now() - interval '2 days', now() - interval '1 day');
+
+insert into order_items (id, quantity, unit_price, total_price, observations, order_id, product_id)
+values
+    (1, 1, 12.99, 12.99, 'Extra cheese please', 1, 9900),
+    (2, 1, 10.99, 10.99, null, 2, 9901),
+    (3, 1, 10.99, 10.99, 'No peanuts', 2, 9901);
