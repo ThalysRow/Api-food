@@ -84,8 +84,6 @@ public class OrderService {
         addOrder.setRestaurant(restaurant);
         addOrder.setUser(user);
         addOrder.setDateCreated(OffsetDateTime.now());
-        addOrder.setDateConfirmed(OffsetDateTime.now());
-        addOrder.setDateDelivered(OffsetDateTime.now());
         addOrder.setItens(data.getItens().stream().map(
                 item -> {
                     ProductModel product = productService.returnProductModel(item.getId());
@@ -110,5 +108,9 @@ public class OrderService {
 
     public List<OrderResumeListDTO> listAllOrders(){
         return  orderRepository.findAll().stream().map(orderMapper::toListResumeDTO).toList();
+    }
+
+    public OrderModel returnOrderModel(Integer orderId){
+        return orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 }
