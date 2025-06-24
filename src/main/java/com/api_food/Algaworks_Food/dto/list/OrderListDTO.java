@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderListDTO {
     private int id;
     private BigDecimal subtotal;
@@ -23,7 +24,6 @@ public class OrderListDTO {
     private OffsetDateTime dateCreated;
     private OffsetDateTime dateConfirmed;
     private OffsetDateTime dateDelivered;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private OffsetDateTime dateCancelled;
     @JsonIgnoreProperties(value = {"deliveryFee", "kitchen", "dateCreated", "dateUpdated",
             "active", "open", "address", "user"})
