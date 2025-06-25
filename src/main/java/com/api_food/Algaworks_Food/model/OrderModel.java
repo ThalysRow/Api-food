@@ -61,7 +61,7 @@ public class OrderModel {
     private OffsetDateTime dateConfirmed;
 
     @Column(name = "date_cancelled", columnDefinition = "datetime")
-    private OffsetDateTime dateCanceled;
+    private OffsetDateTime dateCancelled;
 
     @Column(name = "date_delivered", columnDefinition = "datetime")
     private OffsetDateTime dateDelivered;
