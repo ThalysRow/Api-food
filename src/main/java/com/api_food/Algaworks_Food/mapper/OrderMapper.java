@@ -17,6 +17,7 @@ public interface OrderMapper {
     @Mapping(target = "itens", source = "itens")
     OrderModel toCreateModel(OrderCreateDTO orderCreateDTO);
 
+    @Mapping(target = "dateCancelled", source = "dateCancelled")
     OrderListDTO toListDTO(OrderModel orderModel);
 
     OrderResumeListDTO toListResumeDTO(OrderModel orderModel);
