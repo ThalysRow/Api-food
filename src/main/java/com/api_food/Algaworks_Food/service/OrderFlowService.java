@@ -3,7 +3,6 @@ package com.api_food.Algaworks_Food.service;
 import com.api_food.Algaworks_Food.enums.OrderStatus;
 import com.api_food.Algaworks_Food.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.model.OrderModel;
-import com.api_food.Algaworks_Food.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,11 +12,9 @@ import java.time.OffsetDateTime;
 public class OrderFlowService {
 
     private final OrderService orderService;
-    private final OrderRepository orderRepository;
 
-    public OrderFlowService(OrderService orderService, OrderRepository orderRepository) {
+    public OrderFlowService(OrderService orderService) {
         this.orderService = orderService;
-        this.orderRepository = orderRepository;
     }
 
     @Transactional
