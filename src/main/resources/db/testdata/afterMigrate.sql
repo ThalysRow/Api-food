@@ -16,14 +16,14 @@ delete from cities;
 delete from states;
 delete from kitchens;
 
-ALTER SEQUENCE cities_id_seq RESTART WITH 1;
-ALTER SEQUENCE states_id_seq RESTART WITH 1;
-ALTER SEQUENCE payment_methods_id_seq RESTART WITH 1;
-ALTER SEQUENCE groups_id_seq RESTART WITH 1;
-ALTER SEQUENCE permissions_id_seq RESTART WITH 1;
-ALTER SEQUENCE products_id_seq RESTART WITH 1;
-ALTER SEQUENCE orders_id_seq RESTART WITH 1;
-ALTER SEQUENCE order_items_id_seq RESTART WITH 1;
+ALTER SEQUENCE cities_id_seq RESTART WITH 10000;
+ALTER SEQUENCE states_id_seq RESTART WITH 10000;
+ALTER SEQUENCE payment_methods_id_seq RESTART WITH 10000;
+ALTER SEQUENCE groups_id_seq RESTART WITH 10000;
+ALTER SEQUENCE permissions_id_seq RESTART WITH 10000;
+ALTER SEQUENCE products_id_seq RESTART WITH 10000;
+ALTER SEQUENCE orders_id_seq RESTART WITH 10000;
+ALTER SEQUENCE order_items_id_seq RESTART WITH 10000;
 
  insert into kitchens (id, name) values
    ('11111111-1111-1111-1111-111111111111', 'Italian'),
@@ -90,13 +90,13 @@ insert into orders (id, subtotal, delivery_fee, total_value, status,
                     address_number, address_complement, address_neighborhood,
                     date_created, date_confirmed)
 values
-    (1, 12.99, 5.00, 17.99, 'CREATED',
+    (9901, 12.99, 5.00, 17.99, 'CREATED',
      'bbbbbbb1-bbbb-bbbb-bbbb-bbbbbbbbbbb1', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1', 9900,
      9900, '90001', '123 Main St',
      '42', 'Apt 101', 'Downtown',
      now(), null),
 
-    (2, 21.98, 4.00, 25.98, 'CONFIRMED',
+    (9902, 21.98, 4.00, 25.98, 'CONFIRMED',
      'bbbbbbb2-bbbb-bbbb-bbbb-bbbbbbbbbbb2', 'aaaaaaa2-aaaa-aaaa-aaaa-aaaaaaaaaaa2', 9901,
      9901, '77001', '456 Oak Ave',
      '78', null, 'Westside',
@@ -104,6 +104,6 @@ values
 
 insert into order_items (id, quantity, unit_price, total_price, observations, order_id, product_id)
 values
-    (1, 1, 12.99, 12.99, 'Extra cheese please', 1, 9900),
-    (2, 1, 10.99, 10.99, null, 2, 9901),
-    (3, 1, 10.99, 10.99, 'No peanuts', 2, 9901);
+    (9901, 1, 12.99, 12.99, 'Extra cheese please', 9901, 9900),
+    (9902, 1, 10.99, 10.99, null, 9902, 9901),
+    (9903, 1, 10.99, 10.99, 'No peanuts', 9902, 9901);
