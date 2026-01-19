@@ -1,32 +1,32 @@
 package com.api_food.Algaworks_Food.domain.service;
 
-import com.api_food.Algaworks_Food.api.dto.create.RestaurantCreateDTO;
-import com.api_food.Algaworks_Food.api.dto.list.PaymentMethodListDTO;
-import com.api_food.Algaworks_Food.api.dto.list.RestaurantListDTO;
-import com.api_food.Algaworks_Food.api.dto.list.UserListDTO;
-import com.api_food.Algaworks_Food.api.dto.update.RestaurantUpdateDTO;
+import com.api_food.Algaworks_Food.api.dto.input.RestaurantInput;
+import com.api_food.Algaworks_Food.api.dto.output.PaymentMethodOutput;
+import com.api_food.Algaworks_Food.api.dto.output.RestaurantOutput;
+import com.api_food.Algaworks_Food.api.dto.output.UserOutput;
 import com.api_food.Algaworks_Food.domain.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.domain.exception.custom.EntityInUseException;
+import com.api_food.Algaworks_Food.domain.exception.custom.PaymentMethodNotFoundInRestaurantException;
 import com.api_food.Algaworks_Food.domain.exception.custom.RestaurantNotFoundException;
 import com.api_food.Algaworks_Food.domain.mapper.PaymentMethodMapper;
 import com.api_food.Algaworks_Food.domain.mapper.RestaurantMapper;
 import com.api_food.Algaworks_Food.domain.mapper.UserMapper;
 import com.api_food.Algaworks_Food.domain.model.*;
-import com.api_food.Algaworks_Food.model.*;
 import com.api_food.Algaworks_Food.domain.repository.RestaurantRepository;
-import com.api_food.Algaworks_Food.utils.StringFormatter;
-import org.springframework.context.annotation.Lazy;
+import com.api_food.Algaworks_Food.utils.Formatter;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class RestaurantService {
     private final RestaurantMapper restaurantMapper;
     private final RestaurantRepository restaurantRepository;
-    private final StringFormatter stringFormatter;
     private final KitchenService kitchenService;
     private final CityService cityService;
     private final PaymentMethodMapper paymentMethodMapper;
@@ -34,74 +34,58 @@ public class RestaurantService {
     private final UserMapper userMapper;
     private final UserService userService;
 
-    public RestaurantService(RestaurantMapper restaurantMapper, RestaurantRepository restaurantRepository, StringFormatter stringFormatter, KitchenService kitchenService, CityService cityService, PaymentMethodMapper paymentMethodMapper, @Lazy PaymentMethodService paymentMethodService, UserMapper userMapper, UserService userService) {
-        this.restaurantMapper = restaurantMapper;
-        this.restaurantRepository = restaurantRepository;
-        this.stringFormatter = stringFormatter;
-        this.kitchenService = kitchenService;
-        this.cityService = cityService;
-        this.paymentMethodMapper = paymentMethodMapper;
-        this.paymentMethodService = paymentMethodService;
-        this.userMapper = userMapper;
-        this.userService = userService;
+    @Transactional
+    public RestaurantOutput newRestaurant(RestaurantInput input){
+
+         KitchenModel kitchenFound = kitchenService.verifyKitchen(input.getKitchen().getId());
+         CityModel cityFound = cityService.verifyCityField(input.getAddress().getCity().getId());
+
+        AddressModel address = AddressModel.createAddress(input.getAddress());
+        address.setCity(cityFound);
+
+        RestaurantModel restaurant = RestaurantModel.createRestaurant(input.getName(), input.getDeliveryFee(),
+                kitchenFound, address);
+
+        restaurantRepository.saveAndFlush(restaurant);
+
+        return restaurantMapper.toOutput(restaurant);
+
+    }
+
+    public RestaurantOutput findRestaurantById(UUID id){
+        return restaurantMapper.toOutput(this.returnRestaurantModel(id));
+    }
+
+    public List<RestaurantOutput> listRestaurants(){
+        return restaurantRepository.findAll().stream().map(restaurantMapper::toOutput).toList();
     }
 
     @Transactional
-    public RestaurantCreateDTO newRestaurant(RestaurantCreateDTO restaurant){
+    public RestaurantOutput updateRestaurant(UUID id, RestaurantInput input){
 
-         KitchenModel kitchenFound = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
-         CityModel cityFound = cityService.verifyCityField(restaurant.getAddress().getCity().getId());
+        RestaurantModel restaurantFound = this.returnRestaurantModel(id);
 
-        RestaurantCreateDTO data = stringFormatter.restaurantFieldsFormatter(restaurant);
+            KitchenModel kitchenFound = kitchenService.verifyKitchen(input.getKitchen().getId());
+            CityModel cityFound = cityService.verifyCityField(input.getAddress().getCity().getId());
 
-        RestaurantModel newRestaurant = restaurantMapper.toCreateModel(data);
-        newRestaurant.setKitchen(kitchenFound);
-        newRestaurant.getAddress().setCity(cityFound);
-        newRestaurant.setDateCreated(OffsetDateTime.now());
-        newRestaurant.setDateUpdated(OffsetDateTime.now());
-        RestaurantModel saveRestaurant = restaurantRepository.save(newRestaurant);
-        return restaurantMapper.toCreateDTO(saveRestaurant);
-    }
+            AddressModel address = AddressModel.createAddress(input.getAddress());
+            address.setCity(cityFound);
 
-    public RestaurantListDTO findRestaurantById(UUID id){
-        RestaurantModel restaurant = this.returnRestaurantModel(id);
-        return restaurantMapper.toListDTO(restaurant);
-    }
+            restaurantFound.setName(Formatter.string(input.getName()));
+            restaurantFound.setDeliveryFee(input.getDeliveryFee());
+            restaurantFound.setKitchen(kitchenFound);
+            restaurantFound.setAddress(address);
+            restaurantFound.setDateUpdated(OffsetDateTime.now());
 
-    public List<RestaurantListDTO> listRestaurants(){
-        return restaurantRepository.findAll().stream().map(restaurantMapper::toListDTO).toList();
-    }
+            restaurantRepository.saveAndFlush(restaurantFound);
 
-    @Transactional
-    public RestaurantUpdateDTO updateRestaurant(UUID id, RestaurantUpdateDTO restaurant){
+            return restaurantMapper.toOutput(restaurantFound);
 
-        RestaurantModel findRestaurant = this.returnRestaurantModel(id);
-
-            KitchenModel kitchenFound = kitchenService.verifyKitchen(restaurant.getKitchen().getId());
-            CityModel cityFound = cityService.verifyCityField(restaurant.getAddress().getCity().getId());
-
-        RestaurantUpdateDTO data = stringFormatter.restaurantFieldsFormatter(restaurant);
-
-        findRestaurant.setName(data.getName());
-        findRestaurant.setDeliveryFee(restaurant.getDeliveryFee());
-        findRestaurant.setKitchen(kitchenFound);
-        findRestaurant.getAddress().setCity(cityFound);
-        findRestaurant.getAddress().setZipcode(data.getAddress().getZipcode());
-        findRestaurant.getAddress().setStreet(data.getAddress().getStreet());
-        findRestaurant.getAddress().setNumber(data.getAddress().getNumber());
-        findRestaurant.getAddress().setComplement(data.getAddress().getComplement());
-        findRestaurant.getAddress().setNeighborhood(data.getAddress().getNeighborhood());
-        RestaurantModel updateRestaurant = restaurantMapper.toUpdateModel(data);
-        updateRestaurant.setDateUpdated(OffsetDateTime.now());
-
-        RestaurantModel saveUpdate = restaurantRepository.save(updateRestaurant);
-        return restaurantMapper.toUpdateDTO(saveUpdate);
         }
 
         @Transactional
         public void deleteRestaurant(UUID id){
-        RestaurantListDTO restaurant = this.findRestaurantById(id);
-        restaurantRepository.deleteById(restaurant.getId());
+        restaurantRepository.deleteById(this.returnRestaurantModel(id).getId());
         }
 
         @Transactional
@@ -118,14 +102,16 @@ public class RestaurantService {
             restaurant.setActive(false);
         }
 
-        public List<PaymentMethodListDTO> restaurantListPaymentMethods(UUID id){
-            RestaurantModel restaurant = this.returnRestaurantModel(id);
+        public List<PaymentMethodOutput> restaurantListPaymentMethods(UUID restaurantId){
 
-            return restaurant.getPaymentMethods().stream().map(paymentMethodMapper::toListDTO).toList();
+            RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
+
+            return restaurant.getPaymentMethods().stream().map(paymentMethodMapper::toOutput).toList();
         }
 
         @Transactional
         public void restaurantRemovePaymentMethod(UUID restaurantId, int paymentMethodId){
+
             RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
 
             PaymentMethodModel paymentMethod = paymentMethodService.returnPaymentMethodModel(paymentMethodId);
@@ -138,6 +124,7 @@ public class RestaurantService {
 
         @Transactional
         public void restaurantAddPaymentMethod(UUID restaurantId, int paymentMethodId){
+
             RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
 
             PaymentMethodModel paymentMethod = paymentMethodService.returnPaymentMethodModel(paymentMethodId);
@@ -152,32 +139,41 @@ public class RestaurantService {
             return restaurantRepository.findById(id).orElseThrow(()-> new RestaurantNotFoundException(id));
         }
 
+        public PaymentMethodModel verifyPaymentField(UUID restaurantId, int id){
+            RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
+            return  restaurant.getPaymentMethods()
+                    .stream().filter(payment -> payment.getId() == id)
+                    .findFirst().orElseThrow(()-> new PaymentMethodNotFoundInRestaurantException(id, restaurant.getName()));
+        }
+
         @Transactional
-        public void restaurantOpen(UUID id){
-        RestaurantModel restaurant = this.returnRestaurantModel(id);
+        public void restaurantOpen(UUID restaurantId){
+        RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
 
         restaurant.setOpen(true);
         restaurant.setDateUpdated(OffsetDateTime.now());
-        restaurantRepository.save(restaurant);
+        restaurantRepository.saveAndFlush(restaurant);
         }
 
         @Transactional
-        public void closeRestaurant(UUID id){
-        RestaurantModel restaurant = this.returnRestaurantModel(id);
+        public void closeRestaurant(UUID restaurantId){
+        RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
 
         restaurant.setOpen(false);
         restaurant.setDateUpdated(OffsetDateTime.now());
-        restaurantRepository.save(restaurant);
+        restaurantRepository.saveAndFlush(restaurant);
         }
 
-        public List<UserListDTO> listResponsibleUsersForRestaurant(UUID id){
+        public List<UserOutput> listResponsiblesUsersForRestaurant(UUID id){
             RestaurantModel restaurant = this.returnRestaurantModel(id);
-            return restaurant.getUsers().stream().map(userMapper::toListDTO).toList();
+            return restaurant.getUsers().stream().map(userMapper::toOutput).toList();
         }
 
         @Transactional
         public void addResponsibleUser(UUID restaurantId, UUID userId){
+
         RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
+
             UserModel user = userService.returnUserModel(userId);
 
             if(!user.getRestaurants().contains(restaurant)){
@@ -187,28 +183,41 @@ public class RestaurantService {
 
         @Transactional
         public void removeResponsibleUser(UUID restaurantId, UUID userId){
+
         RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
+
         UserModel user = userService.returnUserModel(userId);
 
-        if(user.getRestaurants().contains(restaurant)){
+        if(!user.getRestaurants().contains(restaurant)){
+            throw new BusinessException("User is not in restaurant list");
+            }
+
             user.getRestaurants().remove(restaurant);
-            }
         }
 
         @Transactional
-        public void activateRestaurants(List<UUID> ids){
+        public void activateRestaurants(List<UUID> restaurantsIds){
+
         try {
-            ids.forEach(this::activateRestaurant);
+
+            restaurantsIds.forEach(this::activateRestaurant);
+
         }catch (RestaurantNotFoundException e){
+
             throw new BusinessException(e.getMessage());
+
             }
         }
 
         @Transactional
-        public void deactivateRestaurants(List<UUID> ids){
+        public void deactivateRestaurants(List<UUID> restaurantsIds){
+
         try {
-            ids.forEach(this::deactivateRestaurant);
+
+            restaurantsIds.forEach(this::deactivateRestaurant);
+
         } catch (RestaurantNotFoundException e){
+
             throw new BusinessException(e.getMessage());
         }
     }

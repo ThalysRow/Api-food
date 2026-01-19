@@ -1,77 +1,76 @@
 package com.api_food.Algaworks_Food.domain.service;
 
-import com.api_food.Algaworks_Food.api.dto.create.CityCreateDTO;
-import com.api_food.Algaworks_Food.api.dto.list.CityListDTO;
-import com.api_food.Algaworks_Food.api.dto.update.CityUpdateDTO;
+import com.api_food.Algaworks_Food.api.dto.input.CityInput;
+import com.api_food.Algaworks_Food.api.dto.output.CityOutput;
 import com.api_food.Algaworks_Food.domain.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.domain.exception.custom.CityNotFoundException;
+import com.api_food.Algaworks_Food.domain.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.domain.mapper.CityMapper;
 import com.api_food.Algaworks_Food.domain.model.CityModel;
 import com.api_food.Algaworks_Food.domain.model.StateModel;
 import com.api_food.Algaworks_Food.domain.repository.CityRepository;
-import com.api_food.Algaworks_Food.utils.StringFormatter;
+import com.api_food.Algaworks_Food.utils.Formatter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CityService {
     private final CityMapper cityMapper;
     private final CityRepository cityRepository;
-    private final StringFormatter stringFormatter;
     private final StateService stateService;
 
-    public CityService(CityMapper cityMapper, CityRepository cityRepository, StringFormatter stringFormatter, StateService stateService) {
-        this.cityMapper = cityMapper;
-        this.cityRepository = cityRepository;
-        this.stringFormatter = stringFormatter;
-        this.stateService = stateService;
-    }
 
     @Transactional
-    public CityCreateDTO addCity(CityCreateDTO city){
+    public CityOutput addCity(CityInput cityInput) {
 
-        StateModel state = stateService.verifyStateField(city.getId());
+        StateModel state = stateService.verifyStateField(cityInput.getState().getId());
 
-        String nameFormated = stringFormatter.stringFormated(city.getName());
+        String name = Formatter.string(cityInput.getName());
 
-        CityModel newCity = cityMapper.toCreateModel(city);
-        newCity.setName(nameFormated);
-        newCity.setState(state);
+        CityModel city = CityModel.createCity(name, state);
 
-        CityModel saveCity = cityRepository.save(newCity);
+        cityRepository.saveAndFlush(city);
 
-        return cityMapper.toCreateDTO(saveCity);
+        return  cityMapper.toCityOutput(city);
 
     }
 
-    public List<CityListDTO> listCities(){
-        return cityRepository.findAll().stream().map(cityMapper::toCreateListDTO).toList();
+    public List<CityOutput> listCities(){
+        return cityRepository.findAll().stream().map(cityMapper::toCityOutput).toList();
     }
 
-    public CityListDTO findCity(int id){
+    public CityOutput findCity(int id){
         CityModel cityFound = this.returnCityModel(id);
-        return cityMapper.toCreateListDTO(cityFound);
+        return cityMapper.toCityOutput(cityFound);
     }
 
     @Transactional
     public void deleteCity(int id){
-        CityListDTO city = this.findCity(id);
-        cityRepository.deleteById(city.getId());
+        CityModel city = this.returnCityModel(id);
+
+        if (cityRepository.isCityInUseByRestaurant(id) || cityRepository.isCityInUseByOrder(id)) {
+            throw new EntityInUseException("City", id, "restaurants or orders");
+        }
+
+        cityRepository.deleteById(id);
     }
 
     @Transactional
-    public CityUpdateDTO updateCity(int id, CityUpdateDTO city){
+    public CityOutput updateCity(int id, CityInput cityInput){
         CityModel cityFound = this.returnCityModel(id);
-        StateModel state = stateService.verifyStateField(city.getState().getId());
+        StateModel state = stateService.verifyStateField(cityInput.getState().getId());
 
-        String nameFormated = stringFormatter.stringFormated(city.getName());
+        String name = Formatter.string(cityInput.getName());
 
-        cityFound.setName(nameFormated);
+        cityFound.setName(name);
         cityFound.setState(state);
-        CityModel saveCity = cityRepository.save(cityFound);
-        return cityMapper.toUpdateDTO(saveCity);
+        cityRepository.saveAndFlush(cityFound);
+
+        return  cityMapper.toCityOutput(cityFound);
     }
 
     public CityModel returnCityModel(int id){

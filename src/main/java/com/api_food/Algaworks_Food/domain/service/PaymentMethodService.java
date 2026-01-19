@@ -1,48 +1,27 @@
 package com.api_food.Algaworks_Food.domain.service;
 
-import com.api_food.Algaworks_Food.api.dto.create.PaymentMethodCreateDTO;
-import com.api_food.Algaworks_Food.api.dto.list.PaymentMethodListDTO;
-import com.api_food.Algaworks_Food.api.dto.update.PaymentMethodUpdateDTO;
+import com.api_food.Algaworks_Food.api.dto.input.PaymentMethodInput;
+import com.api_food.Algaworks_Food.api.dto.output.PaymentMethodOutput;
 import com.api_food.Algaworks_Food.domain.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.domain.exception.custom.PaymentMethodNotFoundException;
-import com.api_food.Algaworks_Food.domain.exception.custom.PaymentMethodNotFoundInRestaurantException;
 import com.api_food.Algaworks_Food.domain.mapper.PaymentMethodMapper;
 import com.api_food.Algaworks_Food.domain.model.PaymentMethodModel;
-import com.api_food.Algaworks_Food.domain.model.RestaurantModel;
 import com.api_food.Algaworks_Food.domain.repository.PaymentMethodRepository;
-import com.api_food.Algaworks_Food.utils.StringFormatter;
+import com.api_food.Algaworks_Food.utils.Formatter;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class PaymentMethodService {
 
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentMethodMapper paymentMethodMapper;
-    private final StringFormatter stringFormatter;
-    private final RestaurantService restaurantService;
 
-    public PaymentMethodService(PaymentMethodRepository paymentMethodRepository, PaymentMethodMapper paymentMethodMapper, StringFormatter stringFormatter, RestaurantService restaurantService) {
-        this.paymentMethodRepository = paymentMethodRepository;
-        this.paymentMethodMapper = paymentMethodMapper;
-        this.stringFormatter = stringFormatter;
-        this.restaurantService = restaurantService;
-    }
-
-/*    public void verifyPaymentMethodName(String name){
-        Optional<PaymentMethodModel> findName = paymentMethodRepository.findByName(name);
-
-        if (findName.isPresent()) {
-            throw new PaymentMethodAlreadyExistsException(name);
-        }
-    }
-
-    */
-
-    public void verifyPaymentMethodInUse(int id){
+    private void verifyPaymentMethodInUse(int id){
         PaymentMethodModel findPaymentMethod = this.returnPaymentMethodModel(id);
 
         if (findPaymentMethod.getOrders() != null && !findPaymentMethod.getOrders().isEmpty() ||
@@ -52,33 +31,38 @@ public class PaymentMethodService {
     }
 
     @Transactional
-    public PaymentMethodCreateDTO addPaymentMethod(PaymentMethodCreateDTO paymentMethod){
+    public PaymentMethodOutput addPaymentMethod(PaymentMethodInput input){
 
-        String nameFormated = stringFormatter.stringFormated(paymentMethod.getName()).toUpperCase();
-        paymentMethod.setName(nameFormated);
-        PaymentMethodModel newPayment = paymentMethodMapper.toCreateModel(paymentMethod);
-        PaymentMethodModel savePaymentMethod = paymentMethodRepository.save(newPayment);
+        String name = Formatter.string(input.getName().toUpperCase());
 
-        return paymentMethodMapper.toCreateDTO(savePaymentMethod);
+        PaymentMethodModel payment = PaymentMethodModel.addPayment(name);
+        paymentMethodRepository.saveAndFlush(payment);
+
+        return paymentMethodMapper.toOutput(payment);
     }
 
-    public List<PaymentMethodListDTO> listAllPaymentMethod(){
-        return paymentMethodRepository.findAll().stream().map(paymentMethodMapper::toListDTO).toList();
+    public List<PaymentMethodOutput> listAllPaymentMethod(){
+        return paymentMethodRepository.findAll().stream().map(paymentMethodMapper::toOutput).toList();
     }
 
-    public PaymentMethodListDTO findPaymentMethodById(int id){
+    public PaymentMethodOutput findPaymentMethodById(int id){
         PaymentMethodModel payment = this.returnPaymentMethodModel(id);
 
-        return paymentMethodMapper.toListDTO(payment);
+        return paymentMethodMapper.toOutput(payment);
     }
 
     @Transactional
-    public PaymentMethodUpdateDTO updatePaymentMethod(int id, PaymentMethodUpdateDTO data){
+    public PaymentMethodOutput updatePaymentMethod(int id, PaymentMethodInput input){
+
+        String name = Formatter.string(input.getName().toUpperCase());
+
         PaymentMethodModel payment = this.returnPaymentMethodModel(id);
-        String nameFormated = stringFormatter.stringFormated(data.getName()).toUpperCase();
-        payment.setName(nameFormated);
-        PaymentMethodModel saveUpdatePaymentMethod = paymentMethodRepository.save(payment);
-        return paymentMethodMapper.toUpdateDTO(saveUpdatePaymentMethod);
+
+        payment.setName(name);
+
+        paymentMethodRepository.saveAndFlush(payment);
+
+        return paymentMethodMapper.toOutput(payment);
     }
 
     @Transactional
@@ -90,12 +74,5 @@ public class PaymentMethodService {
     public PaymentMethodModel returnPaymentMethodModel(int id){
         return  paymentMethodRepository.findById(id)
                 .orElseThrow(()-> new PaymentMethodNotFoundException(id));
-    }
-
-    public PaymentMethodModel verifyPaymentField(UUID restaurantId, int id){
-        RestaurantModel restaurant = restaurantService.returnRestaurantModel(restaurantId);
-        return  restaurant.getPaymentMethods()
-                .stream().filter(payment -> payment.getId() == id)
-                .findFirst().orElseThrow(()-> new PaymentMethodNotFoundInRestaurantException(id, restaurant.getName()));
     }
 }

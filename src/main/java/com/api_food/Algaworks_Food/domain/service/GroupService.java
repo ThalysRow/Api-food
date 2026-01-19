@@ -1,9 +1,8 @@
 package com.api_food.Algaworks_Food.domain.service;
 
-import com.api_food.Algaworks_Food.api.dto.create.GroupCreateDTO;
-import com.api_food.Algaworks_Food.api.dto.list.GroupListDTO;
-import com.api_food.Algaworks_Food.api.dto.list.PermissionListDTO;
-import com.api_food.Algaworks_Food.api.dto.update.GroupUpdateDTO;
+import com.api_food.Algaworks_Food.api.dto.input.GroupInput;
+import com.api_food.Algaworks_Food.api.dto.output.GroupOutput;
+import com.api_food.Algaworks_Food.api.dto.output.PermissionsOutput;
 import com.api_food.Algaworks_Food.domain.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.domain.exception.custom.GroupNameAlreadyExistsException;
 import com.api_food.Algaworks_Food.domain.exception.custom.GroupNotFoundException;
@@ -13,7 +12,8 @@ import com.api_food.Algaworks_Food.domain.mapper.PermissionMapper;
 import com.api_food.Algaworks_Food.domain.model.GroupModel;
 import com.api_food.Algaworks_Food.domain.model.PermissionModel;
 import com.api_food.Algaworks_Food.domain.repository.GroupRepository;
-import com.api_food.Algaworks_Food.utils.StringFormatter;
+import com.api_food.Algaworks_Food.utils.Formatter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,20 +21,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupMapper groupMapper;
-    private final StringFormatter stringFormatter;
+    private final Formatter stringFormatter;
     private final PermissionMapper permissionMapper;
     private final PermissionService permissionService;
 
-    public GroupService(GroupRepository groupRepository, GroupMapper groupMapper, StringFormatter stringFormatter, PermissionMapper permissionMapper, PermissionService permissionService) {
-        this.groupRepository = groupRepository;
-        this.groupMapper = groupMapper;
-        this.stringFormatter = stringFormatter;
-        this.permissionMapper = permissionMapper;
-        this.permissionService = permissionService;
-    }
 
     public void verifyGroupName(String name){
         Optional<GroupModel> findGroup = groupRepository.findGroupByName(name);
@@ -44,36 +38,42 @@ public class GroupService {
     }
 
     @Transactional
-    public GroupCreateDTO addGroup(GroupCreateDTO data){
-        String nameFormated = stringFormatter.stringFormated(data.getName());
-        this.verifyGroupName(nameFormated);
+    public GroupOutput addGroup(GroupInput data){
 
-        GroupModel createGroup = groupMapper.toCreateModel(data);
-        createGroup.setName(nameFormated);
-        GroupModel saveGroup = groupRepository.save(createGroup);
-        return groupMapper.toCreateDTO(saveGroup);
+        String name = Formatter.string(data.getName());
+
+        GroupModel newGroup = GroupModel.addGroup(name);
+
+        groupRepository.saveAndFlush(newGroup);
+
+        return groupMapper.toOutput(newGroup);
+
     }
 
-    public GroupListDTO findGroupById(int id){
+    public GroupOutput findGroupById(int id){
         GroupModel group = groupRepository.findById(id)
                 .orElseThrow(()-> new GroupNotFoundException(id));
 
-        return groupMapper.toListDTO(group);
+        return groupMapper.toOutput(group);
     }
 
-    public List<GroupListDTO> listAllGroups(){
-        return groupRepository.findAll().stream().map(groupMapper::toListDTO).toList();
+    public List<GroupOutput> listAllGroups(){
+        return groupRepository.findAll().stream().map(groupMapper::toOutput).toList();
     }
 
     @Transactional
-    public GroupUpdateDTO updateGroup(int id, GroupUpdateDTO data){
+    public GroupOutput updateGroup(int id, GroupInput data){
         GroupModel group = this.returnGroupModel(id);
-        String nameFormated = stringFormatter.stringFormated(data.getName());
-        this.verifyGroupName(nameFormated);
 
-        group.setName(nameFormated);
-        GroupModel saveGroup = groupRepository.save(group);
-        return groupMapper.toUpdateDTO(saveGroup);
+        String name = Formatter.string(data.getName());
+
+        this.verifyGroupName(name);
+
+        group.setName(name);
+
+       groupRepository.saveAndFlush(group);
+
+       return groupMapper.toOutput(group);
     }
 
     @Transactional
@@ -92,10 +92,13 @@ public class GroupService {
         return groupRepository.findById(id).orElseThrow(()-> new GroupNotFoundException(id));
     }
 
-    public List<PermissionListDTO> listGroupPermissions(int groupId){
+    public List<PermissionsOutput> listGroupPermissions(int groupId){
+
         GroupModel group = this.returnGroupModel(groupId);
+
         List<PermissionModel> permissions = group.getPermissions();
-        return permissions.stream().map(permissionMapper::toListDTO).toList();
+
+        return permissions.stream().map(permissionMapper::toOutPut).toList();
     }
 
     @Transactional
@@ -105,7 +108,8 @@ public class GroupService {
             throw new PermissionNotFoundException(permissionId, groupId);
         }
         group.getPermissions().removeIf(permission -> permission.getId() == permissionId);
-        groupRepository.save(group);
+
+        groupRepository.saveAndFlush(group);
     }
 
     @Transactional

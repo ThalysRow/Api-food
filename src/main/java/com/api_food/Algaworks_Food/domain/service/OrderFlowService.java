@@ -3,19 +3,17 @@ package com.api_food.Algaworks_Food.domain.service;
 import com.api_food.Algaworks_Food.domain.enums.OrderStatus;
 import com.api_food.Algaworks_Food.domain.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.domain.model.OrderModel;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class OrderFlowService {
 
     private final OrderService orderService;
-
-    public OrderFlowService(OrderService orderService) {
-        this.orderService = orderService;
-    }
 
     @Transactional
     public void confirmOrder(int orderId){

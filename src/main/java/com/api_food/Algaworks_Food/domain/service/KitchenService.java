@@ -1,15 +1,15 @@
 package com.api_food.Algaworks_Food.domain.service;
 
-import com.api_food.Algaworks_Food.api.dto.create.KitchenCreateDTO;
-import com.api_food.Algaworks_Food.api.dto.list.KitchenListDTO;
-import com.api_food.Algaworks_Food.api.dto.update.KitchenUpdateDTO;
+import com.api_food.Algaworks_Food.api.dto.input.KitchenInput;
+import com.api_food.Algaworks_Food.api.dto.output.KitchenOutput;
 import com.api_food.Algaworks_Food.domain.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.domain.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.domain.exception.custom.KitchenNotFoundException;
 import com.api_food.Algaworks_Food.domain.mapper.KitchenMapper;
 import com.api_food.Algaworks_Food.domain.model.KitchenModel;
 import com.api_food.Algaworks_Food.domain.repository.KitchenRepository;
-import com.api_food.Algaworks_Food.utils.StringFormatter;
+import com.api_food.Algaworks_Food.utils.Formatter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,41 +17,40 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class KitchenService {
     private final KitchenMapper kitchenMapper;
     private final KitchenRepository kitchenRepository;
-    private final StringFormatter stringFormatter;
 
-    public KitchenService(KitchenMapper kitchenMapper, KitchenRepository kitchenRepository, StringFormatter stringFormatter) {
-        this.kitchenMapper = kitchenMapper;
-        this.kitchenRepository = kitchenRepository;
-        this.stringFormatter = stringFormatter;
+
+    private KitchenModel returnKitchenModel(UUID kitchenId) {
+        return kitchenRepository.findById(kitchenId).orElseThrow(() -> new KitchenNotFoundException(kitchenId));
     }
 
     @Transactional
-    public KitchenCreateDTO addKitchen(KitchenCreateDTO kitchen){
+    public KitchenOutput addKitchen(KitchenInput input){
 
-       String formatedName = stringFormatter.stringFormated(kitchen.getName());
-        kitchen.setName(formatedName);
+        String name = Formatter.string(input.getName());
 
-        KitchenModel newKitchen = kitchenMapper.toCreateModel(kitchen);
-        KitchenModel kitchenSaved = kitchenRepository.save(newKitchen);
-        return kitchenMapper.toCreateDTO(kitchenSaved);
+        KitchenModel kitchen = KitchenModel.addKitchen(name);
+
+        kitchenRepository.saveAndFlush(kitchen);
+
+        return kitchenMapper.toOutput(kitchen);
     }
 
-    public List<KitchenListDTO> listKitchens(){
-        return kitchenRepository.findAll().stream().map(kitchenMapper::toCreateListDTO).toList();
+    public List<KitchenOutput> listKitchens(){
+        return kitchenRepository.findAll().stream().map(kitchenMapper::toOutput).toList();
     }
 
-    public KitchenListDTO findKitchenById(UUID id){
-       KitchenModel kitchenFinded = kitchenRepository.findById(id).orElseThrow(()-> new KitchenNotFoundException(id));
-       return kitchenMapper.toCreateListDTO(kitchenFinded);
+    public KitchenOutput findKitchenById(UUID id){
+       return kitchenMapper.toOutput(this.returnKitchenModel(id));
     }
 
     @Transactional
     public void deleteKitchen(UUID id){
 
-        KitchenModel kitchen = kitchenRepository.findById(id).orElseThrow(()-> new KitchenNotFoundException(id));
+        KitchenModel kitchen = this.returnKitchenModel(id);
 
         if (kitchen.getRestaurants() != null && !kitchen.getRestaurants().isEmpty()){
             throw new EntityInUseException("kitchen", kitchen.getId(), "restaurants");
@@ -61,14 +60,17 @@ public class KitchenService {
     }
 
     @Transactional
-    public KitchenUpdateDTO updateKitchen(UUID id, KitchenUpdateDTO kitchen){
-        KitchenListDTO kitchenFinded = this.findKitchenById(id);
-        String nameFormated = stringFormatter.stringFormated(kitchen.getName());
-        kitchenFinded.setName(nameFormated);
+    public KitchenOutput updateKitchen(UUID id, KitchenInput input){
 
-        KitchenModel newKitchen = kitchenMapper.toModel(kitchenFinded);
-        KitchenModel savedKithen = kitchenRepository.save(newKitchen);
-        return kitchenMapper.toUpdateDTO(savedKithen);
+        input.setName(Formatter.string(input.getName()));
+
+        KitchenModel kitchen = this.returnKitchenModel(id);
+
+        kitchen.setName(input.getName());
+        kitchenRepository.saveAndFlush(kitchen);
+
+        return kitchenMapper.toOutput(kitchen);
+
     }
 
     public KitchenModel verifyKitchen(UUID id){

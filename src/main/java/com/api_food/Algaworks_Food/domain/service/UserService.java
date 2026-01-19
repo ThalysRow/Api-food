@@ -1,18 +1,18 @@
 package com.api_food.Algaworks_Food.domain.service;
 
-import com.api_food.Algaworks_Food.api.dto.create.UserCreateDTO;
-import com.api_food.Algaworks_Food.api.dto.list.GroupListDTO;
-import com.api_food.Algaworks_Food.api.dto.list.UserListDTO;
-import com.api_food.Algaworks_Food.api.dto.update.UserUpdateDTO;
-import com.api_food.Algaworks_Food.api.dto.update.UserUpdatePasswordDTO;
+import com.api_food.Algaworks_Food.api.dto.input.UserInput;
+import com.api_food.Algaworks_Food.api.dto.input.UserUpdateInput;
+import com.api_food.Algaworks_Food.api.dto.input.UserUpdatePasswordInput;
+import com.api_food.Algaworks_Food.api.dto.output.GroupOutput;
+import com.api_food.Algaworks_Food.api.dto.output.UserOutput;
 import com.api_food.Algaworks_Food.domain.exception.custom.*;
-import com.api_food.Algaworks_Food.exception.custom.*;
 import com.api_food.Algaworks_Food.domain.mapper.GroupMapper;
 import com.api_food.Algaworks_Food.domain.mapper.UserMapper;
 import com.api_food.Algaworks_Food.domain.model.GroupModel;
 import com.api_food.Algaworks_Food.domain.model.UserModel;
 import com.api_food.Algaworks_Food.domain.repository.UserRepository;
-import com.api_food.Algaworks_Food.utils.StringFormatter;
+import com.api_food.Algaworks_Food.utils.Formatter;
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,89 +24,92 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final StringFormatter stringFormatter;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final GroupService groupService;
     private final GroupMapper  groupMapper;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, StringFormatter stringFormatter, GroupService groupService, GroupMapper groupMapper) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.stringFormatter = stringFormatter;
-        this.groupService = groupService;
-        this.groupMapper = groupMapper;
-    }
 
     public UserModel returnUserModel(UUID userId) {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     public void verifyEmailInUse(String email){
-        Optional<UserModel> user = userRepository.findUserByEmail(email.trim());
+        Optional<UserModel> user = userRepository.findUserByEmail(email);
 
         if (user.isPresent()){
-          throw new EmailAlreadyExistsException(email.trim());
+          throw new EmailAlreadyExistsException(email);
         }
     }
 
     @Transactional
-    public UserCreateDTO addNewUser(UserCreateDTO data){
-        this.verifyEmailInUse(data.getEmail());
-        data.setName(stringFormatter.stringFormated(data.getName()));
-        String hashedPassword = passwordEncoder.encode(data.getPassword());
-        data.setPassword(hashedPassword);
+    public UserOutput addNewUser(UserInput input){
 
-        UserModel userModel = userMapper.toCreateModel(data);
-        userModel.setDateCreated(OffsetDateTime.now());
-        userModel.setDateUpdated(OffsetDateTime.now());
+        String name = Formatter.string(input.getName());
+        String email = Formatter.string(input.getEmail());
+        String hashedPassword = passwordEncoder.encode(input.getPassword());
 
-        UserModel createUser = userRepository.save(userModel);
-        return userMapper.toCreateDTO(createUser);
+        this.verifyEmailInUse(email);
+
+        UserModel user = UserModel.addUser(name, email, hashedPassword);
+
+        userRepository.saveAndFlush(user);
+
+        return userMapper.toOutput(user);
     }
 
-    public UserListDTO findUserById(UUID id){
-        UserModel user = this.returnUserModel(id);
-        return userMapper.toListDTO(user);
+    public UserOutput findUserById(UUID id){
+
+        return userMapper.toOutput(this.returnUserModel(id));
     }
 
-    public List<UserListDTO> listAllUsers(){
-        return userRepository.findAll().stream().map(userMapper::toListDTO).toList();
+    public List<UserOutput> listAllUsers(){
+        return userRepository.findAll().stream().map(userMapper::toOutput).toList();
     }
 
     @Transactional
-    public UserUpdateDTO updateUser(UUID id, UserUpdateDTO data){
+    public UserOutput updateUser(UUID id, UserUpdateInput input){
+
         UserModel user = this.returnUserModel(id);
 
-        Optional<UserModel> findEmail = userRepository.findUserByEmail(data.getEmail());
+        String name = Formatter.string(input.getName());
+        String email = Formatter.string(input.getEmail());
 
-        if(findEmail.isPresent()){
-            if (!findEmail.get().getId().equals(user.getId())){
-                throw new EmailAlreadyExistsException(data.getEmail());
+        Optional<UserModel> foundUser = userRepository.findUserByEmail(email);
+
+        if(foundUser.isPresent()){
+            if (!foundUser.get().getId().equals(user.getId())){
+                throw new EmailAlreadyExistsException(email);
             }
         }
 
-        String nameFormated = stringFormatter.stringFormated(data.getName());
+        user.setName(name);
+        user.setEmail(email);
         user.setDateUpdated(OffsetDateTime.now());
-        user.setName(nameFormated);
-        user.setEmail(data.getEmail());
 
-        UserModel saveUser = userRepository.save(user);
-        return userMapper.toUpdateDTO(saveUser);
+        userRepository.saveAndFlush(user);
+
+        return userMapper.toOutput(user);
+
     }
 
     @Transactional
-    public void updateUserPassword(UUID id, UserUpdatePasswordDTO data){
+    public void updateUserPassword(UUID id, UserUpdatePasswordInput input){
+
         UserModel user = this.returnUserModel(id);
-        if (!passwordEncoder.matches(data.getCurrentPassword(), user.getPassword())){
+
+        if (!passwordEncoder.matches(input.getCurrentPassword(), user.getPassword())){
             throw new InvalidCurrentPasswordException();
         }
-        String hashedNewPassword = passwordEncoder.encode(data.getNewPassword());
+
+        String hashedNewPassword = passwordEncoder.encode(input.getNewPassword());
+
         user.setPassword(hashedNewPassword);
         user.setDateUpdated(OffsetDateTime.now());
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
     }
 
     @Transactional
@@ -123,7 +126,9 @@ public class UserService {
 
     @Transactional
     public void addGroupToUser(UUID userId, int groupId){
+
         UserModel user = this.returnUserModel(userId);
+
         GroupModel group = groupService.returnGroupModel(groupId);
 
         if (!user.getGroups().contains(group)){
@@ -132,15 +137,19 @@ public class UserService {
         }
     }
 
-    public List<GroupListDTO> listGroupsFromUser(UUID userId){
+    public List<GroupOutput> listGroupsFromUser(UUID userId){
+
         UserModel user = this.returnUserModel(userId);
 
-        return user.getGroups().stream().map(groupMapper::toListDTO).toList();
+        return user.getGroups().stream().map(groupMapper::toOutput).toList();
+
     }
 
     @Transactional
     public void removeGroupFromUser(UUID userId, int groupId){
+
         UserModel user = this.returnUserModel(userId);
+
         GroupModel group = groupService.returnGroupModel(groupId);
 
         if(user.getGroups().contains(group)){
