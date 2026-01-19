@@ -1,14 +1,12 @@
 package com.api_food.Algaworks_Food.utils;
 
-import com.api_food.Algaworks_Food.api.dto.create.RestaurantCreateDTO;
-import com.api_food.Algaworks_Food.api.dto.update.RestaurantUpdateDTO;
 import com.api_food.Algaworks_Food.domain.model.AddressModel;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StringFormatter {
+public class Formatter {
 
-    public static String stringFormated(String string) {
+    public static String string(String string) {
 
         if(string == null || string.trim().isEmpty()){
             return "";
@@ -27,35 +25,12 @@ public class StringFormatter {
         return String.join(" ", format2);
     }
 
-    public static RestaurantCreateDTO restaurantFieldsFormatter(RestaurantCreateDTO data){
-
-        data.setName(stringFormated(data.getName()));
-        data.getAddress().setZipcode(stringFormated(data.getAddress().getZipcode()));
-        data.getAddress().setStreet(stringFormated(data.getAddress().getStreet()));
-        data.getAddress().setNumber(stringFormated(data.getAddress().getNumber()));
-        data.getAddress().setComplement(stringFormated(data.getAddress().getComplement()));
-        data.getAddress().setNeighborhood(stringFormated(data.getAddress().getNeighborhood()));
-
-        return data;
-    }
-
-    public RestaurantUpdateDTO restaurantFieldsFormatter(RestaurantUpdateDTO data){
-        data.setName(stringFormated(data.getName()));
-        data.getAddress().setZipcode(stringFormated(data.getAddress().getZipcode()));
-        data.getAddress().setStreet(stringFormated(data.getAddress().getStreet()));
-        data.getAddress().setNumber(stringFormated(data.getAddress().getNumber()));
-        data.getAddress().setComplement(stringFormated(data.getAddress().getComplement()));
-        data.getAddress().setNeighborhood(stringFormated(data.getAddress().getNeighborhood()));
-
-        return data;
-    }
-
     public AddressModel addressFieldsFormatter(AddressModel data){
-        data.setZipcode(stringFormated(data.getZipcode()));
-        data.setStreet(stringFormated(data.getStreet()));
-        data.setNumber(stringFormated(data.getNumber()));
-        data.setComplement(stringFormated(data.getComplement()));
-        data.setNeighborhood(stringFormated(data.getNeighborhood()));
+        data.setZipcode(string(data.getZipcode()));
+        data.setStreet(string(data.getStreet()));
+        data.setNumber(string(data.getNumber()));
+        data.setComplement(string(data.getComplement()));
+        data.setNeighborhood(string(data.getNeighborhood()));
 
         return data;
     }
