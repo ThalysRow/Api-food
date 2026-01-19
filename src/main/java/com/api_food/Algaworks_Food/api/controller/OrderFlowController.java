@@ -1,18 +1,16 @@
-package com.api_food.Algaworks_Food.controller;
+package com.api_food.Algaworks_Food.api.controller;
 
-import com.api_food.Algaworks_Food.service.OrderFlowService;
+import com.api_food.Algaworks_Food.domain.service.OrderFlowService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/orders/{orderId}")
+@RequiredArgsConstructor
 public class OrderFlowController {
 
     private final OrderFlowService orderFlowService;
-
-    public OrderFlowController(OrderFlowService orderFlowService) {
-        this.orderFlowService = orderFlowService;
-    }
 
     @PutMapping("/confirm")
     @ResponseStatus(HttpStatus.NO_CONTENT)

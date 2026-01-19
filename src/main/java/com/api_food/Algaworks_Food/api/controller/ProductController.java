@@ -1,12 +1,11 @@
-package com.api_food.Algaworks_Food.controller;
+package com.api_food.Algaworks_Food.api.controller;
 
-import com.api_food.Algaworks_Food.dto.create.ProductCreateDTO;
-import com.api_food.Algaworks_Food.dto.list.ProductListDTO;
-import com.api_food.Algaworks_Food.dto.update.ProductUpdateDTO;
-import com.api_food.Algaworks_Food.service.ProductService;
+import com.api_food.Algaworks_Food.api.dto.input.ProductInput;
+import com.api_food.Algaworks_Food.api.dto.output.ProductOutput;
+import com.api_food.Algaworks_Food.domain.service.ProductService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,35 +13,35 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/restaurants/{restaurantId}/products")
+@RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
-
     @PostMapping("/new")
-    public ResponseEntity<ProductCreateDTO> createProduct(@PathVariable UUID restaurantId, @Valid @RequestBody ProductCreateDTO data) {
-        ProductCreateDTO productCreate = productService.createProduct(restaurantId, data);
-        return ResponseEntity.status(HttpStatus.CREATED).body(productCreate);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProductOutput createProduct(@PathVariable UUID restaurantId,
+                                       @Valid @RequestBody ProductInput input) {
+       return productService.createProduct(restaurantId, input);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ProductListDTO>> listProductsRestaurant(@PathVariable UUID restaurantId) {
-        List<ProductListDTO> products = productService.listProductsRestaurant(restaurantId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(products);
+    @ResponseStatus(HttpStatus.OK)
+    public List<ProductOutput> listProductsRestaurant(@PathVariable UUID restaurantId) {
+        return productService.listProductsInRestaurant(restaurantId);
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductListDTO> findProductInRestaurant(@PathVariable UUID restaurantId, @PathVariable int productId) {
-        ProductListDTO product = productService.findProductInRestaurant(restaurantId, productId);
-        return ResponseEntity.status(HttpStatus.OK).body(product);
+    @ResponseStatus(HttpStatus.OK)
+    public ProductOutput findProductInRestaurant(@PathVariable UUID restaurantId,
+                                                                  @PathVariable int productId) {
+       return productService.findProductInRestaurant(restaurantId, productId);
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<ProductUpdateDTO> updateProductRestaurant(@PathVariable UUID restaurantId, @PathVariable int productId, @Valid @RequestBody ProductUpdateDTO data) {
-        ProductUpdateDTO updateProduct = productService.updateProductRestaurant(restaurantId, productId, data);
-        return ResponseEntity.status(HttpStatus.OK).body(updateProduct);
+    @ResponseStatus(HttpStatus.OK)
+    public ProductOutput updateProductRestaurant(@PathVariable UUID restaurantId,
+                                                 @PathVariable int productId,
+                                                 @Valid @RequestBody ProductInput input) {
+       return productService.updateProductInRestaurant(restaurantId, productId, input);
     }
 }

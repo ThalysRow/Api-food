@@ -1,48 +1,44 @@
-package com.api_food.Algaworks_Food.controller;
+package com.api_food.Algaworks_Food.api.controller;
 
-import com.api_food.Algaworks_Food.dto.create.GroupCreateDTO;
-import com.api_food.Algaworks_Food.dto.list.GroupListDTO;
-import com.api_food.Algaworks_Food.dto.list.PermissionListDTO;
-import com.api_food.Algaworks_Food.dto.update.GroupUpdateDTO;
-import com.api_food.Algaworks_Food.service.GroupService;
+import com.api_food.Algaworks_Food.api.dto.input.GroupInput;
+import com.api_food.Algaworks_Food.api.dto.output.GroupOutput;
+import com.api_food.Algaworks_Food.api.dto.output.PermissionsOutput;
+import com.api_food.Algaworks_Food.domain.service.GroupService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/groups")
+@RequiredArgsConstructor
 public class GroupController {
     private final GroupService groupService;
 
-    public GroupController(GroupService groupService) {
-        this.groupService = groupService;
-    }
-
     @PostMapping("/new")
-    public ResponseEntity<GroupCreateDTO> newGroup(@Valid @RequestBody GroupCreateDTO data){
-        GroupCreateDTO addGroup = groupService.addGroup(data);
-        return ResponseEntity.status(HttpStatus.CREATED).body(addGroup);
+    @ResponseStatus(HttpStatus.CREATED)
+    public GroupOutput addGroup(@Valid @RequestBody GroupInput input){
+        return groupService.addGroup(input);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GroupListDTO> findGroup(@PathVariable int id){
-        GroupListDTO group = groupService.findGroupById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(group);
+    @ResponseStatus(HttpStatus.OK)
+    public GroupOutput findGroup(@PathVariable int id){
+        return groupService.findGroupById(id);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<GroupListDTO>> listAllGroups(){
-        List<GroupListDTO> groups = groupService.listAllGroups();
-        return ResponseEntity.status(HttpStatus.OK).body(groups);
+    @ResponseStatus(HttpStatus.OK)
+    public List<GroupOutput> listAllGroups(){
+        return groupService.listAllGroups();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GroupUpdateDTO> updateGroup(@PathVariable int id, @Valid @RequestBody GroupUpdateDTO data){
-        GroupUpdateDTO updateGroup = groupService.updateGroup(id, data);
-        return ResponseEntity.status(HttpStatus.OK).body(updateGroup);
+    @ResponseStatus(HttpStatus.OK)
+    public GroupOutput updateGroup(@PathVariable int id, @Valid @RequestBody GroupInput input){
+       return groupService.updateGroup(id, input);
     }
 
     @DeleteMapping("/{id}")
@@ -52,9 +48,9 @@ public class GroupController {
     }
 
     @GetMapping("{groupId}/permissions")
-    public ResponseEntity<List<PermissionListDTO>> listGroupPermissions(@PathVariable int groupId){
-        List<PermissionListDTO> permissions = groupService.listGroupPermissions(groupId);
-        return ResponseEntity.status(HttpStatus.OK).body(permissions);
+    @ResponseStatus(HttpStatus.OK)
+    public List<PermissionsOutput> listGroupPermissions(@PathVariable int groupId){
+        return groupService.listGroupPermissions(groupId);
     }
 
     @DeleteMapping("/{groupId}/permissions/{permissionId}")

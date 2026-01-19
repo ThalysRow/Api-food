@@ -1,41 +1,37 @@
-package com.api_food.Algaworks_Food.controller;
+package com.api_food.Algaworks_Food.api.controller;
 
-import com.api_food.Algaworks_Food.dto.create.CityCreateDTO;
-import com.api_food.Algaworks_Food.dto.list.CityListDTO;
-import com.api_food.Algaworks_Food.dto.update.CityUpdateDTO;
-import com.api_food.Algaworks_Food.service.CityService;
+import com.api_food.Algaworks_Food.api.dto.input.CityInput;
+import com.api_food.Algaworks_Food.api.dto.output.CityOutput;
+import com.api_food.Algaworks_Food.domain.service.CityService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/cities")
+@RequiredArgsConstructor
 public class CityController {
     private final CityService cityService;
 
-    public CityController(CityService cityService) {
-        this.cityService = cityService;
-    }
-
     @PostMapping("/new")
-    public ResponseEntity<CityCreateDTO> newCity(@Valid @RequestBody CityCreateDTO city){
-        CityCreateDTO newCity = cityService.addCity(city);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newCity);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CityOutput newCity(@Valid @RequestBody CityInput city){
+        return cityService.addCity(city);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<CityListDTO>> listCities(){
-        List<CityListDTO> cities = cityService.listCities();
-        return ResponseEntity.status(HttpStatus.OK).body(cities);
+    @ResponseStatus(HttpStatus.OK)
+    public List<CityOutput> listCities(){
+        return cityService.listCities();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CityListDTO> findCity(@PathVariable int id){
-        CityListDTO city = cityService.findCity(id);
-        return ResponseEntity.status(HttpStatus.OK).body(city);
+    @ResponseStatus(HttpStatus.OK)
+    public CityOutput findCity(@PathVariable int id){
+        return cityService.findCity(id);
     }
 
     @DeleteMapping("/{id}")
@@ -45,8 +41,8 @@ public class CityController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CityUpdateDTO> updateCity(@PathVariable int id, @Valid @RequestBody CityUpdateDTO city){
-        CityUpdateDTO updateCity = cityService.updateCity(id, city);
-        return ResponseEntity.status(HttpStatus.OK).body(updateCity);
+    @ResponseStatus(HttpStatus.OK)
+    public CityOutput updateCity(@PathVariable int id, @Valid @RequestBody CityInput city){
+        return cityService.updateCity(id, city);
     }
 }

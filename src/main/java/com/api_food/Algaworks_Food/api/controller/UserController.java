@@ -1,14 +1,14 @@
-package com.api_food.Algaworks_Food.controller;
+package com.api_food.Algaworks_Food.api.controller;
 
-import com.api_food.Algaworks_Food.dto.create.UserCreateDTO;
-import com.api_food.Algaworks_Food.dto.list.GroupListDTO;
-import com.api_food.Algaworks_Food.dto.list.UserListDTO;
-import com.api_food.Algaworks_Food.dto.update.UserUpdateDTO;
-import com.api_food.Algaworks_Food.dto.update.UserUpdatePasswordDTO;
-import com.api_food.Algaworks_Food.service.UserService;
+import com.api_food.Algaworks_Food.api.dto.input.UserInput;
+import com.api_food.Algaworks_Food.api.dto.input.UserUpdateInput;
+import com.api_food.Algaworks_Food.api.dto.input.UserUpdatePasswordInput;
+import com.api_food.Algaworks_Food.api.dto.output.GroupOutput;
+import com.api_food.Algaworks_Food.api.dto.output.UserOutput;
+import com.api_food.Algaworks_Food.domain.service.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,41 +16,38 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @PostMapping("/new")
-    public ResponseEntity<UserCreateDTO> createNewUser(@Valid @RequestBody UserCreateDTO data){
-        UserCreateDTO newUser = userService.addNewUser(data);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserOutput createNewUser(@Valid @RequestBody UserInput input){
+        return userService.addNewUser(input);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserListDTO> findUser(@PathVariable UUID id){
-        UserListDTO user = userService.findUserById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+    @ResponseStatus(HttpStatus.OK)
+    public UserOutput findUser(@PathVariable UUID id){
+        return userService.findUserById(id);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserListDTO>> listUsers(){
-        List<UserListDTO> users = userService.listAllUsers();
-        return ResponseEntity.status(HttpStatus.OK).body(users);
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserOutput> listUsers(){
+        return userService.listAllUsers();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserUpdateDTO> updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO data){
-        UserUpdateDTO updateUser = userService.updateUser(id, data);
-        return ResponseEntity.status(HttpStatus.OK).body(updateUser);
+    @ResponseStatus(HttpStatus.OK)
+    public UserOutput updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateInput input){
+        return userService.updateUser(id, input);
     }
 
     @PutMapping("/{id}/password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateUserPassword(@PathVariable UUID id, @Valid @RequestBody UserUpdatePasswordDTO data){
-        userService.updateUserPassword(id, data);
+    public void updateUserPassword(@PathVariable UUID id, @Valid @RequestBody UserUpdatePasswordInput input){
+        userService.updateUserPassword(id, input);
     }
 
     @DeleteMapping("/{id}")
@@ -66,9 +63,9 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/groups/list")
-    public ResponseEntity<List<GroupListDTO>> listGroupUserHave(@PathVariable UUID userId){
-        List<GroupListDTO> groups = userService.listGroupsFromUser(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(groups);
+    @ResponseStatus(HttpStatus.OK)
+    public List<GroupOutput> listGroupUserHave(@PathVariable UUID userId){
+        return userService.listGroupsFromUser(userId);
     }
 
     @DeleteMapping("{userId}/groups/{groupId}")

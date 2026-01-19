@@ -1,41 +1,38 @@
-package com.api_food.Algaworks_Food.controller;
+package com.api_food.Algaworks_Food.api.controller;
 
-import com.api_food.Algaworks_Food.dto.create.OrderCreateDTO;
-import com.api_food.Algaworks_Food.dto.list.OrderListDTO;
-import com.api_food.Algaworks_Food.dto.list.OrderResumeListDTO;
-import com.api_food.Algaworks_Food.service.OrderService;
+import com.api_food.Algaworks_Food.api.dto.input.OrderInput;
+import com.api_food.Algaworks_Food.api.dto.output.OrderOutput;
+import com.api_food.Algaworks_Food.api.dto.output.OrderResumeOutput;
+import com.api_food.Algaworks_Food.domain.service.OrderService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
-
     @PostMapping("/new")
-    public ResponseEntity<OrderCreateDTO> createNewOrder(@Valid @RequestBody OrderCreateDTO data) {
-        OrderCreateDTO newOrder = orderService.createNewOrder(data);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newOrder);
+    @ResponseStatus(HttpStatus.CREATED)
+    public OrderOutput addNewOrder(@Valid @RequestBody OrderInput input) {
+        return orderService.createNewOrder(input);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderListDTO> findOrderById(@PathVariable Integer id){
-        OrderListDTO order = orderService.findOrderById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(order);
+    @ResponseStatus(HttpStatus.OK)
+    public OrderOutput findOrderById(@PathVariable Integer id){
+        return orderService.findOrderById(id);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<OrderResumeListDTO>> listAllOrders(){
-        List<OrderResumeListDTO> orders = orderService.listAllOrders();
-        return ResponseEntity.status(HttpStatus.OK).body(orders);
+    @ResponseStatus(HttpStatus.OK)
+    public List<OrderResumeOutput> listAllOrders(){
+        return orderService.listAllOrders();
     }
 }

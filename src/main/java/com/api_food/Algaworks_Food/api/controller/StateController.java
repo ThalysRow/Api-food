@@ -1,47 +1,43 @@
-package com.api_food.Algaworks_Food.controller;
+package com.api_food.Algaworks_Food.api.controller;
 
-import com.api_food.Algaworks_Food.dto.create.StateCreateDTO;
-import com.api_food.Algaworks_Food.dto.list.StateListDTO;
-import com.api_food.Algaworks_Food.dto.update.StateUpdateDTO;
-import com.api_food.Algaworks_Food.service.StateService;
+import com.api_food.Algaworks_Food.api.dto.input.StateInput;
+import com.api_food.Algaworks_Food.api.dto.output.StateOutput;
+import com.api_food.Algaworks_Food.domain.service.StateService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/states")
+@RequiredArgsConstructor
 public class StateController {
     private final StateService stateService;
 
-    public StateController(StateService stateService) {
-        this.stateService = stateService;
-    }
-
     @PostMapping("/new")
-    public ResponseEntity<StateCreateDTO> newState(@Valid @RequestBody StateCreateDTO state) {
-        StateCreateDTO newState = stateService.createNewState(state);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newState);
+    @ResponseStatus(HttpStatus.CREATED)
+    public StateOutput newState(@Valid @RequestBody StateInput input) {
+        return stateService.createNewState(input);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StateListDTO> findStateById(@PathVariable int id) {
-        StateListDTO stateFinded = stateService.findStateById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(stateFinded);
+    @ResponseStatus(HttpStatus.OK)
+    public StateOutput findStateById(@PathVariable int id) {
+        return stateService.findStateById(id);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<StateListDTO>> listStates() {
-        List<StateListDTO> states = stateService.listStates();
-        return ResponseEntity.status(HttpStatus.OK).body(states);
+    @ResponseStatus(HttpStatus.OK)
+    public List<StateOutput> listStates() {
+      return stateService.listStates();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StateUpdateDTO> updateState(@PathVariable int id, @Valid @RequestBody StateUpdateDTO state) {
-        StateUpdateDTO stateUpdate = stateService.updateState(id, state);
-        return ResponseEntity.status(HttpStatus.OK).body(stateUpdate);
+    @ResponseStatus(HttpStatus.OK)
+    public StateOutput updateState(@PathVariable int id, @Valid @RequestBody StateInput input) {
+       return stateService.updateState(id, input);
     }
 
     @DeleteMapping("/{id}")

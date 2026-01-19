@@ -1,14 +1,13 @@
-package com.api_food.Algaworks_Food.controller;
+package com.api_food.Algaworks_Food.api.controller;
 
-import com.api_food.Algaworks_Food.dto.create.RestaurantCreateDTO;
-import com.api_food.Algaworks_Food.dto.list.PaymentMethodListDTO;
-import com.api_food.Algaworks_Food.dto.list.RestaurantListDTO;
-import com.api_food.Algaworks_Food.dto.list.UserListDTO;
-import com.api_food.Algaworks_Food.dto.update.RestaurantUpdateDTO;
-import com.api_food.Algaworks_Food.service.RestaurantService;
+import com.api_food.Algaworks_Food.api.dto.input.RestaurantInput;
+import com.api_food.Algaworks_Food.api.dto.output.PaymentMethodOutput;
+import com.api_food.Algaworks_Food.api.dto.output.RestaurantOutput;
+import com.api_food.Algaworks_Food.api.dto.output.UserOutput;
+import com.api_food.Algaworks_Food.domain.service.RestaurantService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,35 +15,33 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/restaurants")
+@RequiredArgsConstructor
 public class RestaurantController {
     private final RestaurantService restaurantService;
 
-    public RestaurantController(RestaurantService restaurantService) {
-        this.restaurantService = restaurantService;
-    }
-
     @PostMapping("/add")
-    public ResponseEntity<RestaurantCreateDTO> newRestaurant(@Valid @RequestBody RestaurantCreateDTO restaurant){
-        RestaurantCreateDTO newRestaurant = restaurantService.newRestaurant(restaurant);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newRestaurant);
+    @ResponseStatus(HttpStatus.CREATED)
+    public RestaurantOutput newRestaurant(@Valid @RequestBody RestaurantInput input){
+        return  restaurantService.newRestaurant(input);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RestaurantListDTO> findRestaurant(@PathVariable UUID id){
-        RestaurantListDTO restaurant = restaurantService.findRestaurantById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+    @ResponseStatus(HttpStatus.OK)
+    public RestaurantOutput findRestaurant(@PathVariable UUID id){
+        return restaurantService.findRestaurantById(id);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<RestaurantListDTO>> lisRestaurants(){
-        List<RestaurantListDTO> restaurants = restaurantService.listRestaurants();
-        return ResponseEntity.status(HttpStatus.OK).body(restaurants);
+    @ResponseStatus(HttpStatus.OK)
+    public List<RestaurantOutput> lisRestaurants(){
+        return restaurantService.listRestaurants();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RestaurantUpdateDTO> updateRestaurant(@PathVariable UUID id, @Valid @RequestBody RestaurantUpdateDTO restaurant){
-        RestaurantUpdateDTO updateRestaurant = restaurantService.updateRestaurant(id, restaurant);
-        return ResponseEntity.status(HttpStatus.OK).body(updateRestaurant);
+    @ResponseStatus(HttpStatus.OK)
+    public RestaurantOutput updateRestaurant(@PathVariable UUID id,
+                                                                @Valid @RequestBody RestaurantInput input){
+       return restaurantService.updateRestaurant(id, input);
     }
 
     @DeleteMapping("/{id}")
@@ -66,9 +63,9 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}/payment-method/all")
-    public ResponseEntity<List<PaymentMethodListDTO>> restaurantPaymentMethods(@PathVariable UUID id){
-        List<PaymentMethodListDTO> paymentMethods = restaurantService.restaurantListPaymentMethods(id);
-        return ResponseEntity.status(HttpStatus.OK).body(paymentMethods);
+    @ResponseStatus(HttpStatus.OK)
+    public List<PaymentMethodOutput> restaurantPaymentMethods(@PathVariable UUID id){
+       return restaurantService.restaurantListPaymentMethods(id);
     }
 
     @DeleteMapping("/{restaurantId}/payment-method/{paymentMethodId}")
@@ -96,9 +93,9 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}/responsibles")
-    public ResponseEntity<List<UserListDTO>> listResponsiblesForRestaurant(@PathVariable UUID id){
-        List<UserListDTO> users = restaurantService.listResponsibleUsersForRestaurant(id);
-        return ResponseEntity.status(HttpStatus.OK).body(users);
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserOutput> listResponsiblesForRestaurant(@PathVariable UUID id){
+        return restaurantService.listResponsiblesUsersForRestaurant(id);
     }
 
     @PutMapping("/{restaurantId}/responsibles/{userId}")
@@ -115,13 +112,13 @@ public class RestaurantController {
 
     @PutMapping("/activates")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void activateRestaurants(@RequestBody List<UUID> ids){
-        restaurantService.activateRestaurants(ids);
+    public void activateRestaurants(@RequestBody List<UUID> restaurantsIds){
+        restaurantService.activateRestaurants(restaurantsIds);
     }
 
     @DeleteMapping("/activates")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivateRestaurants(@RequestBody List<UUID> ids){
-        restaurantService.deactivateRestaurants(ids);
+    public void deactivateRestaurants(@RequestBody List<UUID> restaurantsIds){
+        restaurantService.deactivateRestaurants(restaurantsIds);
     }
 }
