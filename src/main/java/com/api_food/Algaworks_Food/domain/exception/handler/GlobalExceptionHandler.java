@@ -1,7 +1,7 @@
 package com.api_food.Algaworks_Food.domain.exception.handler;
 
 import com.api_food.Algaworks_Food.domain.exception.custom.*;
-import com.api_food.Algaworks_Food.exception.custom.*;
+import com.api_food.Algaworks_Food.domain.exception.custom.*;
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.IgnoredPropertyException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
