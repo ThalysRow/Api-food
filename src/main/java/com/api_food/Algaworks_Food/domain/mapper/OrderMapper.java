@@ -1,9 +1,9 @@
 package com.api_food.Algaworks_Food.domain.mapper;
 
-import com.api_food.Algaworks_Food.api.dto.create.OrderCreateDTO;
-import com.api_food.Algaworks_Food.api.dto.list.ListProductInOrderDTO;
-import com.api_food.Algaworks_Food.api.dto.list.OrderListDTO;
-import com.api_food.Algaworks_Food.api.dto.list.OrderResumeListDTO;
+import com.api_food.Algaworks_Food.api.dto.input.OrderInput;
+import com.api_food.Algaworks_Food.api.dto.output.OrderOutput;
+import com.api_food.Algaworks_Food.api.dto.output.OrderResumeOutput;
+import com.api_food.Algaworks_Food.api.dto.output.ProductInOrderOutput;
 import com.api_food.Algaworks_Food.domain.model.OrderItemModel;
 import com.api_food.Algaworks_Food.domain.model.OrderModel;
 import org.mapstruct.Mapper;
@@ -15,18 +15,18 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
     @Mapping(target = "itens", source = "itens")
-    OrderModel toCreateModel(OrderCreateDTO orderCreateDTO);
+    OrderModel toModel(OrderInput input);
 
     @Mapping(target = "dateCancelled", source = "dateCancelled")
-    OrderListDTO toListDTO(OrderModel orderModel);
+    OrderOutput toList(OrderModel orderModel);
 
-    OrderResumeListDTO toListResumeDTO(OrderModel orderModel);
+    OrderResumeOutput toResumeOutput(OrderModel orderModel);
 
     @Mapping(target = "itens", source = "itens")
-    OrderCreateDTO toCreateDTO(OrderModel orderModel);
+    OrderOutput toOutput(OrderModel orderModel);
 
     @Named("mapOrderItems")
-    List<ListProductInOrderDTO> mapOrderItems(List<OrderItemModel> itens);
+    List<ProductInOrderOutput> mapOrderItems(List<OrderItemModel> itens);
 
     @Mapping(target = "id", source = "product.id")
     @Mapping(target = "name", source = "product.name")
@@ -37,5 +37,5 @@ public interface OrderMapper {
     @Mapping(target = "unitPrice", source = "unitPrice")
     @Mapping(target = "totalPrice", source = "totalPrice")
     @Mapping(target = "observations", source = "observations")
-    ListProductInOrderDTO mapOrderItem(OrderItemModel orderItem);
+    ProductInOrderOutput mapOrderItem(OrderItemModel orderItem);
 }
