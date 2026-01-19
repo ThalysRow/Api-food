@@ -1,5 +1,7 @@
 package com.api_food.Algaworks_Food.domain.model;
 
+import com.api_food.Algaworks_Food.api.dto.input.AddressInput;
+import com.api_food.Algaworks_Food.utils.Formatter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
@@ -26,4 +28,17 @@ public class AddressModel {
     @ManyToOne
     @JoinColumn(name = "address_city_id")
     private CityModel city;
+
+    public static AddressModel createAddress(AddressInput input) {
+
+        AddressModel address  = new AddressModel();
+
+        address.setZipcode(Formatter.string(input.getZipcode()));
+        address.setStreet(Formatter.string(input.getStreet()));
+        address.setNumber(Formatter.string(input.getNumber()));
+        address.setComplement(Formatter.string(input.getComplement()));
+        address.setNeighborhood(Formatter.string(input.getNeighborhood()));
+
+        return address;
+    }
 }

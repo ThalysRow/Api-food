@@ -57,4 +57,16 @@ public class UserModel {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "restaurant_id"))
     private List<RestaurantModel> restaurants;
+
+    public static UserModel addUser(String name, String email, String password){
+        UserModel user = new UserModel();
+        user.setName(name);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setDateCreated(OffsetDateTime.now());
+        user.setDateUpdated(OffsetDateTime.now());
+
+        return user;
+    }
+
 }

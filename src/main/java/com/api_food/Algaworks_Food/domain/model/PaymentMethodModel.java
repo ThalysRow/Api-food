@@ -27,4 +27,11 @@ public class PaymentMethodModel {
 
     @ManyToMany(mappedBy = "paymentMethods")
     private List<RestaurantModel> restaurants;
+
+    public static PaymentMethodModel addPayment(String name){
+
+        PaymentMethodModel paymentMethod = new PaymentMethodModel();
+        paymentMethod.setName(name);
+        return paymentMethod;
+    }
 }

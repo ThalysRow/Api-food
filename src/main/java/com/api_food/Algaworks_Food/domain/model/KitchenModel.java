@@ -20,4 +20,10 @@ public class KitchenModel {
     private String name;
     @OneToMany(mappedBy = "kitchen")
     private List<RestaurantModel> restaurants;
+
+    public static KitchenModel addKitchen(String name) {
+        KitchenModel kitchen = new KitchenModel();
+        kitchen.setName(name);
+        return kitchen;
+    }
 }

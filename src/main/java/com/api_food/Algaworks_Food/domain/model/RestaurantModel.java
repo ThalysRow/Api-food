@@ -1,5 +1,6 @@
 package com.api_food.Algaworks_Food.domain.model;
 
+import com.api_food.Algaworks_Food.utils.Formatter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -66,4 +68,21 @@ public class RestaurantModel {
     @ManyToMany(mappedBy = "restaurants")
     @JsonIgnore
     private List<UserModel> users;
+
+    public static RestaurantModel createRestaurant(String name, BigDecimal deliveryFee,
+                                                   KitchenModel kitchen, AddressModel address) {
+
+        RestaurantModel restaurant = new RestaurantModel();
+
+        restaurant.setName(Formatter.string(name));
+        restaurant.setDeliveryFee(deliveryFee);
+        restaurant.setKitchen(kitchen);
+        restaurant.setAddress(address);
+        restaurant.setActive(Boolean.TRUE);
+        restaurant.setOpen(Boolean.TRUE);
+        restaurant.setDateCreated(OffsetDateTime.now());
+        restaurant.setDateUpdated(OffsetDateTime.now());
+
+        return restaurant;
+    }
 }

@@ -19,4 +19,13 @@ public class CityModel {
     @ManyToOne
     @JoinColumn(name = "state_id", nullable = false)
     private StateModel state;
+
+   public static CityModel createCity(String name, StateModel state){
+       CityModel city = new CityModel();
+       city.setName(name);
+       city.setState(state);
+
+       return city;
+   }
+
 }

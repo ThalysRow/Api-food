@@ -24,4 +24,10 @@ public class StateModel {
     @OneToMany(mappedBy = "state")
     @JsonIgnore
     private List<CityModel> cities;
+
+    public static StateModel addState(String name){
+        StateModel state = new StateModel();
+        state.setName(name);
+        return state;
+    }
 }

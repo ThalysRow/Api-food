@@ -39,4 +39,16 @@ public class ProductModel {
 
     @OneToMany(mappedBy = "product")
     private List<OrderItemModel> orderItems;
+
+    public static ProductModel addProduct(String name, String description,
+                                          BigDecimal price, RestaurantModel restaurant){
+        ProductModel product  = new ProductModel();
+        product.setName(name);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setRestaurant(restaurant);
+        product.setActive(true);
+
+        return product;
+    }
 }
