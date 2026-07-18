@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.domain.service;
 
 import com.api_food.Algaworks_Food.api.dto.input.KitchenInput;
 import com.api_food.Algaworks_Food.api.dto.output.KitchenOutput;
+import com.api_food.Algaworks_Food.api.dto.output.PageResponseOutput;
 import com.api_food.Algaworks_Food.domain.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.domain.exception.custom.EntityInUseException;
 import com.api_food.Algaworks_Food.domain.exception.custom.KitchenNotFoundException;
@@ -10,10 +11,10 @@ import com.api_food.Algaworks_Food.domain.model.KitchenModel;
 import com.api_food.Algaworks_Food.domain.repository.KitchenRepository;
 import com.api_food.Algaworks_Food.utils.Formatter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -39,8 +40,8 @@ public class KitchenService {
         return kitchenMapper.toOutput(kitchen);
     }
 
-    public List<KitchenOutput> listKitchens(){
-        return kitchenRepository.findAll().stream().map(kitchenMapper::toOutput).toList();
+    public PageResponseOutput<KitchenOutput> listKitchens(Pageable pageable){
+        return PageResponseOutput.of(kitchenRepository.findAll(pageable).map(kitchenMapper::toOutput));
     }
 
     public KitchenOutput findKitchenById(UUID id){

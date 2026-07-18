@@ -2,13 +2,14 @@ package com.api_food.Algaworks_Food.api.controller;
 
 import com.api_food.Algaworks_Food.api.dto.input.KitchenInput;
 import com.api_food.Algaworks_Food.api.dto.output.KitchenOutput;
+import com.api_food.Algaworks_Food.api.dto.output.PageResponseOutput;
 import com.api_food.Algaworks_Food.domain.service.KitchenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -31,8 +32,8 @@ public class KitchenController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<KitchenOutput> listKitchens(){
-        return kitchenService.listKitchens();
+    public PageResponseOutput<KitchenOutput> listKitchens(Pageable pageable){
+        return kitchenService.listKitchens(pageable);
     }
 
     @DeleteMapping("/{id}")
