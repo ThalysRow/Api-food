@@ -1,6 +1,6 @@
 package com.api_food.Algaworks_Food.domain.specs;
 
-import com.api_food.Algaworks_Food.api.dto.input.OrderFilter;
+import com.api_food.Algaworks_Food.api.dto.input.OrderFilterInput;
 import com.api_food.Algaworks_Food.domain.model.OrderModel;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 
 public class OrderSpecs {
-    public static Specification<OrderModel> appFilter(OrderFilter filter) {
+    public static Specification<OrderModel> appFilter(OrderFilterInput filter) {
         return (root, query, builder) -> {
             var predicates = new ArrayList<Predicate>();
 

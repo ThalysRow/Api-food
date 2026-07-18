@@ -2,10 +2,7 @@ package com.api_food.Algaworks_Food.domain.model;
 
 import com.api_food.Algaworks_Food.api.dto.input.AddressInput;
 import com.api_food.Algaworks_Food.utils.Formatter;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +22,7 @@ public class AddressModel {
     private String complement;
     @Column(name = "address_neighborhood")
     private String neighborhood;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_city_id")
     private CityModel city;
 

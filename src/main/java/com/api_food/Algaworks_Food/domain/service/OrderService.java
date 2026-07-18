@@ -1,6 +1,6 @@
 package com.api_food.Algaworks_Food.domain.service;
 
-import com.api_food.Algaworks_Food.api.dto.input.OrderFilter;
+import com.api_food.Algaworks_Food.api.dto.input.OrderFilterInput;
 import com.api_food.Algaworks_Food.api.dto.input.OrderInput;
 import com.api_food.Algaworks_Food.api.dto.output.OrderOutput;
 import com.api_food.Algaworks_Food.api.dto.output.OrderResumeOutput;
@@ -102,7 +102,7 @@ public class OrderService {
                 .orElseThrow(() -> new OrderNotFoundException(id));
     }
 
-    public List<OrderResumeOutput> listOrders(OrderFilter filter) {
+    public List<OrderResumeOutput> listOrders(OrderFilterInput filter) {
         Specification<OrderModel> specs = OrderSpecs.appFilter(filter);
         return  orderRepository.findAll(specs).stream().map(orderMapper::toResumeOutput).toList();
     }
