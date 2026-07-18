@@ -43,7 +43,8 @@ public class ProductService {
 
     public List<ProductOutput> listProductsInRestaurant(UUID id){
         RestaurantModel restaurant = restaurantService.returnRestaurantModel(id);
-        return restaurant.getProducts().stream().map(productMapper::toOutput).toList();
+        return productRepository.findActiveProducts(restaurant).stream().map(productMapper::toOutput).toList();
+//        return restaurant.getProducts().stream().map(productMapper::toOutput).toList();
     }
 
     public ProductOutput findProductInRestaurant(UUID restaurantId, int productId ){
