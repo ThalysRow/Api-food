@@ -26,8 +26,9 @@ public class ProductController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductOutput> listProductsRestaurant(@PathVariable UUID restaurantId) {
-        return productService.listProductsInRestaurant(restaurantId);
+    public List<ProductOutput> listProductsRestaurant(@PathVariable UUID restaurantId,
+                                                      @RequestParam (required = false) Boolean listDesableProducts) {
+        return productService.listProductsInRestaurant(restaurantId, listDesableProducts);
     }
 
     @GetMapping("/{productId}")
