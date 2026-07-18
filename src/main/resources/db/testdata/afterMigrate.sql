@@ -16,9 +16,9 @@ delete from cities;
 delete from states;
 delete from kitchens;
 
--- Todas as sequences de colunas inteiras reiniciam em 1 (MINVALUE padrao do Postgres).
--- Os ids de teste (1, 2, 3...) sao explicitos; o setval no fim joga a sequence
--- acima do maior id, evitando colisao quando o banco gera ids automaticos.
+-- All integer-column sequences restart at 1 (Postgres default MINVALUE).
+-- Test ids (1, 2, 3...) are explicit; the setval below pushes each sequence
+-- above the highest id, avoiding collisions when the DB generates ids automatically.
 ALTER SEQUENCE cities_id_seq RESTART WITH 1;
 ALTER SEQUENCE states_id_seq RESTART WITH 1;
 ALTER SEQUENCE payment_methods_id_seq RESTART WITH 1;
@@ -28,7 +28,7 @@ ALTER SEQUENCE products_id_seq RESTART WITH 1;
 ALTER SEQUENCE orders_id_seq RESTART WITH 1;
 ALTER SEQUENCE order_items_id_seq RESTART WITH 1;
 
--- UUIDs fixos (colunas UUID nao usam sequence)
+-- Fixed UUIDs (UUID columns do not use sequences)
  insert into kitchens (id, name) values
    ('11111111-1111-1111-1111-111111111111', 'Italian'),
    ('22222222-2222-2222-2222-222222222222', 'Chinese'),
@@ -115,7 +115,22 @@ values
     (2, 1, 10.99, 10.99, null, 2, 2),
     (3, 1, 10.99, 10.99, 'No peanuts', 2, 2);
 
--- Ajusta cada sequence para cima do maior id existente (evita colisao com ids explicitos de teste)
+insert into orders (id, subtotal, delivery_fee, total_value, status,
+                    restaurant_id, user_id, payment_method_id,
+                    address_city_id, address_zipcode, address_street,
+                    address_number, address_neighborhood, date_created)
+values
+    (3, 20.00, 5.00, 25.00, 'CREATED',
+     'bbbbbbb1-bbbb-bbbb-bbbb-bbbbbbbbbbb1', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1', 1,
+     1, '90001', 'St A', '1', 'Downtown', now() - interval '8 days'),
+    (4, 15.00, 4.00, 19.00, 'CONFIRMED',
+     'bbbbbbb2-bbbb-bbbb-bbbb-bbbbbbbbbbb2', 'aaaaaaa2-aaaa-aaaa-aaaa-aaaaaaaaaaa2', 2,
+     2, '77001', 'St B', '2', 'Chinatown', now() - interval '1 day'),
+    (5, 12.00, 3.00, 15.00, 'DELIVERED',
+     'bbbbbbb3-bbbb-bbbb-bbbb-bbbbbbbbbbb3', 'aaaaaaa3-aaaa-aaaa-aaaa-aaaaaaaaaaa3', 3,
+     3, '10001', 'St C', '3', 'South Side', now() - interval '30 days');
+
+-- Push each sequence above the highest existing id (avoids collisions with explicit test ids)
 SELECT setval('states_id_seq', (SELECT MAX(id) FROM states));
 SELECT setval('cities_id_seq', (SELECT MAX(id) FROM cities));
 SELECT setval('payment_methods_id_seq', (SELECT MAX(id) FROM payment_methods));

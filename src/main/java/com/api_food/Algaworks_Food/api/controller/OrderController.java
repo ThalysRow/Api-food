@@ -1,5 +1,6 @@
 package com.api_food.Algaworks_Food.api.controller;
 
+import com.api_food.Algaworks_Food.api.dto.input.OrderFilter;
 import com.api_food.Algaworks_Food.api.dto.input.OrderInput;
 import com.api_food.Algaworks_Food.api.dto.output.OrderOutput;
 import com.api_food.Algaworks_Food.api.dto.output.OrderResumeOutput;
@@ -32,7 +33,7 @@ public class OrderController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderResumeOutput> listAllOrders(){
-        return orderService.listAllOrders();
+    public List<OrderResumeOutput> searchOrders(@ModelAttribute OrderFilter filter) {
+        return orderService.listOrders(filter);
     }
 }

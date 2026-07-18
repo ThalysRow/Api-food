@@ -1,5 +1,6 @@
 package com.api_food.Algaworks_Food.domain.service;
 
+import com.api_food.Algaworks_Food.api.dto.input.OrderFilter;
 import com.api_food.Algaworks_Food.api.dto.input.OrderInput;
 import com.api_food.Algaworks_Food.api.dto.output.OrderOutput;
 import com.api_food.Algaworks_Food.api.dto.output.OrderResumeOutput;
@@ -9,8 +10,10 @@ import com.api_food.Algaworks_Food.domain.exception.custom.OrderNotFoundExceptio
 import com.api_food.Algaworks_Food.domain.mapper.OrderMapper;
 import com.api_food.Algaworks_Food.domain.model.*;
 import com.api_food.Algaworks_Food.domain.repository.OrderRepository;
+import com.api_food.Algaworks_Food.domain.specs.OrderSpecs;
 import com.api_food.Algaworks_Food.utils.Formatter;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,8 +102,9 @@ public class OrderService {
                 .orElseThrow(() -> new OrderNotFoundException(id));
     }
 
-    public List<OrderResumeOutput> listAllOrders(){
-        return  orderRepository.findAll().stream().map(orderMapper::toResumeOutput).toList();
+    public List<OrderResumeOutput> listOrders(OrderFilter filter) {
+        Specification<OrderModel> specs = OrderSpecs.appFilter(filter);
+        return  orderRepository.findAll(specs).stream().map(orderMapper::toResumeOutput).toList();
     }
 
     public OrderModel returnOrderModel(Integer orderId){
