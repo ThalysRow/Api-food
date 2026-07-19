@@ -20,7 +20,7 @@ public class SalesQueryImpl implements SalesQueryService {
     private EntityManager manager;
 
     @Override
-    public List<DailySalesOutput> searchDailySales(DailySalesFilter filter) {
+    public List<DailySalesOutput> searchDailySales(DailySalesFilter filter, String timeZone) {
 
         var predicates = new ArrayList<Predicate>();
 
@@ -42,9 +42,16 @@ public class SalesQueryImpl implements SalesQueryService {
             predicates.add(builder.lessThanOrEqualTo(root.get("dateCreated"), filter.getCreatedAtUntil()));
         }
 
+        var convertDateCreated = builder.function("timezone",
+                LocalDate.class,
+                builder.literal(timeZone),
+                builder.function("timezone",
+                        LocalDate.class, builder.literal("+00:00"),
+                        root.get("dateCreated")));
+
         var functionDateCreated = builder.function("date",
                 LocalDate.class,
-                root.get("dateCreated"));
+                convertDateCreated);
 
         var select = builder.construct(DailySalesOutput.class,
                 functionDateCreated,

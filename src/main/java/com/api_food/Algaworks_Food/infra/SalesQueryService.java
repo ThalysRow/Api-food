@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface SalesQueryService {
 
-    List<DailySalesOutput> searchDailySales(DailySalesFilter filter);
+    List<DailySalesOutput> searchDailySales(DailySalesFilter filter, String timeZone);
 }
