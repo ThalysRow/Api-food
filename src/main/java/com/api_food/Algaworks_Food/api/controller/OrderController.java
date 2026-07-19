@@ -4,13 +4,14 @@ import com.api_food.Algaworks_Food.api.dto.input.OrderFilterInput;
 import com.api_food.Algaworks_Food.api.dto.input.OrderInput;
 import com.api_food.Algaworks_Food.api.dto.output.OrderOutput;
 import com.api_food.Algaworks_Food.api.dto.output.OrderResumeOutput;
+import com.api_food.Algaworks_Food.api.dto.output.PageResponseOutput;
 import com.api_food.Algaworks_Food.domain.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -33,7 +34,8 @@ public class OrderController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderResumeOutput> searchOrders(@ModelAttribute OrderFilterInput filter) {
-        return orderService.listOrders(filter);
+    public PageResponseOutput<OrderResumeOutput> searchOrders(@ModelAttribute OrderFilterInput filter,
+                                                             @PageableDefault(size = 10) Pageable pageable) {
+        return orderService.listOrders(filter, pageable);
     }
 }

@@ -1,6 +1,8 @@
 package com.api_food.Algaworks_Food.domain.repository;
 
 import com.api_food.Algaworks_Food.domain.model.OrderModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +16,7 @@ public interface OrderRepository extends JpaRepository<OrderModel, Integer>,
     @Query("from OrderModel o join fetch o.user join fetch o.restaurant r join fetch r.kitchen")
     List<OrderModel> findAll();
 
-    @EntityGraph(attributePaths = {"user", "restaurant", "restaurant.kitchen", "itens",
+    @EntityGraph(attributePaths = {"user", "restaurant", "restaurant.kitchen",
             "deliveryAddress", "deliveryAddress.city", "deliveryAddress.city.state"})
-    List<OrderModel> findAll(Specification<OrderModel> spec);
+    Page<OrderModel> findAll(Specification<OrderModel> spec, Pageable pageable);
 }

@@ -7,6 +7,7 @@ import com.api_food.Algaworks_Food.domain.service.KitchenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,7 @@ public class KitchenController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public PageResponseOutput<KitchenOutput> listKitchens(Pageable pageable){
+    public PageResponseOutput<KitchenOutput> listKitchens(@PageableDefault(size = 10) Pageable pageable){
         return kitchenService.listKitchens(pageable);
     }
 
