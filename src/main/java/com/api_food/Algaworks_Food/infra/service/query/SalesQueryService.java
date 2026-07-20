@@ -1,4 +1,4 @@
-package com.api_food.Algaworks_Food.infra;
+package com.api_food.Algaworks_Food.infra.service.query;
 
 import com.api_food.Algaworks_Food.api.dto.output.DailySalesOutput;
 import com.api_food.Algaworks_Food.domain.filter.DailySalesFilter;
