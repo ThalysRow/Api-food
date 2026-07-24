@@ -103,4 +103,15 @@ public class ProductService {
     public ProductModel returnProductModel(int id){
         return productRepository.findById(id).orElseThrow(()-> new BusinessException("product", id));
     }
+
+    public ProductModel findProductModelInRestaurant(UUID restaurantId, int productId) {
+
+        RestaurantModel restaurant = restaurantService.verifyFieldRestaurant(restaurantId);
+
+        return restaurant.getProducts()
+                .stream()
+                .filter(product -> product.getId() == productId)
+                .findFirst()
+                .orElseThrow(()-> new ProductNotFoundInRestaurantException(productId, restaurant.getName()));
+    }
 }
