@@ -341,4 +341,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
+
+    @ExceptionHandler(PhotoStorageException.class)
+    public ResponseEntity<?> handlePhotoStorageException(PhotoStorageException ex, WebRequest request){
+
+        HttpStatusCode status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ProblemType type = ProblemType.PHOTO_STORAGE_ERROR;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
+
+        return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
+    }
 }
