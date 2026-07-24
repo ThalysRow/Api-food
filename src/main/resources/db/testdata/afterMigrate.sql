@@ -2,6 +2,7 @@
 
 delete from restaurant_payment_methods;
 delete from order_items;
+delete from photo_product;
 delete from products;
 delete from group_users;
 delete from group_permissions;
