@@ -10,7 +10,8 @@ public enum ProblemType {
     BUSINESS_ERROR("/business-error", "Business rule violation"),
     INVALID_PARAMETER("/invalid-parameter", "Invalid parameter"),
     INVALID_DATA("/invalid-data", "Invalid data"),
-    UNAUTHORIZED("/unauthorized", "Unauthorized");
+    UNAUTHORIZED("/unauthorized", "Unauthorized"),
+    PHOTO_STORAGE_ERROR("/photo-storage-error", "Failed to store photo");
 
     private String title;
     private String uri;
