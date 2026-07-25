@@ -353,4 +353,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
     }
+
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public ResponseEntity<?> handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException ex, WebRequest request){
+
+        HttpStatus status = HttpStatus.NOT_ACCEPTABLE;
+        ProblemType type = ProblemType.INCOMPATIBLE_MEDIA_TYPE;
+        String detail = ex.getMessage();
+
+        MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();
+
+        return handleExceptionInternal(ex, message, new HttpHeaders(), status, request);
+    }
 }

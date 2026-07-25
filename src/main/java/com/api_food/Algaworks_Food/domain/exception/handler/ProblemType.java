@@ -11,7 +11,8 @@ public enum ProblemType {
     INVALID_PARAMETER("/invalid-parameter", "Invalid parameter"),
     INVALID_DATA("/invalid-data", "Invalid data"),
     UNAUTHORIZED("/unauthorized", "Unauthorized"),
-    PHOTO_STORAGE_ERROR("/photo-storage-error", "Failed to store photo");
+    PHOTO_STORAGE_ERROR("/photo-storage-error", "Failed to store photo"),
+    INCOMPATIBLE_MEDIA_TYPE("/incompatible-media-type", "incompatible media type");
 
     private String title;
     private String uri;
