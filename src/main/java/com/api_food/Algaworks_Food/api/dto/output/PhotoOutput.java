@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PhotoUpdateOutput {
+public class PhotoOutput {
     private int productId;
     private String fileName;
     private String description;

@@ -1,7 +1,7 @@
 package com.api_food.Algaworks_Food.domain.service;
 
 import com.api_food.Algaworks_Food.api.dto.input.PhotoUpdateInput;
-import com.api_food.Algaworks_Food.api.dto.output.PhotoUpdateOutput;
+import com.api_food.Algaworks_Food.api.dto.output.PhotoOutput;
 import com.api_food.Algaworks_Food.domain.exception.custom.PhotoNotFoundInProductException;
 import com.api_food.Algaworks_Food.domain.mapper.PhotoProductMapper;
 import com.api_food.Algaworks_Food.domain.model.PhotoProductModel;
@@ -24,21 +24,35 @@ public class PhotoProductService {
     private final PhotoProductMapper photoProductMapper;
     private final PhotoStorage photoStorage;
 
+    public PhotoOutput findPhotoById(UUID restaurantId, int productId){
+        productService.findProductModelInRestaurant(restaurantId, productId);
+
+        PhotoProductModel photo = this.returnPhotoProductModel(productId);
+        PhotoOutput output = photoProductMapper.toOutput(photo);
+        output.setUrl(photoStorage.getUrl(photo.getFileName()));
+
+        return output;
+    }
+
+    private PhotoProductModel returnPhotoProductModel(int productId){
+        return productRepositoryQueries.findById(productId)
+                .orElseThrow(()-> new PhotoNotFoundInProductException(productId));
+    }
 
     @Transactional
-    public PhotoUpdateOutput save(PhotoUpdateInput input, UUID restaurantId, int productId){
+    public PhotoOutput save(PhotoUpdateInput input, UUID restaurantId, int productId){
 
         ProductModel product = productService.findProductModelInRestaurant(restaurantId, productId);
 
         String fileName = photoStorage.save(input.getImage(), productId);
 
-        Optional<PhotoProductModel> findedPhoto = productRepositoryQueries.findById(productId);
+        Optional<PhotoProductModel> foundPhoto = productRepositoryQueries.findById(productId);
 
         PhotoProductModel photo;
 
-        if(findedPhoto.isPresent()){
+        if(foundPhoto.isPresent()){
 
-            photo = findedPhoto.get();
+            photo = foundPhoto.get();
 
             if(!photo.getFileName().equals(fileName)){
                 photoStorage.remove(photo.getFileName());
@@ -53,22 +67,21 @@ public class PhotoProductService {
 
         photo = productRepositoryQueries.save(photo);
 
-        PhotoUpdateOutput output = photoProductMapper.toDto(photo);
+        PhotoOutput output = photoProductMapper.toOutput(photo);
         output.setUrl(photoStorage.getUrl(photo.getFileName()));
 
         return output;
     }
 
     @Transactional
-    public void removeImage(UUID restaurantId, int productId){
+    public void removePhoto(UUID restaurantId, int productId){
 
         productService.findProductModelInRestaurant(restaurantId, productId);
 
-        PhotoProductModel image = productRepositoryQueries.findById(productId)
-                .orElseThrow(()-> new PhotoNotFoundInProductException(productId));
+        PhotoProductModel photo = this.returnPhotoProductModel(productId);
 
-        photoStorage.remove(image.getFileName());
-        productRepositoryQueries.remove(image);
+        photoStorage.remove(photo.getFileName());
+        productRepositoryQueries.remove(photo);
 
     }
 
