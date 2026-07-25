@@ -66,6 +66,6 @@ public class OrderModel {
     @Column(name = "date_delivered", columnDefinition = "datetime")
     private OffsetDateTime dateDelivered;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OrderItemModel> itens;
 }
