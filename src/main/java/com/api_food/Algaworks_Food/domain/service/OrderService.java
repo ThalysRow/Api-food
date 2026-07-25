@@ -2,10 +2,7 @@ package com.api_food.Algaworks_Food.domain.service;
 
 import com.api_food.Algaworks_Food.api.dto.input.OrderFilterInput;
 import com.api_food.Algaworks_Food.api.dto.input.OrderInput;
-import com.api_food.Algaworks_Food.api.dto.output.OrderOutput;
-import com.api_food.Algaworks_Food.api.dto.output.OrderResumeOutput;
-import com.api_food.Algaworks_Food.api.dto.output.PageResponseOutput;
-import com.api_food.Algaworks_Food.api.dto.output.ProductOutput;
+import com.api_food.Algaworks_Food.api.dto.output.*;
 import com.api_food.Algaworks_Food.domain.enums.OrderStatus;
 import com.api_food.Algaworks_Food.domain.exception.custom.OrderNotFoundException;
 import com.api_food.Algaworks_Food.domain.mapper.OrderMapper;
@@ -22,9 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -52,25 +51,42 @@ public class OrderService {
         CityModel city = cityService.verifyCityField(cityId);
 
 
-        List<Integer> productsId = input.getItens().stream().map(productId -> productId.getId()).toList();
+        List<Integer> productsId = input.getItens().stream().map(ProductInOrderOutput::getId).toList();
 
-        productService.verifyProductsField(restaurantId, productsId);
+        List<ProductModel> productsFound = productService.returnProductModels(restaurantId, productsId);
+
+        Map<Integer, ProductModel> productsMap = productsFound.stream()
+                .collect(Collectors.toMap(ProductModel::getId, p -> p));
 
         BigDecimal deliveryFee = restaurant.getDeliveryFee();
-        BigDecimal subtotal = new BigDecimal(0);
+        BigDecimal subtotal = BigDecimal.ZERO;
+        List<OrderItemModel> orderItens = new ArrayList<>();
 
-        for (int i = 0; i < input.getItens().size(); i++) {
-            BigDecimal quantity = input.getItens().get(i).getQuantity();
-            int productId = input.getItens().get(i).getId();
+        OrderModel addOrder =  orderMapper.toModel(input);
 
-            ProductOutput product = productService.findProductInRestaurant(restaurant.getId(), productId);
+        for (ProductInOrderOutput itemInput : input.getItens()){
+                ProductModel product = productsMap.get(itemInput.getId());
+                BigDecimal quantity = itemInput.getQuantity();
+                BigDecimal unitPrice = product.getPrice();
+                BigDecimal totalPrice = unitPrice.multiply(quantity);
 
-            subtotal = subtotal.add(product.getPrice().multiply(quantity));
+                subtotal = subtotal.add(totalPrice);
+
+                OrderItemModel orderItem = new OrderItemModel();
+                orderItem.setProduct(product);
+                orderItem.setQuantity(quantity);
+                orderItem.setUnitPrice(unitPrice);
+                orderItem.setTotalPrice(totalPrice);
+                orderItem.setObservations(Formatter.string(itemInput.getObservations()));
+                orderItem.setOrder(addOrder);
+
+                orderItens.add(orderItem);
+
         }
 
         BigDecimal totalValue = subtotal.add(deliveryFee);
 
-        OrderModel addOrder =  orderMapper.toModel(input);
+
 
         addOrder.setSubtotal(subtotal);
         addOrder.setDeliveryFee(deliveryFee);
@@ -82,22 +98,11 @@ public class OrderService {
         addOrder.setRestaurant(restaurant);
         addOrder.setUser(user);
         addOrder.setDateCreated(OffsetDateTime.now());
-        addOrder.setItens(input.getItens().stream().map(
-                item -> {
-                    ProductModel product = productService.returnProductModel(item.getId());
-                    OrderItemModel orderItem = new OrderItemModel();
-                    orderItem.setProduct(product);
-                    orderItem.setQuantity(item.getQuantity());
-                    orderItem.setUnitPrice(product.getPrice());
-                    orderItem.setTotalPrice(product.getPrice().multiply(item.getQuantity()));
-                    orderItem.setObservations(stringFormatter.string(item.getObservations()));
-                    orderItem.setOrder(addOrder);
-                    return orderItem;
-                }).toList());
+        addOrder.setItens(orderItens);
 
         orderRepository.saveAndFlush(addOrder);
 
-        return orderMapper.toOutput(addOrder);
+        return this.findOrderById(addOrder.getId());
     }
 
     public OrderOutput findOrderById(Integer id){
