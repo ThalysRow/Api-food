@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
-public class ImageUpdateInput {
+public class PhotoUpdateInput {
 
     @NotNull(message = "The field image is required")
     @FileSize(max = "20MB")

@@ -1,7 +1,7 @@
 package com.api_food.Algaworks_Food.domain.service;
 
-import com.api_food.Algaworks_Food.api.dto.input.ImageUpdateInput;
-import com.api_food.Algaworks_Food.api.dto.output.ImageUpdateOutput;
+import com.api_food.Algaworks_Food.api.dto.input.PhotoUpdateInput;
+import com.api_food.Algaworks_Food.api.dto.output.PhotoUpdateOutput;
 import com.api_food.Algaworks_Food.domain.exception.custom.PhotoNotFoundInProductException;
 import com.api_food.Algaworks_Food.domain.mapper.PhotoProductMapper;
 import com.api_food.Algaworks_Food.domain.model.PhotoProductModel;
@@ -9,7 +9,6 @@ import com.api_food.Algaworks_Food.domain.model.ProductModel;
 import com.api_food.Algaworks_Food.domain.repository.ProductRepositoryQueries;
 import com.api_food.Algaworks_Food.infra.storage.PhotoStorage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +20,13 @@ import java.util.UUID;
 public class PhotoProductService {
 
     private final ProductService productService;
-
-    @Qualifier("productRepositoryImpl")
     private final ProductRepositoryQueries productRepositoryQueries;
     private final PhotoProductMapper photoProductMapper;
     private final PhotoStorage photoStorage;
 
 
     @Transactional
-    public ImageUpdateOutput save(ImageUpdateInput input, UUID restaurantId, int productId){
+    public PhotoUpdateOutput save(PhotoUpdateInput input, UUID restaurantId, int productId){
 
         ProductModel product = productService.findProductModelInRestaurant(restaurantId, productId);
 
@@ -56,7 +53,7 @@ public class PhotoProductService {
 
         photo = productRepositoryQueries.save(photo);
 
-        ImageUpdateOutput output = photoProductMapper.toDto(photo);
+        PhotoUpdateOutput output = photoProductMapper.toDto(photo);
         output.setUrl(photoStorage.getUrl(photo.getFileName()));
 
         return output;

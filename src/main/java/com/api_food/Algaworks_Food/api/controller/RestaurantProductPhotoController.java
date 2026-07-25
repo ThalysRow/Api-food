@@ -1,7 +1,7 @@
 package com.api_food.Algaworks_Food.api.controller;
 
-import com.api_food.Algaworks_Food.api.dto.input.ImageUpdateInput;
-import com.api_food.Algaworks_Food.api.dto.output.ImageUpdateOutput;
+import com.api_food.Algaworks_Food.api.dto.input.PhotoUpdateInput;
+import com.api_food.Algaworks_Food.api.dto.output.PhotoUpdateOutput;
 import com.api_food.Algaworks_Food.domain.service.PhotoProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,24 +12,24 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("restaurants/{restaurantId}/products/{productId}/image")
+@RequestMapping("restaurants/{restaurantId}/products/{productId}/photo")
 @RequiredArgsConstructor
-public class RestaurantProductImage {
+public class RestaurantProductPhotoController {
 
     private final PhotoProductService photoProductService;
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public ImageUpdateOutput updateImage(@PathVariable UUID restaurantId,
+    public PhotoUpdateOutput updatePhoto(@PathVariable UUID restaurantId,
                                          @PathVariable int productId,
-                                         @Valid ImageUpdateInput image){
+                                         @Valid PhotoUpdateInput photo){
 
-        return photoProductService.save(image, restaurantId, productId);
+        return photoProductService.save(photo, restaurantId, productId);
     }
 
     @DeleteMapping()
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeImage(@PathVariable UUID restaurantId, @PathVariable int productId){
+    public void removePhoto(@PathVariable UUID restaurantId, @PathVariable int productId){
         photoProductService.removeImage(restaurantId, productId);
     }
 }
