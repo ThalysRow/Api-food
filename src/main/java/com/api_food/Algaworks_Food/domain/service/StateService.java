@@ -61,7 +61,7 @@ public class StateService {
         return stateMapper.toOutput(stateRepository.saveAndFlush(foundState));
     }
 
-    public StateModel returnStateModel(int id){
+    private StateModel returnStateModel(int id){
         return stateRepository.findById(id).orElseThrow(()-> new StateNotFoundException(id));
     }
 

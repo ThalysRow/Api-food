@@ -37,7 +37,7 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
-    public void verifyEmailInUse(String email){
+    private void verifyEmailInUse(String email){
         Optional<UserModel> user = userRepository.findUserByEmail(email);
 
         if (user.isPresent()){

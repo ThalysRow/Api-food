@@ -73,7 +73,7 @@ public class CityService {
         return  cityMapper.toCityOutput(cityFound);
     }
 
-    public CityModel returnCityModel(int id){
+    private CityModel returnCityModel(int id){
         return cityRepository.findById(id).orElseThrow(()-> new CityNotFoundException(id));
     }
 

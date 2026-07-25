@@ -30,7 +30,7 @@ public class GroupService {
     private final PermissionService permissionService;
 
 
-    public void verifyGroupName(String name){
+    private void verifyGroupName(String name){
         Optional<GroupModel> findGroup = groupRepository.findGroupByName(name);
         if (findGroup.isPresent()){
             throw new GroupNameAlreadyExistsException(name);
