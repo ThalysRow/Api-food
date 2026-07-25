@@ -198,28 +198,15 @@ public class RestaurantService {
         @Transactional
         public void activateRestaurants(List<UUID> restaurantsIds){
 
-        try {
+            restaurantRepository.activateAll(restaurantsIds);
 
-            restaurantsIds.forEach(this::activateRestaurant);
-
-        }catch (RestaurantNotFoundException e){
-
-            throw new BusinessException(e.getMessage());
-
-            }
         }
 
         @Transactional
         public void deactivateRestaurants(List<UUID> restaurantsIds){
 
-        try {
+        restaurantRepository.deactivateAll(restaurantsIds);
 
-            restaurantsIds.forEach(this::deactivateRestaurant);
-
-        } catch (RestaurantNotFoundException e){
-
-            throw new BusinessException(e.getMessage());
-        }
     }
 
         public RestaurantModel verifyFieldRestaurant(UUID id){
