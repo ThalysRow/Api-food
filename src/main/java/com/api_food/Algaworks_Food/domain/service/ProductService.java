@@ -86,17 +86,6 @@ public class ProductService {
         return productMapper.toOutput(findedProduct);
     }
 
-    public void getProductInRestaurant(UUID restaurantId, int productId){
-
-        RestaurantModel restaurant = restaurantService.verifyFieldRestaurant(restaurantId);
-
-         restaurant.getProducts()
-                 .stream()
-                .filter(item -> item.getId() == productId)
-                .findFirst()
-                 .orElseThrow(()-> new ProductNotFoundInRestaurantException(productId, restaurant.getName()));
-    }
-
 
     public List<ProductModel> returnProductModels(UUID restaurantId, List<Integer> productIds) {
         List<ProductModel> products = productRepository.findByRestaurantIdProductsId(restaurantId, productIds);
