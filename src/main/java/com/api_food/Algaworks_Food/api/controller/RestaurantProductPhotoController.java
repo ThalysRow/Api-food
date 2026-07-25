@@ -7,8 +7,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
@@ -37,6 +39,14 @@ public class RestaurantProductPhotoController {
     @ResponseStatus(HttpStatus.OK)
     public PhotoOutput findPhotoById(@PathVariable UUID restaurantId, @PathVariable int productId){
         return photoProductService.findPhotoById(restaurantId, productId);
+    }
+
+    @GetMapping(produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<?> servePhotoFile(@PathVariable UUID restaurantId, @PathVariable int productId,
+                                            @RequestHeader(name = "accept") String acceptHeader){
+            PhotoOutput photo = photoProductService.findPhotoWithMediaValidation(restaurantId,productId, acceptHeader);
+
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(photo.getUrl())).build();
     }
 
 }
