@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<OrderModel, Integer>,
         JpaSpecificationExecutor<OrderModel> {
@@ -17,6 +18,12 @@ public interface OrderRepository extends JpaRepository<OrderModel, Integer>,
     List<OrderModel> findAll();
 
     @EntityGraph(attributePaths = {"user", "restaurant", "restaurant.kitchen",
+            "paymentMethod",
             "deliveryAddress", "deliveryAddress.city", "deliveryAddress.city.state"})
     Page<OrderModel> findAll(Specification<OrderModel> spec, Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"user", "restaurant", "restaurant.kitchen", "paymentMethod",
+            "deliveryAddress.city.state", "itens", "itens.product"})
+    Optional<OrderModel> findById(Integer id);
 }
