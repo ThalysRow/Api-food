@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -95,14 +97,23 @@ public class ProductService {
                  .orElseThrow(()-> new ProductNotFoundInRestaurantException(productId, restaurant.getName()));
     }
 
-    @Transactional
-    public void verifyProductsField(UUID restaurantId, List<Integer> productsId){
-        productsId.forEach(productId -> { getProductInRestaurant(restaurantId, productId);});
+
+    public List<ProductModel> returnProductModels(UUID restaurantId, List<Integer> productIds) {
+        List<ProductModel> products = productRepository.findByRestaurantIdProductsId(restaurantId, productIds);
+
+        Set<Integer> foundIds = products.stream()
+                .map(ProductModel::getId)
+                .collect(Collectors.toSet());
+
+            for (Integer id : productIds){
+                if (!foundIds.contains(id)){
+                    throw new BusinessException("product", id);
+                }
+            }
+
+            return products;
     }
 
-    public ProductModel returnProductModel(int id){
-        return productRepository.findById(id).orElseThrow(()-> new BusinessException("product", id));
-    }
 
     public ProductModel findProductModelInRestaurant(UUID restaurantId, int productId) {
 
