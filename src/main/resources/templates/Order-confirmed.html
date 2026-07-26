@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f6f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333333;">
+
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f6f8; padding: 30px 15px; border-collapse: collapse;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border-collapse: collapse;">
+
+                    <tr>
+                        <td style="background-color: #e53935; background: linear-gradient(135deg, #e53935 0%, #c62828 100%); padding: 35px 30px; text-align: center; color: #ffffff;">
+                            <h1 style="margin: 0 0 10px; font-size: 26px; font-weight: 700; letter-spacing: 0.5px; color: #ffffff;">${orders.restaurant.name}</h1>
+                            <div style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); padding: 6px 18px; border-radius: 20px; font-size: 14px; font-weight: 600; color: #ffffff;">
+                                &#10003; Order #${orders.id?c} Confirmed
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 30px 30px 15px;">
+                            <h2 style="margin: 0 0 10px; font-size: 20px; color: #111111;">Hello, ${orders.user.name}!</h2>
+                            <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #555555;">
+                                Great news! Your order has been received and confirmed by <strong>${orders.restaurant.name}</strong>. It is already being prepared with care!
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 15px 30px;">
+                            <h3 style="margin: 0 0 15px; font-size: 16px; color: #111111; border-bottom: 2px solid #f0f0f0; padding-bottom: 8px;">Order Items</h3>
+                            
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
+                                <#list orders.itens as item>
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px dashed #e0e0e0; font-size: 14px; color: #333333;">
+                                        <strong style="color: #e53935;">${item.quantity}x</strong> ${item.product.name}
+                                        <#if (item.observations!"")?has_content>
+                                            <br><small style="color: #888888; font-style: italic;">Note: ${item.observations}</small>
+                                        </#if>
+                                    </td>
+                                    <td align="right" style="padding: 12px 0; border-bottom: 1px dashed #e0e0e0; font-size: 14px; font-weight: 600; color: #333333;">
+                                        $ ${item.totalPrice?string(",##0.00")}
+                                    </td>
+                                </tr>
+                                </#list>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 10px 30px 25px;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #fafafa; border-radius: 8px; padding: 15px; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 4px 0; font-size: 14px; color: #666666;">Subtotal:</td>
+                                    <td align="right" style="padding: 4px 0; font-size: 14px; color: #333333;">$ ${orders.subtotal?string(",##0.00")}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 0; font-size: 14px; color: #666666;">Delivery Fee:</td>
+                                    <td align="right" style="padding: 4px 0; font-size: 14px; color: #333333;">$ ${orders.deliveryFee?string(",##0.00")}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px 0 0; font-size: 16px; font-weight: 700; color: #111111; border-top: 1px solid #e0e0e0;">Total:</td>
+                                    <td align="right" style="padding: 10px 0 0; font-size: 18px; font-weight: 700; color: #e53935; border-top: 1px solid #e0e0e0;">$ ${orders.totalValue?string(",##0.00")}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 0 30px 30px;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
+                                <tr>
+                                    <td width="50%" valign="top" style="padding-right: 10px;">
+                                        <h4 style="margin: 0 0 6px; font-size: 13px; text-transform: uppercase; color: #888888; letter-spacing: 0.5px;">Delivery Address</h4>
+                                        <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #444444;">
+                                            <#if orders.deliveryAddress??>
+                                                ${orders.deliveryAddress.street}, ${orders.deliveryAddress.number}<#if (orders.deliveryAddress.complement!"")?has_content> - ${orders.deliveryAddress.complement}</#if><br>
+                                                ${orders.deliveryAddress.neighborhood} - Zip Code ${orders.deliveryAddress.zipcode}<br>
+                                                ${orders.deliveryAddress.city.name}/${orders.deliveryAddress.city.state.name}
+                                            <#else>
+                                                Pick up at Restaurant
+                                            </#if>
+                                        </p>
+                                    </td>
+                                    <td width="50%" valign="top" style="padding-left: 10px; border-left: 1px solid #eeeeee;">
+                                        <h4 style="margin: 0 0 6px; font-size: 13px; text-transform: uppercase; color: #888888; letter-spacing: 0.5px;">Payment Method</h4>
+                                        <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #444444;">
+                                            ${orders.paymentMethod.name}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="background-color: #f0f0f0; padding: 20px 30px; text-align: center; font-size: 12px; color: #777777;">
+                            <p style="margin: 0 0 5px;">This is an automated email sent by <strong>AlgaFood Delivery</strong>.</p>
+                            <p style="margin: 0;">If you have any questions about your order, please contact the restaurant directly.</p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

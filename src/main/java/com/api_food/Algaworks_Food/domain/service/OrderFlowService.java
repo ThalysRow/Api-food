@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
 public class OrderFlowService {
 
     private final OrderService orderService;
+    private final EmailSendService emailSendService;
 
     @Transactional
     public void confirmOrder(int orderId){
@@ -23,6 +24,15 @@ public class OrderFlowService {
             throw new BusinessException(String.format("The order with id '%d' cannot be confirmed, " +
                     "because the status of the order is '%s'",orderId,order.getStatus()));
         }
+
+        var email = EmailSendService.EmailMessage.builder()
+                        .subject(order.getRestaurant().getName() + " Order number: " + orderId)
+                        .body("Order-confirmed.html")
+                        .model("orders", order)
+                        .recipient(order.getUser().getEmail()).build();
+
+        emailSendService.send(email);
+
 
         order.setStatus(OrderStatus.CONFIRMED);
         order.setDateConfirmed(OffsetDateTime.now());
