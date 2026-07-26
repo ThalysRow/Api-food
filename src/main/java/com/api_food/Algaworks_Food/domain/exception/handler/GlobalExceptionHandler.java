@@ -357,8 +357,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
     public ResponseEntity<?> handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException ex, WebRequest request){
 
-        HttpStatus status = HttpStatus.NOT_ACCEPTABLE;
-        ProblemType type = ProblemType.INCOMPATIBLE_MEDIA_TYPE;
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(org.springframework.web.HttpMediaTypeNotAcceptableException ex,
+                                                                      HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        return ResponseEntity.status(status).header(headers.toString()).build();
+    }
+
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<?> handleEmailException(EmailException ex, WebRequest request){
+
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ProblemType type = ProblemType.EMAIL_ERROR;
         String detail = ex.getMessage();
 
         MessageException message = createMessage(status, type, type.getTitle(), detail, OffsetDateTime.now()).build();

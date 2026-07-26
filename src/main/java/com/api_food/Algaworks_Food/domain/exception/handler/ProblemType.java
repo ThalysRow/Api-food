@@ -12,7 +12,8 @@ public enum ProblemType {
     INVALID_DATA("/invalid-data", "Invalid data"),
     UNAUTHORIZED("/unauthorized", "Unauthorized"),
     PHOTO_STORAGE_ERROR("/photo-storage-error", "Failed to store photo"),
-    INCOMPATIBLE_MEDIA_TYPE("/incompatible-media-type", "incompatible media type");
+    INCOMPATIBLE_MEDIA_TYPE("/incompatible-media-type", "incompatible media type"),
+    EMAIL_ERROR("/email-error", "Failed to send email");
 
     private String title;
     private String uri;
