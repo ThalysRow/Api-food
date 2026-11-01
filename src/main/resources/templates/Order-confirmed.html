@@ -14,7 +14,7 @@
 
                     <tr>
                         <td style="background-color: #e53935; background: linear-gradient(135deg, #e53935 0%, #c62828 100%); padding: 35px 30px; text-align: center; color: #ffffff;">
-                            <h1 style="margin: 0 0 10px; font-size: 26px; font-weight: 700; letter-spacing: 0.5px; color: #ffffff;">${orders.restaurant.name}</h1>
+                            <h1 style="margin: 0 0 10px; font-size: 26px; font-weight: 700; letter-spacing: 0.5px; color: #ffffff;">${orders.restaurant.name?keep_before(" ")} 👋</h1>
                             <div style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); padding: 6px 18px; border-radius: 20px; font-size: 14px; font-weight: 600; color: #ffffff;">
                                 &#10003; Order #${orders.id?c} Confirmed
                             </div>

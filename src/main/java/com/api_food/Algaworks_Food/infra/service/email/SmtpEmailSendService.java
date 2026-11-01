@@ -6,21 +6,19 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
-@Service
+@Slf4j
 @RequiredArgsConstructor
 public class SmtpEmailSendService implements EmailSendService {
 
     private final Configuration freemarkerConfig;
     private final JavaMailSender mailSender;
-
-    @Value("${MAIL_SENDER}")
-    private String sender;
+    private final String sender;
+    private final String emailDevTest;
 
     @Override
     public void send(EmailMessage message) {
@@ -34,13 +32,15 @@ public class SmtpEmailSendService implements EmailSendService {
 
             helper.setFrom(sender);
             helper.setTo(message.getRecipients().toArray(new String[0]));
+            //helper.setTo(emailDevTest);
             helper.setSubject(message.getSubject());
             helper.setText(body, true);
 
             mailSender.send(mimeMessage);
 
         } catch (Exception e) {
-            throw new EmailException();
+            e.printStackTrace();
+            throw new EmailException("Error to send email: " + e.getMessage());
         }
 
     }
@@ -51,7 +51,7 @@ public class SmtpEmailSendService implements EmailSendService {
             Template template = freemarkerConfig.getTemplate(message.getBody());
             return FreeMarkerTemplateUtils.processTemplateIntoString(template,message.getModels());
         } catch (Exception e) {
-            throw new EmailException();
+            throw new EmailException(e.getMessage());
         }
     }
 }
