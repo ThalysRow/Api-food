@@ -2,6 +2,7 @@ package com.api_food.Algaworks_Food.config;
 
 import com.api_food.Algaworks_Food.domain.service.EmailSendService;
 import com.api_food.Algaworks_Food.infra.service.email.FakeEmailSendService;
+import com.api_food.Algaworks_Food.infra.service.email.SandboxEmailSendService;
 import com.api_food.Algaworks_Food.infra.service.email.SmtpEmailSendService;
 import freemarker.template.Configuration;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,15 +16,23 @@ public class EmailConfig {
     @Bean
     @ConditionalOnProperty(name = "algafood.mail.impl", havingValue = "smtp", matchIfMissing = true)
     public EmailSendService smtpEmailSendService(Configuration freemarkerConfig,
-                                                  JavaMailSender mailSender,
-                                                  @Value("${MAIL_SENDER}") String sender,
-                                                  @Value("${EMAIL_DEV_TEST}") String emailDevTest) {
-        return new SmtpEmailSendService(freemarkerConfig, mailSender, sender, emailDevTest);
+                                                 JavaMailSender mailSender,
+                                                 @Value("${MAIL_SENDER}") String sender) {
+        return new SmtpEmailSendService(freemarkerConfig, mailSender, sender);
     }
 
     @Bean
     @ConditionalOnProperty(name = "algafood.mail.impl", havingValue = "fake")
     public EmailSendService fakeEmailSendService(Configuration freemarkerConfig) {
         return new FakeEmailSendService(freemarkerConfig);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "algafood.mail.impl", havingValue = "sandbox")
+    public EmailSendService sandboxEmailSendService(Configuration freemarkerConfig,
+                                                    JavaMailSender mailSender,
+                                                    @Value("${MAIL_SENDER}") String sender,
+                                                    @Value("${EMAIL_DEV_TEST}") String emailDevTest) {
+        return new SandboxEmailSendService(freemarkerConfig, mailSender, sender, emailDevTest);
     }
 }
