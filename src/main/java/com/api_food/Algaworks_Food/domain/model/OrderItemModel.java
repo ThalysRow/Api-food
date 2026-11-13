@@ -41,4 +41,18 @@ public class OrderItemModel {
     @JoinColumn(nullable = false, name = "product_id")
     private ProductModel product;
 
+    public void calcPriceTotal(){
+        BigDecimal unitPrice = this.getUnitPrice();
+        BigDecimal quantity = this.getQuantity();
+
+        if(unitPrice == null) {
+            unitPrice = BigDecimal.ZERO;
+        }
+
+        if(quantity == null) {
+            quantity = BigDecimal.ZERO;
+        }
+
+        this.setTotalPrice(unitPrice.multiply(quantity));
+    }
 }

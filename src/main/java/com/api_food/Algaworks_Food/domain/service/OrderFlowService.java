@@ -1,13 +1,9 @@
 package com.api_food.Algaworks_Food.domain.service;
 
-import com.api_food.Algaworks_Food.domain.enums.OrderStatus;
-import com.api_food.Algaworks_Food.domain.exception.custom.BusinessException;
 import com.api_food.Algaworks_Food.domain.model.OrderModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.OffsetDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -20,49 +16,28 @@ public class OrderFlowService {
     public void confirmOrder(int orderId){
         OrderModel order = orderService.returnOrderModel(orderId);
 
-        if (!order.getStatus().equals(OrderStatus.CREATED)){
-            throw new BusinessException(String.format("The order with id '%d' cannot be confirmed, " +
-                    "because the status of the order is '%s'",orderId,order.getStatus()));
-        }
+        order.confirm();
 
-        var email = EmailSendService.EmailMessage.builder()
-                        .subject(order.getRestaurant().getName() + " Order number: " + orderId)
-                        .body("Order-confirmed.html")
-                        .model("orders", order)
-                        .recipient(order.getUser().getEmail()).build();
+//        var email = EmailSendService.EmailMessage.builder()
+//                        .subject(order.getRestaurant().getName() + " Order number: " + orderId)
+//                        .body("Order-confirmed.html")
+//                        .model("orders", order)
+//                        .recipient(order.getUser().getEmail()).build();
+//
+//        emailSendService.send(email);
 
-        emailSendService.send(email);
-
-
-        order.setStatus(OrderStatus.CONFIRMED);
-        order.setDateConfirmed(OffsetDateTime.now());
     }
 
     @Transactional
     public void deliverOrder(int orderId){
         OrderModel order = orderService.returnOrderModel(orderId);
-
-        if(!order.getStatus().equals(OrderStatus.CONFIRMED)){
-            throw new BusinessException(String.format("The order with id '%d' cannot be delivered, " +
-                    "because the status of the order is '%s'",orderId,order.getStatus()));
-        }
-
-        order.setStatus(OrderStatus.DELIVERED);
-        order.setDateDelivered(OffsetDateTime.now());
+         order.deliver();
     }
 
     @Transactional
     public void cancelOrder(int orderId){
         OrderModel order = orderService.returnOrderModel(orderId);
 
-        if(!order.getStatus().equals(OrderStatus.CONFIRMED) &&
-                !order.getStatus().equals(OrderStatus.CREATED)){
-            throw new BusinessException(String.format("The order with id '%d' cannot be cancelled, " +
-                    "because the status of the order is '%s'",orderId,order.getStatus()));
-        }
-
-        order.setStatus(OrderStatus.CANCELED);
-        order.setDateCancelled(OffsetDateTime.now());
-
+        order.cancel();
     }
 }

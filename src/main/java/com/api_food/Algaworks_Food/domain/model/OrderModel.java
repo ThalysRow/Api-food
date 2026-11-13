@@ -1,12 +1,14 @@
 package com.api_food.Algaworks_Food.domain.model;
 
 import com.api_food.Algaworks_Food.domain.enums.OrderStatus;
+import com.api_food.Algaworks_Food.domain.exception.custom.BusinessException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -17,8 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "orders")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class OrderModel {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+public class OrderModel extends AbstractAggregateRoot<OrderModel> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,4 +70,56 @@ public class OrderModel {
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OrderItemModel> itens;
+
+    public void calcTotalValue(){
+        getItens().forEach(OrderItemModel::calcPriceTotal);
+
+        this.subtotal = getItens().stream()
+                .map(OrderItemModel::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        this.totalValue = this.subtotal.add(this.deliveryFee != null ? this.deliveryFee : BigDecimal.ZERO);
+
+    }
+
+    public void confirm(){
+
+        if(!this.getStatus().equals(OrderStatus.CREATED)){
+            throw new BusinessException(String.format("The order with id '%d' cannot be confirmed, " +
+                    "because the status of the order is '%s'", this.getId(), this.getStatus()));
+        }
+
+        setStatus(OrderStatus.CONFIRMED);
+        setDateConfirmed(OffsetDateTime.now());
+    }
+
+    public void deliver(){
+
+        if(!this.getStatus().equals(OrderStatus.CONFIRMED)){
+            throw new BusinessException(String.format("The order with id '%d' cannot be delivered, " +
+                    "because the status of the order is '%s'", this.getId(), this.getStatus()));
+        }
+
+        setStatus(OrderStatus.DELIVERED);
+        setDateDelivered(OffsetDateTime.now());
+    }
+
+    public void cancel(){
+
+        if(!this.getStatus().equals(OrderStatus.CREATED) &&
+                !this.getStatus().equals(OrderStatus.CONFIRMED)){
+            throw new BusinessException(String.format("The order with id '%d' cannot be canceled, " +
+                    "because the status of the order is '%s'", this.getId(), this.getStatus()));
+        }
+
+        setStatus(OrderStatus.CANCELED);
+        setDateCancelled(OffsetDateTime.now());
+    }
+
+    public void setItens(List<OrderItemModel> itens){
+        this.itens = itens;
+        if (this.itens != null){
+            this.itens.forEach(item -> item.setOrder(this));
+        }
+    }
 }

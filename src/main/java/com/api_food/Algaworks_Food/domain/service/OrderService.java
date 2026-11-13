@@ -59,38 +59,30 @@ public class OrderService {
                 .collect(Collectors.toMap(ProductModel::getId, p -> p));
 
         BigDecimal deliveryFee = restaurant.getDeliveryFee();
-        BigDecimal subtotal = BigDecimal.ZERO;
+
         List<OrderItemModel> orderItens = new ArrayList<>();
 
         OrderModel addOrder =  orderMapper.toModel(input);
 
-        for (ProductInOrderOutput itemInput : input.getItens()){
-                ProductModel product = productsMap.get(itemInput.getId());
-                BigDecimal quantity = itemInput.getQuantity();
-                BigDecimal unitPrice = product.getPrice();
-                BigDecimal totalPrice = unitPrice.multiply(quantity);
+       for (ProductInOrderOutput itemInput : input.getItens()){
 
-                subtotal = subtotal.add(totalPrice);
-
+               ProductModel product = productsMap.get(itemInput.getId());
                 OrderItemModel orderItem = new OrderItemModel();
                 orderItem.setProduct(product);
-                orderItem.setQuantity(quantity);
-                orderItem.setUnitPrice(unitPrice);
-                orderItem.setTotalPrice(totalPrice);
+                orderItem.setQuantity(itemInput.getQuantity());
+                orderItem.setUnitPrice(product.getPrice());
                 orderItem.setObservations(Formatter.string(itemInput.getObservations()));
-                orderItem.setOrder(addOrder);
 
                 orderItens.add(orderItem);
 
         }
 
-        BigDecimal totalValue = subtotal.add(deliveryFee);
-
-
-
-        addOrder.setSubtotal(subtotal);
         addOrder.setDeliveryFee(deliveryFee);
-        addOrder.setTotalValue(totalValue);
+
+        addOrder.setItens(orderItens);
+
+        addOrder.calcTotalValue();
+
         addOrder.setStatus(OrderStatus.CREATED);
         addOrder.setDeliveryAddress(stringFormatter.addressFieldsFormatter(addOrder.getDeliveryAddress()));
         addOrder.getDeliveryAddress().setCity(city);
@@ -98,7 +90,7 @@ public class OrderService {
         addOrder.setRestaurant(restaurant);
         addOrder.setUser(user);
         addOrder.setDateCreated(OffsetDateTime.now());
-        addOrder.setItens(orderItens);
+
 
         orderRepository.saveAndFlush(addOrder);
 
