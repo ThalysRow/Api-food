@@ -50,7 +50,7 @@ public class UserService {
 
         String name = Formatter.string(input.getName());
         String email = Formatter.string(input.getEmail());
-        String hashedPassword = passwordEncoder.encode(input.getPassword());
+        String hashedPassword = passwordEncoder.encode(input.getPassword().trim());
 
         this.verifyEmailInUse(email);
 
@@ -105,7 +105,7 @@ public class UserService {
             throw new InvalidCurrentPasswordException();
         }
 
-        String hashedNewPassword = passwordEncoder.encode(input.getNewPassword());
+        String hashedNewPassword = passwordEncoder.encode(input.getNewPassword().trim());
 
         user.setPassword(hashedNewPassword);
         user.setDateUpdated(OffsetDateTime.now());
@@ -131,8 +131,8 @@ public class UserService {
 
         GroupModel group = groupService.returnGroupModel(groupId);
 
-        if (!user.getGroups().contains(group)){
-            user.getGroups().add(group);
+        if (!user.containsGroup(group)){
+            user.addGroup(group);
             userRepository.save(user);
         }
     }
@@ -152,8 +152,8 @@ public class UserService {
 
         GroupModel group = groupService.returnGroupModel(groupId);
 
-        if(user.getGroups().contains(group)){
-            user.getGroups().removeIf(group::equals);
+        if(user.containsGroup(group)){
+            user.removeGroup(group);
         }
     }
 

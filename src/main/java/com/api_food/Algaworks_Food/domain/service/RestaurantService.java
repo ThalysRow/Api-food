@@ -91,15 +91,14 @@ public class RestaurantService {
         @Transactional
         public void activateRestaurant(UUID id){
             RestaurantModel restaurant = this.returnRestaurantModel(id);
-
-            restaurant.setActive(true);
+            restaurant.activate();
         }
 
         @Transactional
         public void deactivateRestaurant(UUID id){
             RestaurantModel restaurant = this.returnRestaurantModel(id);
 
-            restaurant.setActive(false);
+            restaurant.deactivate();
         }
 
         public List<PaymentMethodOutput> restaurantListPaymentMethods(UUID restaurantId){
@@ -116,10 +115,10 @@ public class RestaurantService {
 
             PaymentMethodModel paymentMethod = paymentMethodService.returnPaymentMethodModel(paymentMethodId);
 
-            if (!restaurant.getPaymentMethods().contains(paymentMethod)) {
+            if (!restaurant.acceptsPaymentMethod(paymentMethod)) {
                 throw new BusinessException(String.format("The payment method '%s' is not yet associated with restaurant '%s'.", paymentMethod.getName(), restaurant.getName()));
             }
-            restaurant.getPaymentMethods().remove(paymentMethod);
+            restaurant.removePaymentMethod(paymentMethod);
         }
 
         @Transactional
@@ -129,10 +128,10 @@ public class RestaurantService {
 
             PaymentMethodModel paymentMethod = paymentMethodService.returnPaymentMethodModel(paymentMethodId);
 
-            if (restaurant.getPaymentMethods().contains(paymentMethod)) {
+            if (restaurant.acceptsPaymentMethod(paymentMethod)) {
                 throw new EntityInUseException(String.format("The payment method '%s' is already linked to restaurant '%s'.", paymentMethod.getName(), restaurant.getName()));
             }
-            restaurant.getPaymentMethods().add(paymentMethod);
+            restaurant.addPaymentMethod(paymentMethod);
         }
 
         public RestaurantModel returnRestaurantModel(UUID id){
@@ -149,18 +148,14 @@ public class RestaurantService {
         @Transactional
         public void restaurantOpen(UUID restaurantId){
         RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
-
-        restaurant.setOpen(true);
-        restaurant.setDateUpdated(OffsetDateTime.now());
+        restaurant.open();
         restaurantRepository.saveAndFlush(restaurant);
         }
 
         @Transactional
         public void closeRestaurant(UUID restaurantId){
         RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
-
-        restaurant.setOpen(false);
-        restaurant.setDateUpdated(OffsetDateTime.now());
+        restaurant.close();
         restaurantRepository.saveAndFlush(restaurant);
         }
 
@@ -176,23 +171,22 @@ public class RestaurantService {
 
             UserModel user = userService.returnUserModel(userId);
 
-            if(!user.getRestaurants().contains(restaurant)){
-                user.getRestaurants().add(restaurant);
+            if(!user.containsRestaurant(restaurant)){
+                user.addRestaurant(restaurant);
             }
         }
 
         @Transactional
-        public void removeResponsibleUser(UUID restaurantId, UUID userId){
+        public void removeResponsibleUser(UUID restaurantId, UUID userId) {
 
-        RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
+            RestaurantModel restaurant = this.returnRestaurantModel(restaurantId);
 
-        UserModel user = userService.returnUserModel(userId);
+            UserModel user = userService.returnUserModel(userId);
 
-        if(!user.getRestaurants().contains(restaurant)){
-            throw new BusinessException("User is not in restaurant list");
+            if (user.containsRestaurant(restaurant)) {
+                user.removeRestaurant(restaurant);
             }
 
-            user.getRestaurants().remove(restaurant);
         }
 
         @Transactional

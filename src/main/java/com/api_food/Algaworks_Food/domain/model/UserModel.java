@@ -69,4 +69,28 @@ public class UserModel {
         return user;
     }
 
+    public boolean addGroup(GroupModel group){
+        return getGroups().add(group);
+    }
+
+    public boolean removeGroup(GroupModel group){
+        return getGroups().remove(group);
+    }
+
+    public boolean containsGroup(GroupModel group){
+        return getGroups().contains(group);
+    }
+
+    public boolean addRestaurant(RestaurantModel restaurant){
+        return getRestaurants().add(restaurant);
+    }
+
+    public boolean removeRestaurant(RestaurantModel restaurant){
+        return getRestaurants().remove(restaurant);
+    }
+
+    public boolean containsRestaurant(RestaurantModel restaurant){
+        return getRestaurants().contains(restaurant);
+    }
+
 }

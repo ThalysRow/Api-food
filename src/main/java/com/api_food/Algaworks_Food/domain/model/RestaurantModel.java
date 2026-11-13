@@ -85,4 +85,34 @@ public class RestaurantModel {
 
         return restaurant;
     }
+
+    public void open(){
+        this.open = true;
+        this.dateUpdated = OffsetDateTime.now();
+    }
+
+    public void close(){
+        this.open = false;
+        this.dateUpdated = OffsetDateTime.now();
+    }
+
+    public void activate() {
+        this.active = true;
+    }
+
+    public void deactivate(){
+        this.active = false;
+    }
+
+    public boolean addPaymentMethod(PaymentMethodModel paymentMethod){
+        return getPaymentMethods().add(paymentMethod);
+    }
+
+    public boolean removePaymentMethod(PaymentMethodModel paymentMethod){
+        return getPaymentMethods().remove(paymentMethod);
+    }
+
+    public boolean acceptsPaymentMethod(PaymentMethodModel paymentMethod){
+        return getPaymentMethods().contains(paymentMethod);
+    }
 }

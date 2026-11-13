@@ -41,4 +41,16 @@ public class GroupModel {
         group.setName(name);
         return group;
     }
+
+    public boolean addPermission(PermissionModel permission){
+        return getPermissions().add(permission);
+    }
+
+    public boolean removePermission(PermissionModel permission){
+        return getPermissions().remove(permission);
+    }
+
+    public boolean containsPermission(PermissionModel permission){
+        return getPermissions().contains(permission);
+    }
 }

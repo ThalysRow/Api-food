@@ -104,12 +104,13 @@ public class GroupService {
     @Transactional
     public void removeGroupPermissions(int groupId, int permissionId){
         GroupModel group = this.returnGroupModel(groupId);
-        if (group.getPermissions().stream().noneMatch(permission -> permission.getId() == permissionId)){
+        PermissionModel permission = permissionService.returnPermissionModel(permissionId);
+
+        if(!group.containsPermission(permission)){
             throw new PermissionNotFoundException(permissionId, groupId);
         }
-        group.getPermissions().removeIf(permission -> permission.getId() == permissionId);
 
-        groupRepository.saveAndFlush(group);
+        group.removePermission(permission);
     }
 
     @Transactional
@@ -117,9 +118,9 @@ public class GroupService {
         GroupModel group = this.returnGroupModel(groupId);
         PermissionModel permission = permissionService.returnPermissionModel(permissionId);
 
-        if (group.getPermissions().stream().noneMatch(perm -> perm.getId() == permissionId)){
-            group.getPermissions().add(permission);
-            groupRepository.save(group);
-        }
+       if(!group.containsPermission(permission)){
+           group.addPermission(permission);
+           groupRepository.saveAndFlush(group);
+       }
     }
 }
